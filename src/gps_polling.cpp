@@ -83,8 +83,8 @@ void GpsPollingThread( ProcessValues *processvalues,
 
 	//Loop until first GPS lock to set system time
 	while ( (gpsdata == NULL) ||
-			//(gpsdata->fix.mode <= 1) ||
-			//(gpsdata->fix.time < 1) ||
+			(gpsdata->fix.mode <= 1) ||
+			(gpsdata->fix.time < 1) ||
 			std::isnan(gpsdata->fix.time) ) {
 		if (*exitsignal) {
 			return;
