@@ -27,7 +27,7 @@ namespace lanedetectconstants {
 							cv::Point(0,0) };
 							 
 	//Image evaluation
-	float k_contrastscalefactor{ 0.7f };
+	float k_contrastscalefactor{ 0.75f };
 	uint16_t k_ystartposition{ 240 };
 	
 	//Line filtering
