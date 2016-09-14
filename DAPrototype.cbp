@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="DAPrototype" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/DAPrototype" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-g" />
+					<Add directory="include" />
+					<Add directory="C:/opencv/build/include" />
+				</Compiler>
+				<Linker>
+					<Add directory="C:/opencv/build/x86/mingw/lib" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/DAPrototype" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="include/alarm_monitor.h" />
+		<Unit filename="include/display_handler.h" />
+		<Unit filename="include/fcw_tracker_class.h" />
+		<Unit filename="include/frame_queue_class.h" />
+		<Unit filename="include/gpio_handler.h" />
+		<Unit filename="include/gps.h" />
+		<Unit filename="include/gps_polling.h" />
+		<Unit filename="include/image_capturer.h" />
+		<Unit filename="include/image_editor.h" />
+		<Unit filename="include/image_processor.h" />
+		<Unit filename="include/lane_detect_constants.h" />
+		<Unit filename="include/lane_detect_processor.h" />
+		<Unit filename="include/libgpsmm.h" />
+		<Unit filename="include/lidar_polling.h" />
+		<Unit filename="include/pace_setter_class.h" />
+		<Unit filename="include/storage_worker_class.h" />
+		<Unit filename="include/tinyxml2.h" />
+		<Unit filename="include/video_writer.h" />
+		<Unit filename="include/xml_reader.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="src/alarm_monitor.cpp" />
+		<Unit filename="src/display_handler.cpp" />
+		<Unit filename="src/fcw_tracker_class.cpp" />
+		<Unit filename="src/frame_queue_class.cpp" />
+		<Unit filename="src/gpio_handler.cpp" />
+		<Unit filename="src/gps_polling.cpp" />
+		<Unit filename="src/image_capturer.cpp" />
+		<Unit filename="src/image_editor.cpp" />
+		<Unit filename="src/image_processor.cpp" />
+		<Unit filename="src/lane_detect_processor.cpp" />
+		<Unit filename="src/libgpsmm.cpp" />
+		<Unit filename="src/lidar_polling.cpp" />
+		<Unit filename="src/pace_setter_class.cpp" />
+		<Unit filename="src/storage_worker_class.cpp" />
+		<Unit filename="src/tinyxml2.cpp" />
+		<Unit filename="src/video_writer.cpp" />
+		<Unit filename="src/xml_reader.cpp" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
