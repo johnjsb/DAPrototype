@@ -29,7 +29,7 @@ namespace alarmdata {
 	//2 = following too close warning
 	//3 = fcw alarm
 	//4 = following too close alarm
-	//5 = driver ahead takeoff notification				//Future
+	//5 = driver pullahead notification
 	//-1 = error (sensor error)	
 	std::atomic<int> fcwstatus{0};
 	//Scaled over-threshold value for PWM

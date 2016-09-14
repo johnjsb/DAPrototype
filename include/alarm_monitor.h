@@ -30,7 +30,7 @@ namespace alarmdata {
 	//2 = following too close warning
 	//3 = fcw alarm
 	//4 = following too close alarm
-	//5 = driver ahead takeoff notification				//Future
+	//5 = driver pullahead notification
 	//-1 = error (sensor error)	
 	extern std::atomic<int> fcwstatus;
 	//Scaled over-threshold value for PWM
@@ -39,8 +39,8 @@ namespace alarmdata {
 	//GPS Status
 	//0 = inactive (disabled by xml)
 	//1 = no GPS lock
-	//2 = gps locked and speed Ok (below LDW threshold)	//Future
-	//3 = gps locked and speed Ok (above LDW threshold)	//Future
+	//2 = gps locked and speed Ok (below LDW threshold)
+	//3 = gps locked and speed Ok (above LDW threshold)
 	//4 = gps locked and speeding warning				//Future
 	//5 = gps locked and speeding alarm					//Future
 	//-1 = error (sensor error)	

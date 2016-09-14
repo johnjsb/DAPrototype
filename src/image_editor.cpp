@@ -205,8 +205,11 @@ std::string GetDiagnosticString ()
 		case 4:
 			diagnosticstring += "FCW tailgate alarm, ";
 			break;
+		case 5:
+			diagnosticstring += "FCW tailgate alarm, ";
+			break;
 		case -1:
-			diagnosticstring += "FCW sensor failure, ";
+			diagnosticstring += "FCW driver pull ahead detected, ";
 			break;
 	}
 	//GPS

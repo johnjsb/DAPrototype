@@ -10,6 +10,7 @@ class FcwTracker
 		double followingdistance_;  		//m (averaged)
 		double followingtime_;  			//s
 		double timetocollision_;			//s
+		double acceleration_;				//m/s^2 (averaged)
         FcwTracker( double distanceoffset,
 					int samplestoaverage = 3 );
         void Update( double distance,
@@ -23,7 +24,6 @@ class FcwTracker
 		std::deque<double> velocities_;		//m/s (relative to forward object)
 		std::deque<double> accelerations_;	//m/s^2 (relative to forward object)
 		double velocity_;					//m/s (averaged)
-		double acceleration_;				//m/s^2 (averaged)
 		const double kdistanceoffset_;		//m (windshield to bumper distance)
 		const int ksamplestoaverage_;		//number of samples for noise reduction
         long sampletime_;					//usec (time between samples)

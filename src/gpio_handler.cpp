@@ -51,7 +51,7 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 	PaceSetter gpiopacer(settings::comm::pollrategpio, "GPIO handler");
 	
 	//Loop indefinitely
-	//for(;;) {
+//	for(;;) {
     for(int i = 0; i < 2000; i++) {		//For testing
 		//Check for Warnings
 		if ( (alarmdata::ldwstatus > 2) || (alarmdata::fcwstatus > 0) ||
@@ -72,13 +72,13 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 		} else if ( !alarm && warning && settings::gen::enbuzzer ) {
 			buzzercount++;
 			if ( buzzercount % buzzerinterval != 0) continue;
-			/*
+/*
 			if (digitalRead(BUZZERPIN) {
 				digitalWrite(BUZZERPIN, 1);
 			} else {
 				digitalWrite(BUZZERPIN, 0);
 			}
-			*/
+*/
 		} else {
 			//digitalWrite(BUZZERPIN, 0);
 			buzzercount = buzzerinterval - 1;
@@ -87,131 +87,131 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 		//Set PWM for LDW LED's
 		switch (alarmdata::ldwstatus){
 			case 1:
-				/*
+/*
 				pwmWrite (LEFTALARMPIN, 0);
 				pwmWrite (LEFTWARNINGPIN, 0);
 				pwmWrite (LEFTOKPIN, alarmdata::ldwpwmvalue);
 				pwmWrite (RIGHTALARMPIN, 0);
 				pwmWrite (RIGHTWARNINGPIN, 0);
 				pwmWrite (RIGHTOKPIN, 0);
-				*/
+*/
 				break;
 			case 2:
-				/*
+/*
 				pwmWrite (LEFTALARMPIN, 0);
 				pwmWrite (LEFTWARNINGPIN, 0);
 				pwmWrite (LEFTOKPIN, 0);
 				pwmWrite (RIGHTALARMPIN, 0);
 				pwmWrite (RIGHTWARNINGPIN, 0);
 				pwmWrite (RIGHTOKPIN, alarmdata::ldwpwmvalue);
-				*/
+*/
 				break;
 			case 3:
-				/*
+/*
 				pwmWrite (LEFTALARMPIN, 0);
 				pwmWrite (LEFTWARNINGPIN, alarmdata::ldwpwmvalue);
 				pwmWrite (LEFTOKPIN, 1023);
 				pwmWrite (RIGHTALARMPIN, 0);
 				pwmWrite (RIGHTWARNINGPIN, 0);
 				pwmWrite (RIGHTOKPIN, 0);
-				*/
+*/
 				break;
 			case 4:
-				/*
+/*
 				pwmWrite (LEFTALARMPIN, 0);
 				pwmWrite (LEFTWARNINGPIN, 0);
 				pwmWrite (LEFTOKPIN, 0);
 				pwmWrite (RIGHTALARMPIN, 0);
 				pwmWrite (RIGHTWARNINGPIN, alarmdata::ldwpwmvalue);
 				pwmWrite (RIGHTOKPIN, 1023);
-				*/
+*/
 				break;
 			case 5:
-				/*
+/*
 				pwmWrite (LEFTALARMPIN, alarmdata::ldwpwmvalue);
 				pwmWrite (LEFTWARNINGPIN, 1023);
 				pwmWrite (LEFTOKPIN, 1023);
 				pwmWrite (RIGHTALARMPIN, 0);
 				pwmWrite (RIGHTWARNINGPIN, 0);
 				pwmWrite (RIGHTOKPIN, 0);
-				*/
+*/
 				break;
 			case 6:
-				/*
+/*
 				pwmWrite (LEFTALARMPIN, 0);
 				pwmWrite (LEFTWARNINGPIN, 0);
 				pwmWrite (LEFTOKPIN, 0);
 				pwmWrite (RIGHTALARMPIN, alarmdata::ldwpwmvalue);
 				pwmWrite (RIGHTWARNINGPIN, 1023);
 				pwmWrite (RIGHTOKPIN, 1023);
-				*/
+*/
 				break;
 			default:
-				/*
+/*
 				pwmWrite (LEFTALARMPIN, 0);
 				pwmWrite (LEFTWARNINGPIN, 0);
 				pwmWrite (LEFTOKPIN, 0);
 				pwmWrite (RIGHTALARMPIN, 0);
 				pwmWrite (RIGHTWARNINGPIN, 0);
 				pwmWrite (RIGHTOKPIN, 0);
-				*/
+*/
 				break;
 		}
 		
 		//Set PWM for FCW LED's
 		switch ( alarmdata::fcwstatus ) {
 			case 0:
-				//pwmWrite (FORWARDALARMPIN, 0);
-				//pwmWrite (FORWARDWARNINGPIN, 0);
-				//pwmWrite (FORWARDOKPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDALARMPIN, 0);
+//				pwmWrite (FORWARDWARNINGPIN, 0);
+//				pwmWrite (FORWARDOKPIN, alarmdata::fcwpwmvalue);
 				break;
 			case 1:
-				//pwmWrite (FORWARDALARMPIN, 0);
-				//pwmWrite (FORWARDWARNINGPIN, alarmdata::fcwpwmvalue);
-				//pwmWrite (FORWARDOKPIN, 1023);
+//				pwmWrite (FORWARDALARMPIN, 0);
+//				pwmWrite (FORWARDWARNINGPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			case 2:
-				//pwmWrite (FORWARDALARMPIN, 0);
-				//pwmWrite (FORWARDWARNINGPIN, alarmdata::fcwpwmvalue);
-				//pwmWrite (FORWARDOKPIN, 1023);
+//				pwmWrite (FORWARDALARMPIN, 0);
+//				pwmWrite (FORWARDWARNINGPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			case 3:
-				//pwmWrite (FORWARDALARMPIN, alarmdata::fcwpwmvalue);
-				//pwmWrite (FORWARDWARNINGPIN, 1023);
-				//pwmWrite (FORWARDOKPIN, 1023);
+//				pwmWrite (FORWARDALARMPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDWARNINGPIN, 1023);
+//				pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			case 4:
-				//pwmWrite (FORWARDALARMPIN, alarmdata::fcwpwmvalue);
-				//pwmWrite (FORWARDWARNINGPIN, 1023);
-				//pwmWrite (FORWARDOKPIN, 1023);
+//				pwmWrite (FORWARDALARMPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDWARNINGPIN, 1023);
+//				pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			default:
-				//pwmWrite (FORWARDALARMPIN, 0);
-				//pwmWrite (FORWARDWARNINGPIN, 0);
-				//pwmWrite (FORWARDOKPIN, 0);
+//				pwmWrite (FORWARDALARMPIN, 0);
+//				pwmWrite (FORWARDWARNINGPIN, 0);
+//				pwmWrite (FORWARDOKPIN, 0);
 				break;
 		}
 		
 		//Set center LED
 		if ( (alarmdata::ldwstatus >= 0) && (alarmdata::fcwstatus >= 0) &&
 			(alarmdata::gpsstatus > 1) ) {
-			//digitalWrite(CENTERPIN, 1);
+//				digitalWrite(CENTERPIN, 1);
 		} else if ( (alarmdata::ldwstatus >= 0) && (alarmdata::fcwstatus >= 0) &&
 			(alarmdata::gpsstatus == 0) ) {
 			blinkercount++;
 			if ( blinkercount % blinkinterval != 0) continue;
-			/*
+/*
 			if (digitalRead(CENTERPIN) {
 				digitalWrite(CENTERPIN, 1);
 			} else {
 				digitalWrite(CENTERPIN, 0);
 			}
-			*/
+*/
 		} else {
 			//digitalWrite(CENTERPIN, 0);
 		}
 		
-	/*
+/*
 		//Shutdown logic on power loss
 		if ( digitalRead(POWERINPUTPIN) || !settings::gpio::autoshutdown ) {
 			inputfailcount = 0;
@@ -220,7 +220,7 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 		} else {
 			break;				//This exits and shuts down the Pi
 		}
-	*/
+*/
 	
         gpiopacer.SetPace();
     }
@@ -232,7 +232,7 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 	}
 //	digitalWrite(POWEROUTPUTPIN, 0);	//Kill power to RPi
 
-	system ("sudo shutdown -h now");
+//	system ("sudo shutdown -h now");	//Shutdown RPi
 	
 	std::cout << "Exiting GPIO handler thread!" << std::endl;
 

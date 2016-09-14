@@ -21,6 +21,8 @@ void LidarPolingThread( std::atomic<bool> *exitsignal )
 	//Create thread variables
 	double followingdistance{0.0};
 	bool vehiclemoving{false};
+	int pullaheaddelay{ settings::comm::pollratelidar/2 };	//500ms
+	int pullaheadcount{ 0 };
 	FcwTracker fcwtracker( settings::fcw::distanceoffset,
 		settings::fcw::samplestoaverage );
 	/*
@@ -44,7 +46,7 @@ void LidarPolingThread( std::atomic<bool> *exitsignal )
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
 		//Check if vehicle is moving
-		if ( alarmdata::gpsspeed > 2.0 ) {
+		if ( alarmdata::gpsspeed > 1.0 ) {
 			vehiclemoving = true;
 			
 		} else {
@@ -109,15 +111,26 @@ void LidarPolingThread( std::atomic<bool> *exitsignal )
 			alarmdata::fcwpwmvalue = 1023;
 		}
 		if ( !vehiclemoving || (fcwtracker.timetocollision_ < fcwtracker.followingtime_) &&
-			alarmdata::fcwstatus == 0) {
+			(alarmdata::fcwstatus == 0) ) {
 			alarmdata::fcwpwmvalue = 1023 + static_cast<int>((1024.0*(1000*
 				fcwtracker.timetocollision_ - settings::fcw::mscollisionwarning)) /
 				(settings::fcw::mscollisionwarning));			
 		} else if ( vehiclemoving && (fcwtracker.timetocollision_ >
-			fcwtracker.followingtime_) && alarmdata::fcwstatus == 0) {
+			fcwtracker.followingtime_) && (alarmdata::fcwstatus == 0) ) {
 			alarmdata::fcwpwmvalue = 1023 + static_cast<int>((1024.0*(1000*
 				fcwtracker.followingtime_ - settings::fcw::msfollowdistwarning)) /
 				(settings::fcw::msfollowdistwarning));			
+		}
+		
+		//Check for driver pullahead
+		if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) && (
+			alarmdata::fcwstatus = 0) && (pullaheadcount > pullaheaddelay) ) {
+			alarmdata::fcwstatus = 5;
+		} else if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) && (
+			alarmdata::fcwstatus = 0) ) {
+			pullaheadcount++;
+		} else {
+			pullaheadcount = 0;
 		}
 		
 		//Setpace
