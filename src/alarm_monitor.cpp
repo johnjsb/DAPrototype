@@ -20,6 +20,9 @@ namespace alarmdata {
 	//6 = right alarm
 	//-1 = error (no lane identified)
 	std::atomic<int> ldwstatus{0};
+	//Scaled over-threshold value for PWM
+	//0-1023
+	std::atomic<int> ldwpwmvalue{1023};
 	//FCW Status
 	//0 = inactive (disabled by xml or zero speed)
 	//1 = fcw warning
@@ -29,6 +32,9 @@ namespace alarmdata {
 	//5 = driver ahead takeoff notification				//Future
 	//-1 = error (sensor error)	
 	std::atomic<int> fcwstatus{0};
+	//Scaled over-threshold value for PWM
+	//0-1023
+	std::atomic<int> fcwpwmvalue{1023};
 	//GPS Status
 	//0 = inactive (disabled by xml)
 	//1 = no GPS lock

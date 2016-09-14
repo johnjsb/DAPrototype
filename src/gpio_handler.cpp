@@ -86,41 +86,102 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 		
 		//Set PWM for LDW LED's
 		switch (alarmdata::ldwstatus){
-			
+			case 1:
+				/*
+				pwmWrite (LEFTALARMPIN, 0);
+				pwmWrite (LEFTWARNINGPIN, 0);
+				pwmWrite (LEFTOKPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (RIGHTALARMPIN, 0);
+				pwmWrite (RIGHTWARNINGPIN, 0);
+				pwmWrite (RIGHTOKPIN, 0);
+				*/
+				break;
+			case 2:
+				/*
+				pwmWrite (LEFTALARMPIN, 0);
+				pwmWrite (LEFTWARNINGPIN, 0);
+				pwmWrite (LEFTOKPIN, 0);
+				pwmWrite (RIGHTALARMPIN, 0);
+				pwmWrite (RIGHTWARNINGPIN, 0);
+				pwmWrite (RIGHTOKPIN, alarmdata::ldwpwmvalue);
+				*/
+				break;
+			case 3:
+				/*
+				pwmWrite (LEFTALARMPIN, 0);
+				pwmWrite (LEFTWARNINGPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (LEFTOKPIN, 1023);
+				pwmWrite (RIGHTALARMPIN, 0);
+				pwmWrite (RIGHTWARNINGPIN, 0);
+				pwmWrite (RIGHTOKPIN, 0);
+				*/
+				break;
+			case 4:
+				/*
+				pwmWrite (LEFTALARMPIN, 0);
+				pwmWrite (LEFTWARNINGPIN, 0);
+				pwmWrite (LEFTOKPIN, 0);
+				pwmWrite (RIGHTALARMPIN, 0);
+				pwmWrite (RIGHTWARNINGPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (RIGHTOKPIN, 1023);
+				*/
+				break;
+			case 5:
+				/*
+				pwmWrite (LEFTALARMPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (LEFTWARNINGPIN, 1023);
+				pwmWrite (LEFTOKPIN, 1023);
+				pwmWrite (RIGHTALARMPIN, 0);
+				pwmWrite (RIGHTWARNINGPIN, 0);
+				pwmWrite (RIGHTOKPIN, 0);
+				*/
+				break;
+			case 6:
+				/*
+				pwmWrite (LEFTALARMPIN, 0);
+				pwmWrite (LEFTWARNINGPIN, 0);
+				pwmWrite (LEFTOKPIN, 0);
+				pwmWrite (RIGHTALARMPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (RIGHTWARNINGPIN, 1023);
+				pwmWrite (RIGHTOKPIN, 1023);
+				*/
+				break;
+			default:
+				/*
+				pwmWrite (LEFTALARMPIN, 0);
+				pwmWrite (LEFTWARNINGPIN, 0);
+				pwmWrite (LEFTOKPIN, 0);
+				pwmWrite (RIGHTALARMPIN, 0);
+				pwmWrite (RIGHTWARNINGPIN, 0);
+				pwmWrite (RIGHTOKPIN, 0);
+				*/
+				break;
 		}
-		/*
-		pwmWrite (LEFTALARMPIN, 1023);
-		pwmWrite (LEFTWARNINGPIN, 1023);
-		pwmWrite (LEFTOKPIN, 1023);
-		pwmWrite (RIGHTALARMPIN, 0);
-		pwmWrite (RIGHTWARNINGPIN, 0);
-		pwmWrite (RIGHTOKPIN, 0);
-		*/
 		
 		//Set PWM for FCW LED's
 		switch ( alarmdata::fcwstatus ) {
 			case 0:
 				//pwmWrite (FORWARDALARMPIN, 0);
 				//pwmWrite (FORWARDWARNINGPIN, 0);
-				//pwmWrite (FORWARDOKPIN, 1023);
+				//pwmWrite (FORWARDOKPIN, alarmdata::fcwpwmvalue);
 				break;
 			case 1:
 				//pwmWrite (FORWARDALARMPIN, 0);
-				//pwmWrite (FORWARDWARNINGPIN, 1023);
+				//pwmWrite (FORWARDWARNINGPIN, alarmdata::fcwpwmvalue);
 				//pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			case 2:
 				//pwmWrite (FORWARDALARMPIN, 0);
-				//pwmWrite (FORWARDWARNINGPIN, 1023);
+				//pwmWrite (FORWARDWARNINGPIN, alarmdata::fcwpwmvalue);
 				//pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			case 3:
-				//pwmWrite (FORWARDALARMPIN, 1023);
+				//pwmWrite (FORWARDALARMPIN, alarmdata::fcwpwmvalue);
 				//pwmWrite (FORWARDWARNINGPIN, 1023);
 				//pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			case 4:
-				//pwmWrite (FORWARDALARMPIN, 1023);
+				//pwmWrite (FORWARDALARMPIN, alarmdata::fcwpwmvalue);
 				//pwmWrite (FORWARDWARNINGPIN, 1023);
 				//pwmWrite (FORWARDOKPIN, 1023);
 				break;
