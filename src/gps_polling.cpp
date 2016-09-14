@@ -43,14 +43,14 @@ void GpsPollingThread( std::atomic<bool> *exitsignal )
 				alarmmonitor::longitude = newdata->fix.longitude;
 				alarmmonitor::gpsspeed = newdata->fix.speed;
 				if ( newdata->fix.speed > settings::ldw::enablespeed ) {
-					newdata->fix.mode = 3;
+					alarmdata::gpsstatus =  3;
 				} else {
-					newdata->fix.mode = 2;
+					alarmdata::gpsstatus =  2;
 				}
 				
 			} else {
 				alarmdata::gpsstatus = 1;
-				std::cout << "No GPS fix." << std::endl;
+				//std::cout << "No GPS fix." << std::endl;
 			}
 		}
 		

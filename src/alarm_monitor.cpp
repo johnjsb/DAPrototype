@@ -32,8 +32,8 @@ namespace alarmdata {
 	//GPS Status
 	//0 = inactive (disabled by xml)
 	//1 = no GPS lock
-	//2 = gps locked and speed Ok (below LDW threshold)	//Future
-	//3 = gps locked and speed Ok (above LDW threshold)	//Future
+	//2 = gps locked and speed Ok (below LDW threshold)
+	//3 = gps locked and speed Ok (above LDW threshold)
 	//4 = gps locked and speeding warning				//Future
 	//5 = gps locked and speeding alarm					//Future
 	//-1 = error (sensor error)	
