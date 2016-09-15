@@ -17,54 +17,54 @@
 //Placeholder variables for constant initialization
 
 //GEN
-bool genenbuzzer{true};
-bool gendebugscreen{false};
-bool gendebugterminal{false};
+static bool genenbuzzer{true};
+static bool gendebugscreen{false};
+static bool gendebugterminal{false};
 //CAM
-bool camrecordorgimage{false};
-std::string camfilepath{"/home/pi/videos/"};
-std::string camorgfilename{"in.avi"};
-std::string cammodfilename{"out.avi"};
-int campixwidth{640};
-int campixheight{480};
-bool camshowspeed{true};
-bool camshowloc{true};
-bool camshadelanes{true};
-int camrecfps{10};
-int camfilestokeep{20};
-int camminperfile{30};
+static bool camrecordorgimage{false};
+static std::string camfilepath{"/home/pi/videos/"};
+static std::string camorgfilename{"in.avi"};
+static std::string cammodfilename{"out.avi"};
+static int campixwidth{640};
+static int campixheight{480};
+static bool camshowspeed{true};
+static bool camshowloc{true};
+static bool camshadelanes{true};
+static int camrecfps{10};
+static int camfilestokeep{20};
+static int camminperfile{30};
 //DISP
-bool dispenabled{true};
-int disppixwidth{800};
-int disppixheight{480};
-int dispupdatefps{10};
+static bool dispenabled{true};
+static int disppixwidth{800};
+static int disppixheight{480};
+static int dispupdatefps{10};
 //COMM
-int commpollrategps{10};
-int commpollratelidar{10};
-int commpollrategpio{10};
+static int commpollrategps{10};
+static int commpollratelidar{10};
+static int commpollrategpio{10};
 //GPS
-int gpssamplestoaverage{5};
+static int gpssamplestoaverage{5};
 //LDW
-bool ldwenabled{true};
-int ldwenablespeed{0};
-int ldwsamplestokeep{7};
-int ldwsamplestoaverage{4};
-int ldwperoffsetwarning{15};
-int ldwperoffsetalarm{20};
-int ldwmsuntilwarning{500};
-int ldwmsuntilalarm{500};
-int ldwupdatefps{10};
+static bool ldwenabled{true};
+static int ldwenablespeed{0};
+static int ldwsamplestokeep{7};
+static int ldwsamplestoaverage{4};
+static int ldwperoffsetwarning{15};
+static int ldwperoffsetalarm{20};
+static int ldwmsuntilwarning{500};
+static int ldwmsuntilalarm{500};
+static int ldwupdatefps{10};
 //FCW
-bool fcwenabled{true};
-int fcwsamplestoaverage{3};
-double fcwdistanceoffset{0.0};
-int fcwmsfollowdistwarning{2500};
-int fcwmsfollowdistalarm{2000};
-int fcwmscollisionwarning{300};
-int fcwmscollisionalarm{300};
+static bool fcwenabled{true};
+static int fcwsamplestoaverage{3};
+static double fcwdistanceoffset{0.0};
+static int fcwmsfollowdistwarning{2500};
+static int fcwmsfollowdistalarm{2000};
+static int fcwmscollisionwarning{300};
+static int fcwmscollisionalarm{300};
 //GPIO
-bool gpioenabled{true};
-bool gpioautoshutdown{true};
+static bool gpioenabled{true};
+static bool gpioautoshutdown{true};
 	
 using namespace tinyxml2;
 using namespace std;
