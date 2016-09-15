@@ -4,15 +4,16 @@
 //#include <wiringPi.h>
 //#include <wiringPiI2C.h>
 #include "pace_setter_class.h"
+#include "process_values_class.h"
 #include "xml_reader.h"
-#include "alarm_monitor.h"
 
 #define BUZZERPIN 17
 #define POWERINPUTPIN 7
 #define POWEROUTPUTPIN 29
 
-void GpioHandlerThread( std::atomic<bool> *exitsignal,
-                        std::atomic<bool> *shutdownsignal )
+void GpioHandlerThread( ProcessValues *processvalues,
+						std::atomic<bool> *exitsignal,
+						std::atomic<bool> *shutdownsignal )
 {
 
 	std::cout << "GPIO handler thread starting!" << std::endl;
@@ -54,15 +55,15 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 //	for(;;) {
     for(int i = 0; i < 2000; i++) {		//For testing
 		//Check for Warnings
-		if ( (alarmdata::ldwstatus > 2) || (alarmdata::fcwstatus > 0) ||
-			(alarmdata::gpsstatus > 3) ) {
+		if ( (processvalues->ldwstatus_ > 2) || (processvalues->fcwstatus_ > 0) ||
+			(processvalues->gpsstatus_ > 3) ) {
 			warning = true;
 		} else {
 			warning = alarm = false;
 		}
 		//Check for Alarms
-		if ( (alarmdata::ldwstatus > 4) || (alarmdata::fcwstatus > 2) ||
-			(alarmdata::gpsstatus > 4) ) {
+		if ( (processvalues->ldwstatus_ > 4) || (processvalues->fcwstatus_ > 2) ||
+			(processvalues->gpsstatus_ > 4) ) {
 			alarm = true;
 		}
 		
@@ -85,12 +86,12 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 		}
 		
 		//Set PWM for LDW LED's
-		switch (alarmdata::ldwstatus){
+		switch (processvalues->ldwstatus_){
 			case 1:
 /*
 				pwmWrite (LEFTALARMPIN, 0);
 				pwmWrite (LEFTWARNINGPIN, 0);
-				pwmWrite (LEFTOKPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (LEFTOKPIN, processvalues->ldwpwmvalue_);
 				pwmWrite (RIGHTALARMPIN, 0);
 				pwmWrite (RIGHTWARNINGPIN, 0);
 				pwmWrite (RIGHTOKPIN, 0);
@@ -103,13 +104,13 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 				pwmWrite (LEFTOKPIN, 0);
 				pwmWrite (RIGHTALARMPIN, 0);
 				pwmWrite (RIGHTWARNINGPIN, 0);
-				pwmWrite (RIGHTOKPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (RIGHTOKPIN, processvalues->ldwpwmvalue_);
 */
 				break;
 			case 3:
 /*
 				pwmWrite (LEFTALARMPIN, 0);
-				pwmWrite (LEFTWARNINGPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (LEFTWARNINGPIN, processvalues->ldwpwmvalue_);
 				pwmWrite (LEFTOKPIN, 1023);
 				pwmWrite (RIGHTALARMPIN, 0);
 				pwmWrite (RIGHTWARNINGPIN, 0);
@@ -122,13 +123,13 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 				pwmWrite (LEFTWARNINGPIN, 0);
 				pwmWrite (LEFTOKPIN, 0);
 				pwmWrite (RIGHTALARMPIN, 0);
-				pwmWrite (RIGHTWARNINGPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (RIGHTWARNINGPIN, processvalues->ldwpwmvalue_);
 				pwmWrite (RIGHTOKPIN, 1023);
 */
 				break;
 			case 5:
 /*
-				pwmWrite (LEFTALARMPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (LEFTALARMPIN, processvalues->ldwpwmvalue_);
 				pwmWrite (LEFTWARNINGPIN, 1023);
 				pwmWrite (LEFTOKPIN, 1023);
 				pwmWrite (RIGHTALARMPIN, 0);
@@ -141,7 +142,7 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 				pwmWrite (LEFTALARMPIN, 0);
 				pwmWrite (LEFTWARNINGPIN, 0);
 				pwmWrite (LEFTOKPIN, 0);
-				pwmWrite (RIGHTALARMPIN, alarmdata::ldwpwmvalue);
+				pwmWrite (RIGHTALARMPIN, processvalues->ldwpwmvalue_);
 				pwmWrite (RIGHTWARNINGPIN, 1023);
 				pwmWrite (RIGHTOKPIN, 1023);
 */
@@ -159,29 +160,29 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 		}
 		
 		//Set PWM for FCW LED's
-		switch ( alarmdata::fcwstatus ) {
+		switch ( processvalues->fcwstatus_ ) {
 			case 0:
 //				pwmWrite (FORWARDALARMPIN, 0);
 //				pwmWrite (FORWARDWARNINGPIN, 0);
-//				pwmWrite (FORWARDOKPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDOKPIN, processvalues->fcwpwmvalue_);
 				break;
 			case 1:
 //				pwmWrite (FORWARDALARMPIN, 0);
-//				pwmWrite (FORWARDWARNINGPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDWARNINGPIN, processvalues->fcwpwmvalue_);
 //				pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			case 2:
 //				pwmWrite (FORWARDALARMPIN, 0);
-//				pwmWrite (FORWARDWARNINGPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDWARNINGPIN, processvalues->fcwpwmvalue_);
 //				pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			case 3:
-//				pwmWrite (FORWARDALARMPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDALARMPIN, processvalues->fcwpwmvalue_);
 //				pwmWrite (FORWARDWARNINGPIN, 1023);
 //				pwmWrite (FORWARDOKPIN, 1023);
 				break;
 			case 4:
-//				pwmWrite (FORWARDALARMPIN, alarmdata::fcwpwmvalue);
+//				pwmWrite (FORWARDALARMPIN, processvalues->fcwpwmvalue_);
 //				pwmWrite (FORWARDWARNINGPIN, 1023);
 //				pwmWrite (FORWARDOKPIN, 1023);
 				break;
@@ -193,11 +194,11 @@ void GpioHandlerThread( std::atomic<bool> *exitsignal,
 		}
 		
 		//Set center LED
-		if ( (alarmdata::ldwstatus >= 0) && (alarmdata::fcwstatus >= 0) &&
-			(alarmdata::gpsstatus > 1) ) {
+		if ( (processvalues->ldwstatus_ >= 0) && (processvalues->fcwstatus_ >= 0) &&
+			(processvalues->gpsstatus_ > 1) ) {
 //				digitalWrite(CENTERPIN, 1);
-		} else if ( (alarmdata::ldwstatus >= 0) && (alarmdata::fcwstatus >= 0) &&
-			(alarmdata::gpsstatus == 0) ) {
+		} else if ( (processvalues->ldwstatus_ >= 0) && (processvalues->fcwstatus_ >= 0) &&
+			(processvalues->gpsstatus_ == 0) ) {
 			blinkercount++;
 			if ( blinkercount % blinkinterval != 0) continue;
 /*

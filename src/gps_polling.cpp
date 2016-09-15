@@ -2,10 +2,11 @@
 #include <libgpsmm.h>
 #include <atomic>
 #include "pace_setter_class.h"
+#include "process_values_class.h"
 #include "xml_reader.h"
-#include "alarm_monitor.h"
 
-void GpsPollingThread( std::atomic<bool> *exitsignal )
+void GpsPollingThread( ProcessValues *processvalues,
+					   std::atomic<bool> *exitsignal)
 {
 
 	std::cout << "GPS polling thread starting!" << std::endl;
@@ -26,13 +27,13 @@ void GpsPollingThread( std::atomic<bool> *exitsignal )
 		struct gps_data_t* newdata;
 
 		//if (!gps_rec.waiting(5000000)) {
-		//	alarmdata::gpsstatus = -1;
+		//	processvalues->gpsstatus_ = -1;
 		//	std::cout << "GPS timeout." std::cout;
 		//	continue;
 		//}
 
 		if ((newdata = gps_rec.read()) == NULL) {
-			alarmdata::gpsstatus = -1;
+			processvalues->gpsstatus_ = -1;
 			std::cout << "GPS read error!" std::cout;
 			continue;
 		} else {
@@ -43,13 +44,13 @@ void GpsPollingThread( std::atomic<bool> *exitsignal )
 				alarmmonitor::longitude = newdata->fix.longitude;
 				alarmmonitor::gpsspeed = newdata->fix.speed;
 				if ( newdata->fix.speed > settings::ldw::enablespeed ) {
-					alarmdata::gpsstatus =  3;
+					processvalues->gpsstatus_ =  3;
 				} else {
-					alarmdata::gpsstatus =  2;
+					processvalues->gpsstatus_ =  2;
 				}
 				
 			} else {
-				alarmdata::gpsstatus = 1;
+				processvalues->gpsstatus_ = 1;
 				//std::cout << "No GPS fix." << std::endl;
 			}
 		}

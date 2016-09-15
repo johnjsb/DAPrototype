@@ -2,7 +2,9 @@
 #define LIDAR_POLLING_H_INCLUDED
 
 #include <atomic>
+#include "process_values_class.h"
 
-void LidarPolingThread( std::atomic<bool> *exitsignal );
+void LidarPolingThread( ProcessValues *processvalues,
+						std::atomic<bool> *exitsignal );
 
 #endif // LIDAR_POLLING_H_INCLUDED

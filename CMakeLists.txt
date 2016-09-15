@@ -4,7 +4,7 @@ project (DAPrototype)
 include_directories(include)
 add_compile_options(-std=c++11)
 add_library(XML_READER_LIBRARIES src/xml_reader.cpp)
-add_library(ALARM_MONITOR_LIBRARIES src/alarm_monitor.cpp)
+add_library(PROCESS_VALUES_LIBRARIES src/process_values_class.cpp)
 add_library(DISPLAY_HANDLER_LIBRARIES src/display_handler.cpp)
 add_library(GPIO_HANDLER_LIBRARIES src/gpio_handler.cpp)
 #add_library(GPS_POLLING_LIBRARIES src/gps_polling.cpp)
@@ -48,7 +48,7 @@ target_link_libraries(main
 	FRAME_QUEUE_LIBRARIES
 	STORAGE_WORKER_LIBRARIES
 	LANE_DETECT_LIBRARIES
-	ALARM_MONITOR_LIBRARIES
+	PROCESS_VALUES_LIBRARIES
 #	GPS_LIBRARIES
 #	WIRING_PI_LIBRARIES
 )

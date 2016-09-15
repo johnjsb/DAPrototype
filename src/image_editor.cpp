@@ -6,7 +6,6 @@
 #include <mutex>
 #include <atomic>
 #include "image_editor.h"
-#include "alarm_monitor.h"
 #include "lane_detect_processor.h"
 #include "pace_setter_class.h"
 #include "xml_reader.h"
@@ -16,7 +15,9 @@
 void ImageEditorThread( cv::Mat *orgimage,
                         std::mutex *capturemutex,
 						cv::Mat *displayimage,
-						std::mutex *displaymutex, std::atomic<bool> *exitsignal )
+						std::mutex *displaymutex,
+						ProcessValues *processvalues,
+						std::atomic<bool> *exitsignal )
 {
 
 	std::cout << "Image editor thread starting!" << std::endl;
@@ -45,31 +46,32 @@ void ImageEditorThread( cv::Mat *orgimage,
 				0.5, cv::Scalar(255,255,0), 1, cv::LINE_8, false );
 		//Show speed
 		std::stringstream speedtext;
-		speedtext << std::fixed << std::setprecision(1) << alarmdata::gpsspeed << " mph";
+		speedtext << std::fixed << std::setprecision(1) << processvalues->gpsspeed_ << " mph";
 		putText( modifiedimage, speedtext.str(), cv::Point(515,30), CV_FONT_HERSHEY_COMPLEX,
 				0.75, cv::Scalar(0,255,0), 1, cv::LINE_8, false );
 		
 		//Show latitude and longitude
-		putText( modifiedimage, ConvertLatLong(alarmdata::latitude, alarmdata::longitude),
+		putText( modifiedimage, ConvertLatLong(processvalues->latitude_, processvalues->longitude_),
 			cv::Point(10, 470), CV_FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255,0,255), 1,
 			cv::LINE_8,	false );
 			
 		//Show following time
 		std::stringstream timetext;
-		timetext  << std::fixed << std::setprecision(2) << alarmdata::timetocollision <<
+		timetext  << std::fixed << std::setprecision(2) << processvalues->timetocollision_ <<
 			" s";
 		putText( modifiedimage, timetext.str(),	cv::Point(10, 455),
 			CV_FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255,255,255), 1, cv::LINE_8, false );
 		
 		//Show following distance
 		std::stringstream distancetext;
-		distancetext  << std::fixed << std::setprecision(2) << alarmdata::forwarddistance <<
+		distancetext  << std::fixed << std::setprecision(2) << processvalues->forwarddistance_ <<
 			" m";
 		putText( modifiedimage, distancetext.str(),	cv::Point(100, 455),
 			CV_FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255,255,255), 1, cv::LINE_8, false );
 			
 		//Show diagnostic message
-		std::string diagnosticmessage{ GetDiagnosticString() };
+		std::string diagnosticmessage{ GetDiagnosticString(processvalues->ldwstatus_,
+			processvalues->fcwstatus_, processvalues-> gpsstatus_) };
 		if ( diagnosticmessage.length() != 0 ) {
 			putText( modifiedimage, diagnosticmessage, cv::Point(10, 20),
 				CV_FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(0,0,255), 1, cv::LINE_8,
@@ -78,15 +80,14 @@ void ImageEditorThread( cv::Mat *orgimage,
 		
 				
 		//Overlay lanes
-		cv::Point newpolygon[4];
-		alarmdata::polygonmutex.lock();
-		std::copy( alarmdata::polygon.begin(), alarmdata::polygon.end(), newpolygon );
-		alarmdata::polygonmutex.unlock();
+		Polygon newpolygon{ processvalues->GetPolygon() };
+		cv::Point cvpointarray[4];
+		std::copy( newpolygon.begin(), newpolygon.end(), cvpointarray );
 		if ( (newpolygon[0] != cv::Point(0,0)) && settings::cam::shadelanes &&
-			(alarmdata::ldwstatus > 0) ) {
+			(processvalues->ldwstatus_ > 0) ) {
 			cv::Mat polygonimage{ modifiedimage.size(), modifiedimage.type(),
 				cv::Scalar(0) };
-			cv::fillConvexPoly( polygonimage, newpolygon, 4,  cv::Scalar(0,255,0) );
+			cv::fillConvexPoly( polygonimage, cvpointarray, 4,  cv::Scalar(0,255,0) );
 			OverlayImage( &polygonimage, &modifiedimage, 0.5 );
 		}
 		
@@ -170,11 +171,11 @@ std::string ConvertLatLong ( double latitude,
 	return positionstring;
 }
 /*****************************************************************************************/
-std::string GetDiagnosticString ()
+std::string GetDiagnosticString ( int ldwstatus, int fcwstatus, int gpsstatus )
 {
 	std::string diagnosticstring{ "" };
 	//LDW
-	switch ( alarmdata::ldwstatus ) {
+	switch ( ldwstatus ) {
 		case 1:
 			diagnosticstring += "LCW left alarm, ";
 			break;
@@ -192,7 +193,7 @@ std::string GetDiagnosticString ()
 			break;
 	}
 	//FCW
-	switch ( alarmdata::fcwstatus ) {
+	switch ( fcwstatus ) {
 		case 1:
 			diagnosticstring += "FCW warning, ";
 			break;
@@ -213,7 +214,7 @@ std::string GetDiagnosticString ()
 			break;
 	}
 	//GPS
-	switch ( alarmdata::gpsstatus ) {
+	switch ( gpsstatus ) {
 		case 1:
 			diagnosticstring += "GPS no lock, ";
 			break;

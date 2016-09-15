@@ -42,7 +42,6 @@
 #include <atomic>
 
 //DAPrototype source files
-#include "alarm_monitor.h"
 #include "display_handler.h"
 #include "gpio_handler.h"
 //#include "gps_polling.h"
@@ -52,6 +51,7 @@
 #include "lane_detect_processor.h"
 #include "lidar_polling.h"
 #include "pace_setter_class.h"
+#include "process_values_class.h"
 #include "video_writer.h"
 #include "xml_reader.h"
 
@@ -66,21 +66,23 @@ int main()
     std::streambuf *coutbuf = std::cout.rdbuf();
     std::cout.rdbuf(out.rdbuf());
 	
-	std::atomic<bool> exitsignal{ false };
-	std::atomic<bool> shutdownsignal{ false };
-	
-    //Get XML Properties
+    //Check XML Properties
 	if (settings::readsuccess < 0) {
         std::cout << "XML reading failed, using defaults." << std::endl;
     } else {
         std::cout << "XML reading successful!" << std::endl;
     }
-	
-	//Common frames	and their mutexes
+
+	//Create shared resources
+	std::atomic<bool> exitsignal{ false };
+	std::atomic<bool> shutdownsignal{ false };
     cv::Mat captureimage;
 	std::mutex capturemutex;
 	cv::Mat displayimage;
 	std::mutex displaymutex;
+	ProcessValues processvalues;
+	
+	//Start threads
 
 	//Start image capture thread
     std::thread t_imagecapture( CaptureImageThread,
@@ -91,6 +93,7 @@ int main()
     std::thread t_imageprocessor( ProcessImageThread,
 								  &captureimage,
 								  &capturemutex,
+								  &processvalues,
 								  &exitsignal );
 	//Start display thread
 	std::thread t_displayupdate( DisplayUpdateThread,
@@ -103,6 +106,7 @@ int main()
 								&capturemutex,
 								&displayimage,
 								&displaymutex,
+								&processvalues,
 								&exitsignal );
 	//Start video writer thread
     std::thread t_videowriter( VideoWriterThread,
@@ -113,15 +117,15 @@ int main()
 							   &exitsignal );
 	//Start GPS poling thread
 //	std::thread t_gpspolling( GpsPollingThread,
+//							  &processvalues,
 //							  &exitsignal );
 	//Start LIDAR polling thread
 	std::thread t_lidarpolling( LidarPolingThread,
+								&processvalues,
 								&exitsignal );
-	//Start alarm monitor thread
-//	std::thread t_alarmmonitor( AlarmMonitorThread,
-//								&exitsignal );
 	//Start GPIO thread
 	std::thread t_gpiohandler( GpioHandlerThread,
+							   &processvalues,
 							   &exitsignal,
 							   &shutdownsignal );
 	
@@ -136,7 +140,6 @@ int main()
 	t_videowriter.join();
 	t_imageprocessor.join();
 	t_lidarpolling.join();
-//	t_alarmmonitor.join();
 //	t_gpspolling.join();
 	t_imeageeditor.join();
 	t_imagecapture.join();
