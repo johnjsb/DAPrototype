@@ -14,188 +14,236 @@
 #include <io.h>
 #include <sys/stat.h>
 
-namespace settings{
-    namespace gen {
-        bool enbuzzer{true};
-        bool debugscreen{false};
-        bool debugterminal{false};
-    }
-    namespace cam{
-		bool recordorgimage{false};
-		std::string filepath{"/home/pi/videos/"};
-		std::string orgfilename{"in.avi"};
-		std::string modfilename{"out.avi"};
-        int pixwidth{640};
-        int pixheight{480};
-        bool showspeed{true};
-        bool showloc{true};
-        bool shadelanes{true};
-        int recfps{10};
-        int filestokeep{20};
-        int minperfile{30};
-    }
-    namespace disp{
-        bool enabled{true};
-        int pixwidth{800};
-        int pixheight{480};
-        int updatefps{10};
-    }
-    namespace comm{
-        int pollrategps{10};
-        int pollratelidar{10};
-        int pollrategpio{10};
-    }
-    namespace gps{
-        int samplestoaverage{5};
-    }
-    namespace ldw{
-        bool enabled{true};
-		int enablespeed{0};
-        int samplestokeep{7};
-        int samplestoaverage{4};
-        int peroffsetwarning{15};
-        int peroffsetalarm{20};
-        int msuntilwarning{500};
-        int msuntilalarm{500};
-        int updatefps{10};
-    }
-    namespace fcw{
-        bool enabled{true};
-        int samplestoaverage{3};
-		double distanceoffset{0.0};
-        int msfollowdistwarning{2500};
-        int msfollowdistalarm{2000};
-        int mscollisionwarning{300};
-        int mscollisionalarm{300};
-    }
-    namespace gpio{
-        bool enabled{true};
-        bool autoshutdown{true};
-	}
-}
-    
+//Placeholder variables for constant initialization
 
+//GEN
+bool genenbuzzer{true};
+bool gendebugscreen{false};
+bool gendebugterminal{false};
+//CAM
+bool camrecordorgimage{false};
+std::string camfilepath{"/home/pi/videos/"};
+std::string camorgfilename{"in.avi"};
+std::string cammodfilename{"out.avi"};
+int campixwidth{640};
+int campixheight{480};
+bool camshowspeed{true};
+bool camshowloc{true};
+bool camshadelanes{true};
+int camrecfps{10};
+int camfilestokeep{20};
+int camminperfile{30};
+//DISP
+bool dispenabled{true};
+int disppixwidth{800};
+int disppixheight{480};
+int dispupdatefps{10};
+//COMM
+int commpollrategps{10};
+int commpollratelidar{10};
+int commpollrategpio{10};
+//GPS
+int gpssamplestoaverage{5};
+//LDW
+bool ldwenabled{true};
+int ldwenablespeed{0};
+int ldwsamplestokeep{7};
+int ldwsamplestoaverage{4};
+int ldwperoffsetwarning{15};
+int ldwperoffsetalarm{20};
+int ldwmsuntilwarning{500};
+int ldwmsuntilalarm{500};
+int ldwupdatefps{10};
+//FCW
+bool fcwenabled{true};
+int fcwsamplestoaverage{3};
+double fcwdistanceoffset{0.0};
+int fcwmsfollowdistwarning{2500};
+int fcwmsfollowdistalarm{2000};
+int fcwmscollisionwarning{300};
+int fcwmscollisionalarm{300};
+//GPIO
+bool gpioenabled{true};
+bool gpioautoshutdown{true};
+	
 using namespace tinyxml2;
 using namespace std;
 
 int ReadXmlSettings()
 {
-
+    std::cout << "Reading XML..." << std::endl;
 	XMLDocument doc;
 	doc.LoadFile( "../RPiDashcamSettings.xml");
-	if ( doc.ErrorID() != 0 ) {		
-		//cout << "XML file read error: " << doc.ErrorID();
-		//cout << " Using defaults" << endl;
+	if ( doc.ErrorID() != 0 ) {
 		return -1;
+	} else {
+		try{
+			XMLElement* attributeApproachElement = doc.FirstChildElement()->
+				FirstChildElement( "GEN" );
+			(*(*attributeApproachElement).FirstChildElement( "enBuzzer" )).QueryBoolText( 
+				&genenbuzzer );
+			(*(*attributeApproachElement).FirstChildElement( "debugScreen" )).QueryBoolText( 
+				&gendebugscreen );		
+			(*(*attributeApproachElement).FirstChildElement( "debugTerminal" )).QueryBoolText( 
+				&gendebugterminal );
+
+			attributeApproachElement = doc.FirstChildElement()->
+				FirstChildElement( "CAM" );
+			(*(*attributeApproachElement).FirstChildElement( "recordOrgImage" )).QueryBoolText( 
+				&camrecordorgimage );
+			camfilepath = (*(*attributeApproachElement).FirstChildElement(
+				"filePath" )).GetText();
+			camorgfilename = (*(*attributeApproachElement).FirstChildElement(
+				"orgFileName" )).GetText();
+			cammodfilename = (*(*attributeApproachElement).FirstChildElement(
+				"modFileName" )).GetText();
+			(*(*attributeApproachElement).FirstChildElement( "pixWidth" )).QueryIntText( 
+				&campixwidth );
+			(*(*attributeApproachElement).FirstChildElement( "pixHeight" )).QueryIntText( 
+				&campixheight );	
+			(*(*attributeApproachElement).FirstChildElement( "showSpeed" )).QueryBoolText( 
+				&camshowspeed );	
+			(*(*attributeApproachElement).FirstChildElement( "showLoc" )).QueryBoolText( 
+				&camshowloc );		
+			(*(*attributeApproachElement).FirstChildElement( "shadeLanes" )).QueryBoolText( 
+				&camshadelanes );	
+			(*(*attributeApproachElement).FirstChildElement( "recFPS" )).QueryIntText( 
+				&camrecfps );		
+			(*(*attributeApproachElement).FirstChildElement( "filesToKeep" )).QueryIntText( 
+				&camfilestokeep );	
+			(*(*attributeApproachElement).FirstChildElement( "minPerFile" )).QueryIntText( 
+				&camminperfile );
+
+			attributeApproachElement = doc.FirstChildElement()->
+				FirstChildElement( "DISP" );
+			(*(*attributeApproachElement).FirstChildElement( "enabled" )).QueryBoolText( 
+				&dispenabled );
+			(*(*attributeApproachElement).FirstChildElement( "pixWidth" )).QueryIntText( 
+				&disppixwidth );
+			(*(*attributeApproachElement).FirstChildElement( "pixHeight" )).QueryIntText( 
+				&disppixheight );
+			(*(*attributeApproachElement).FirstChildElement( "updateFPS" )).QueryIntText( 
+				&dispupdatefps );
+
+			attributeApproachElement = doc.FirstChildElement()->
+				FirstChildElement( "COMM" );
+			(*(*attributeApproachElement).FirstChildElement( "pollRateGPS" )).QueryIntText( 
+				&commpollrategps );
+			(*(*attributeApproachElement).FirstChildElement( "pollRateLIDAR" )).QueryIntText( 
+				&commpollratelidar );
+			(*(*attributeApproachElement).FirstChildElement( "pollRateGpio" )).QueryIntText( 
+				&commpollrategpio );	
+
+			attributeApproachElement = doc.FirstChildElement()->
+				FirstChildElement( "LDW" );	
+			(*(*attributeApproachElement).FirstChildElement( "enabled" )).QueryBoolText( 
+				&ldwenabled );
+			(*(*attributeApproachElement).FirstChildElement( "enableSpeed" )).QueryIntText( 
+				&ldwenablespeed );
+			(*(*attributeApproachElement).FirstChildElement( "samplesToKeep" )).QueryIntText( 
+				&ldwsamplestokeep );
+			(*(*attributeApproachElement).FirstChildElement( "samplesToAverage" )).QueryIntText( 
+				&ldwsamplestoaverage );
+			(*(*attributeApproachElement).FirstChildElement( "perOffsetWarning" )).QueryIntText( 
+				&ldwperoffsetwarning );	
+			(*(*attributeApproachElement).FirstChildElement( "perOffsetAlarm" )).QueryIntText( 
+				&ldwperoffsetalarm );	
+			(*(*attributeApproachElement).FirstChildElement( "msUntilWarning" )).QueryIntText( 
+				&ldwmsuntilwarning );		
+			(*(*attributeApproachElement).FirstChildElement( "msUntilAlarm" )).QueryIntText( 
+				&ldwmsuntilalarm );		
+			(*(*attributeApproachElement).FirstChildElement( "updateFPS" )).QueryIntText( 
+				&ldwupdatefps );		
+				
+			attributeApproachElement = doc.FirstChildElement()->
+				FirstChildElement( "FCW" );
+			(*(*attributeApproachElement).FirstChildElement( "enabled" )).QueryBoolText( 
+				&fcwenabled );
+			(*(*attributeApproachElement).FirstChildElement( "samplesToAverage" )).QueryIntText( 
+				&fcwsamplestoaverage );
+			(*(*attributeApproachElement).FirstChildElement( "distanceOffset" )).QueryDoubleText( 
+				&fcwdistanceoffset );
+			(*(*attributeApproachElement).FirstChildElement( "msFollowDistWarning" )).QueryIntText( 
+				&fcwmsfollowdistwarning );
+			(*(*attributeApproachElement).FirstChildElement( "msFollowDistAlarm" )).QueryIntText( 
+				&fcwmsfollowdistalarm );
+			(*(*attributeApproachElement).FirstChildElement( "msCollisionWarning" )).QueryIntText( 
+				&fcwmscollisionwarning );
+			(*(*attributeApproachElement).FirstChildElement( "msCollisionAlarm" )).QueryIntText( 
+				&fcwmscollisionalarm );
+
+			attributeApproachElement = doc.FirstChildElement()->
+				FirstChildElement( "GPIO" );
+			(*(*attributeApproachElement).FirstChildElement( "enabled" )).QueryBoolText( 
+				&gpioenabled );
+			(*(*attributeApproachElement).FirstChildElement( "autoShutdown" )).QueryBoolText( 
+				&gpioautoshutdown );		
+		} catch ( exception E ) {
+			return -2;	
+		}
 	}
-	
-	try{
-		XMLElement* attributeApproachElement = doc.FirstChildElement()->
-			FirstChildElement( "GEN" );
-		(*(*attributeApproachElement).FirstChildElement( "enBuzzer" )).QueryBoolText( 
-			&settings::gen::enbuzzer );
-		(*(*attributeApproachElement).FirstChildElement( "debugScreen" )).QueryBoolText( 
-			&settings::gen::debugscreen );		
-		(*(*attributeApproachElement).FirstChildElement( "debugTerminal" )).QueryBoolText( 
-			&settings::gen::debugterminal );
-
-		attributeApproachElement = doc.FirstChildElement()->
-			FirstChildElement( "CAM" );
-		(*(*attributeApproachElement).FirstChildElement( "recordOrgImage" )).QueryBoolText( 
-			&settings::cam::recordorgimage );
-		settings::cam::filepath = (*(*attributeApproachElement).FirstChildElement(
-			"filePath" )).GetText();
-		settings::cam::orgfilename = (*(*attributeApproachElement).FirstChildElement(
-			"orgFileName" )).GetText();
-		settings::cam::modfilename = (*(*attributeApproachElement).FirstChildElement(
-			"modFileName" )).GetText();
-		(*(*attributeApproachElement).FirstChildElement( "pixWidth" )).QueryIntText( 
-			&settings::cam::pixwidth );
-		(*(*attributeApproachElement).FirstChildElement( "pixHeight" )).QueryIntText( 
-			&settings::cam::pixheight );	
-		(*(*attributeApproachElement).FirstChildElement( "showSpeed" )).QueryBoolText( 
-			&settings::cam::showspeed );	
-		(*(*attributeApproachElement).FirstChildElement( "showLoc" )).QueryBoolText( 
-			&settings::cam::showloc );		
-		(*(*attributeApproachElement).FirstChildElement( "shadeLanes" )).QueryBoolText( 
-			&settings::cam::shadelanes );	
-		(*(*attributeApproachElement).FirstChildElement( "recFPS" )).QueryIntText( 
-			&settings::cam::recfps );		
-		(*(*attributeApproachElement).FirstChildElement( "filesToKeep" )).QueryIntText( 
-			&settings::cam::filestokeep );	
-		(*(*attributeApproachElement).FirstChildElement( "minPerFile" )).QueryIntText( 
-			&settings::cam::minperfile );
-
-		attributeApproachElement = doc.FirstChildElement()->
-			FirstChildElement( "DISP" );
-		(*(*attributeApproachElement).FirstChildElement( "enabled" )).QueryBoolText( 
-			&settings::disp::enabled );
-		(*(*attributeApproachElement).FirstChildElement( "pixWidth" )).QueryIntText( 
-			&settings::disp::pixwidth );
-		(*(*attributeApproachElement).FirstChildElement( "pixHeight" )).QueryIntText( 
-			&settings::disp::pixheight );
-		(*(*attributeApproachElement).FirstChildElement( "updateFPS" )).QueryIntText( 
-			&settings::disp::updatefps );
-
-		attributeApproachElement = doc.FirstChildElement()->
-			FirstChildElement( "COMM" );
-		(*(*attributeApproachElement).FirstChildElement( "pollRateGPS" )).QueryIntText( 
-			&settings::comm::pollrategps );
-		(*(*attributeApproachElement).FirstChildElement( "pollRateLIDAR" )).QueryIntText( 
-			&settings::comm::pollratelidar );
-		(*(*attributeApproachElement).FirstChildElement( "pollRateGpio" )).QueryIntText( 
-			&settings::comm::pollrategpio );	
-
-		attributeApproachElement = doc.FirstChildElement()->
-			FirstChildElement( "LDW" );	
-		(*(*attributeApproachElement).FirstChildElement( "enabled" )).QueryBoolText( 
-			&settings::ldw::enabled );
-		(*(*attributeApproachElement).FirstChildElement( "enableSpeed" )).QueryIntText( 
-			&settings::ldw::enablespeed );
-		(*(*attributeApproachElement).FirstChildElement( "samplesToKeep" )).QueryIntText( 
-			&settings::ldw::samplestokeep );
-		(*(*attributeApproachElement).FirstChildElement( "samplesToAverage" )).QueryIntText( 
-			&settings::ldw::samplestoaverage );
-		(*(*attributeApproachElement).FirstChildElement( "perOffsetWarning" )).QueryIntText( 
-			&settings::ldw::peroffsetwarning );	
-		(*(*attributeApproachElement).FirstChildElement( "perOffsetAlarm" )).QueryIntText( 
-			&settings::ldw::peroffsetalarm );	
-		(*(*attributeApproachElement).FirstChildElement( "msUntilWarning" )).QueryIntText( 
-			&settings::ldw::msuntilwarning );		
-		(*(*attributeApproachElement).FirstChildElement( "msUntilAlarm" )).QueryIntText( 
-			&settings::ldw::msuntilalarm );		
-		(*(*attributeApproachElement).FirstChildElement( "updateFPS" )).QueryIntText( 
-			&settings::ldw::updatefps );		
-			
-		attributeApproachElement = doc.FirstChildElement()->
-			FirstChildElement( "FCW" );
-		(*(*attributeApproachElement).FirstChildElement( "enabled" )).QueryBoolText( 
-			&settings::fcw::enabled );
-		(*(*attributeApproachElement).FirstChildElement( "samplesToAverage" )).QueryIntText( 
-			&settings::fcw::samplestoaverage );
-		(*(*attributeApproachElement).FirstChildElement( "distanceOffset" )).QueryDoubleText( 
-			&settings::fcw::distanceoffset );
-		(*(*attributeApproachElement).FirstChildElement( "msFollowDistWarning" )).QueryIntText( 
-			&settings::fcw::msfollowdistwarning );
-		(*(*attributeApproachElement).FirstChildElement( "msFollowDistAlarm" )).QueryIntText( 
-			&settings::fcw::msfollowdistalarm );
-		(*(*attributeApproachElement).FirstChildElement( "msCollisionWarning" )).QueryIntText( 
-			&settings::fcw::mscollisionwarning );
-		(*(*attributeApproachElement).FirstChildElement( "msCollisionAlarm" )).QueryIntText( 
-			&settings::fcw::mscollisionalarm );
-
-		attributeApproachElement = doc.FirstChildElement()->
-			FirstChildElement( "GPIO" );
-		(*(*attributeApproachElement).FirstChildElement( "enabled" )).QueryBoolText( 
-			&settings::gpio::enabled );
-		(*(*attributeApproachElement).FirstChildElement( "autoShutdown" )).QueryBoolText( 
-			&settings::gpio::autoshutdown );		
-	} catch ( exception E ) {
-		//cout << "XML read error: " << endl;	
-		return -2;	
-	}
-		
-	//cout << "XML settings read successfully!" << endl;
 		
 	return 1;
+}
+
+//Initialize all namespace constants
+namespace settings{
+	const int readsuccess(ReadXmlSettings());
+	namespace gen {
+		const bool enbuzzer{genenbuzzer};
+		const bool debugscreen{gendebugscreen};
+		const bool debugterminal{gendebugterminal};
+	}
+	namespace cam{
+		const bool recordorgimage{camrecordorgimage};
+		const std::string filepath{camfilepath};
+		const std::string orgfilename{camorgfilename};
+		const std::string modfilename{cammodfilename};
+		const int pixwidth{campixwidth};
+		const int pixheight{campixheight};
+		const bool showspeed{camshowspeed};
+		const bool showloc{camshowloc};
+		const bool shadelanes{camshadelanes};
+		const int recfps{camrecfps};
+		const int filestokeep{camfilestokeep};
+		const int minperfile{camminperfile};
+	}
+	namespace disp{
+		const bool enabled{dispenabled};
+		const int pixwidth{disppixwidth};
+		const int pixheight{disppixheight};
+		const int updatefps{dispupdatefps};
+	}
+	namespace comm{
+		const int pollrategps{commpollrategps};
+		const int pollratelidar{commpollratelidar};
+		const int pollrategpio{commpollrategpio};
+	}
+	namespace gps{
+		const int samplestoaverage{gpssamplestoaverage};
+	}
+	namespace ldw{
+		const bool enabled{ldwenabled};
+		const int enablespeed{ldwenablespeed};
+		const int samplestokeep{ldwsamplestokeep};
+		const int samplestoaverage{ldwsamplestoaverage};
+		const int peroffsetwarning{ldwperoffsetwarning};
+		const int peroffsetalarm{ldwperoffsetalarm};
+		const int msuntilwarning{ldwmsuntilwarning};
+		const int msuntilalarm{ldwmsuntilalarm};
+		const int updatefps{ldwupdatefps};
+	}
+	namespace fcw{
+		const bool enabled{enabled};
+		const int samplestoaverage{fcwsamplestoaverage};
+		const double distanceoffset{fcwdistanceoffset};
+		const int msfollowdistwarning{fcwmsfollowdistwarning};
+		const int msfollowdistalarm{fcwmsfollowdistalarm};
+		const int mscollisionwarning{fcwmscollisionwarning};
+		const int mscollisionalarm{fcwmscollisionalarm};
+	}
+	namespace gpio{
+		const bool enabled{gpioenabled};
+		const bool autoshutdown{gpioautoshutdown};
+	}
 }

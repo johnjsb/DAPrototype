@@ -70,8 +70,7 @@ int main()
 	std::atomic<bool> shutdownsignal{ false };
 	
     //Get XML Properties
-    std::cout << "Reading XML..." << std::endl;
-    if ( ReadXmlSettings() < 0 ) {
+	if (settings::readsuccess < 0) {
         std::cout << "XML reading failed, using defaults." << std::endl;
     } else {
         std::cout << "XML reading successful!" << std::endl;

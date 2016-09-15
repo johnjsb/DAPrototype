@@ -5,66 +5,67 @@
 
 #include <string>
 
+int ReadXmlSettings();
+
 namespace settings{
+	extern const int readsuccess;
     namespace gen {
-        extern bool enbuzzer;
-        extern bool debugscreen;
-        extern bool debugterminal;
+        extern const bool enbuzzer;
+        extern const bool debugscreen;
+        extern const bool debugterminal;
     }
     namespace cam{
-		extern bool recordorgimage;
-		extern std::string filepath;
-		extern std::string orgfilename;
-		extern std::string modfilename;
-        extern int pixwidth;
-        extern int pixheight;
-        extern bool showspeed;
-        extern bool showloc;
-        extern bool shadelanes;
-        extern int recfps;
-        extern int filestokeep;
-        extern int minperfile;
+		extern const bool recordorgimage;
+		extern const std::string filepath;
+		extern const std::string orgfilename;
+		extern const std::string modfilename;
+        extern const int pixwidth;
+        extern const int pixheight;
+        extern const bool showspeed;
+        extern const bool showloc;
+        extern const bool shadelanes;
+        extern const int recfps;
+        extern const int filestokeep;
+        extern const int minperfile;
     }
     namespace disp{
-        extern bool enabled;
-        extern int pixwidth;
-        extern int pixheight;
-        extern int updatefps;
+        extern const bool enabled;
+        extern const int pixwidth;
+        extern const int pixheight;
+        extern const int updatefps;
     }
     namespace comm{
-        extern int pollrategps;
-        extern int pollratelidar;
-        extern int pollrategpio;
+        extern const int pollrategps;
+        extern const int pollratelidar;
+        extern const int pollrategpio;
     }
     namespace gps{
-        extern int samplestoaverage;
+        extern const int samplestoaverage;
     }
     namespace ldw{
-        extern bool enabled;
-		extern int enablespeed;
-        extern int samplestokeep;
-        extern int samplestoaverage;
-        extern int peroffsetwarning;
-        extern int peroffsetalarm;
-        extern int msuntilwarning;
-        extern int msuntilalarm;
-        extern int updatefps;
+        extern const bool enabled;
+		extern const int enablespeed;
+        extern const int samplestokeep;
+        extern const int samplestoaverage;
+        extern const int peroffsetwarning;
+        extern const int peroffsetalarm;
+        extern const int msuntilwarning;
+        extern const int msuntilalarm;
+        extern const int updatefps;
     }
     namespace fcw{
-        extern bool enabled;
-        extern int samplestoaverage;
-		extern double distanceoffset;
-        extern int msfollowdistwarning;
-        extern int msfollowdistalarm;
-        extern int mscollisionwarning;
-        extern int mscollisionalarm;
+        extern const bool enabled;
+        extern const int samplestoaverage;
+		extern const double distanceoffset;
+        extern const int msfollowdistwarning;
+        extern const int msfollowdistalarm;
+        extern const int mscollisionwarning;
+        extern const int mscollisionalarm;
     }
     namespace gpio{
-        extern bool enabled;
-        extern bool autoshutdown;
+        extern const bool enabled;
+        extern const bool autoshutdown;
     }
 }
-
-int ReadXmlSettings();
 
 #endif // XML_READER_H_INCLUDED

@@ -8,10 +8,10 @@
 		<debugTerminal>1</debugTerminal>
 	</GEN>
 	<CAM>
-		<recordOrgImage>0</recordOrgImage>
+		<recordOrgImage>1</recordOrgImage>
 		<filePath>./</filePath>
-		<orgFileName>intest.avi</orgFileName>
-		<modFileName>outtest.avi</modFileName>
+		<orgFileName>original.avi</orgFileName>
+		<modFileName>modified.avi</modFileName>
 		<pixWidth>640</pixWidth>
 		<pixHeight>480</pixHeight>
 		<showSpeed>1</showSpeed>
