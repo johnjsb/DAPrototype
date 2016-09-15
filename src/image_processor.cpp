@@ -19,7 +19,7 @@ void ProcessImageThread( cv::Mat *orgimage,
 	std::cout << "Image processor thread starting!" << std::endl;
 	
 	//Check if LDW is enabled
-	if ( !settings::ldw::enabled ) {
+	if ( !settings::ldw::kenabled ) {
 		std::cout << "LDW disabled, exiting image processor thread!" <<
 			std::endl;
 		return;
@@ -37,12 +37,12 @@ void ProcessImageThread( cv::Mat *orgimage,
 	
 	//create pace setter
 	PaceSetter processorpacer( 50, "image processor");
-//	PaceSetter processorpacer(std::max(settings::disp::updatefps,
-//		settings::cam::recfps), "image processor");
+//	PaceSetter processorpacer(std::max(settings::disp::kupdatefps,
+//		settings::cam::krecfps), "image processor");
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
-		if ( (processvalues->gpsstatus_ > 2) && settings::ldw::enabled ) {
+		if ( (processvalues->gpsstatus_ > 2) && settings::ldw::kenabled ) {
 			//Get image
 			capturemutex->lock();
 			cv::Mat processimage{ orgimage->clone() };
@@ -51,43 +51,43 @@ void ProcessImageThread( cv::Mat *orgimage,
 			//Get lanes
 			Polygon newpolygon;
 			ProcessImage( processimage, newpolygon );
-			AveragePolygon( newpolygon, pastpolygons, settings::ldw::samplestoaverage,
-				settings::ldw::samplestokeep );	
+			AveragePolygon( newpolygon, pastpolygons, settings::ldw::ksamplestoaverage,
+				settings::ldw::ksamplestokeep );	
 
 			//Evaluate LDW
 			if ( newpolygon[0] != cv::Point(0,0) ) {
 				double deviationpix = 0.5*( newpolygon[0].x +
-					newpolygon[1].x - settings::cam::pixwidth );
+					newpolygon[1].x - settings::cam::kpixwidth );
 				double deviationper = 100.0 * deviationpix /
-					static_cast<double>(settings::cam::pixwidth);			
-				if ( 0.0 < deviationper && deviationper < settings::ldw::peroffsetwarning
+					static_cast<double>(settings::cam::kpixwidth);			
+				if ( 0.0 < deviationper && deviationper < settings::ldw::kperoffsetwarning
 					) {
 					processvalues->ldwstatus_ = 2;
 					processvalues->ldwpwmvalue_ = 1023 + static_cast<int>((1024.0*(deviationper -
-						settings::ldw::peroffsetwarning)) /
-						(settings::ldw::peroffsetwarning));
-				} else if ( settings::ldw::peroffsetwarning < deviationper &&
-					deviationper < settings::ldw::peroffsetalarm ) {
+						settings::ldw::kperoffsetwarning)) /
+						(settings::ldw::kperoffsetwarning));
+				} else if ( settings::ldw::kperoffsetwarning < deviationper &&
+					deviationper < settings::ldw::kperoffsetalarm ) {
 					processvalues->ldwstatus_ = 4;
 					processvalues->ldwpwmvalue_ = 1023 + static_cast<int>((1024.0*(deviationper -
-						settings::ldw::peroffsetwarning)) /
-						(settings::ldw::peroffsetwarning));
-				} else if ( settings::ldw::peroffsetalarm < deviationper ) {
+						settings::ldw::kperoffsetwarning)) /
+						(settings::ldw::kperoffsetwarning));
+				} else if ( settings::ldw::kperoffsetalarm < deviationper ) {
 					processvalues->ldwstatus_ = 6;
 					processvalues->ldwpwmvalue_ = 1023;
 				} else if ( 0.0 > deviationper && deviationper >
-					(-1.0 * settings::ldw::peroffsetwarning) ) {
+					(-1.0 * settings::ldw::kperoffsetwarning) ) {
 					processvalues->ldwstatus_ = 1;
 					processvalues->ldwpwmvalue_ = 1023 - static_cast<int>((1024.0*(deviationper +
-						settings::ldw::peroffsetwarning)) /
-						(settings::ldw::peroffsetwarning));
-				} else if ( (-1.0 * settings::ldw::peroffsetwarning) > deviationper &&
-					deviationper > (-1.0 * settings::ldw::peroffsetalarm) ) {
+						settings::ldw::kperoffsetwarning)) /
+						(settings::ldw::kperoffsetwarning));
+				} else if ( (-1.0 * settings::ldw::kperoffsetwarning) > deviationper &&
+					deviationper > (-1.0 * settings::ldw::kperoffsetalarm) ) {
 					processvalues->ldwstatus_ = 3;
 					processvalues->ldwpwmvalue_ = 1023 - static_cast<int>((1024.0*(deviationper +
-						settings::ldw::peroffsetalarm)) /
-						(settings::ldw::peroffsetalarm - settings::ldw::peroffsetwarning));
-				} else if ( (-1.0 * settings::ldw::peroffsetalarm) > deviationper ) {
+						settings::ldw::kperoffsetalarm)) /
+						(settings::ldw::kperoffsetalarm - settings::ldw::kperoffsetwarning));
+				} else if ( (-1.0 * settings::ldw::kperoffsetalarm) > deviationper ) {
 					processvalues->ldwstatus_ = 5;
 					processvalues->ldwpwmvalue_ = 1023;
 				}

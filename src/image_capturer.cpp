@@ -33,8 +33,8 @@ void CaptureImageThread( cv::Mat *capture,
 	cv::Mat newimage;
 
 	//create pace setter
-	PaceSetter camerapacer(std::max(settings::disp::updatefps,
-		settings::cam::recfps), "Image capturer");
+	PaceSetter camerapacer(std::max(settings::disp::kupdatefps,
+		settings::cam::krecfps), "Image capturer");
 
 	//Loop indefinitely
 	while( !(*exitsignal) ) {

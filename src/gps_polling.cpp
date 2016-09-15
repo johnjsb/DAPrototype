@@ -20,7 +20,7 @@ void GpsPollingThread( ProcessValues *processvalues,
     }
 	
 	//create pace setter
-	PaceSetter gpspacer(settings::comm::pollrategps, "GPS polling");
+	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
@@ -43,7 +43,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 				alarmmonitor::latitude = newdata->fix.latitude;
 				alarmmonitor::longitude = newdata->fix.longitude;
 				alarmmonitor::gpsspeed = newdata->fix.speed;
-				if ( newdata->fix.speed > settings::ldw::enablespeed ) {
+				if ( newdata->fix.speed > settings::ldw::kenablespeed ) {
 					processvalues->gpsstatus_ =  3;
 				} else {
 					processvalues->gpsstatus_ =  2;

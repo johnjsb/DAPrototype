@@ -22,10 +22,10 @@ void LidarPolingThread( ProcessValues *processvalues,
 	//Create thread variables
 	double followingdistance{0.0};
 	bool vehiclemoving{false};
-	int pullaheaddelay{ settings::comm::pollratelidar/2 };	//500ms
+	int pullaheaddelay{ settings::comm::kpollratelidar/2 };	//500ms
 	int pullaheadcount{ 0 };
-	FcwTracker fcwtracker( settings::fcw::distanceoffset,
-		settings::fcw::samplestoaverage );
+	FcwTracker fcwtracker( settings::fcw::kdistanceoffset,
+		settings::fcw::ksamplestoaverage );
 	/*
 	//Setup I2C
     wiringPiSetupGpio();
@@ -42,7 +42,7 @@ void LidarPolingThread( ProcessValues *processvalues,
 	*/
 	
 	//create pace setter
-	PaceSetter lidarpacer(settings::comm::pollratelidar, "lidar polling");
+	PaceSetter lidarpacer(settings::comm::kpollratelidar, "lidar polling");
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
@@ -81,22 +81,22 @@ void LidarPolingThread( ProcessValues *processvalues,
 		//4 = following too close alarm
 		//5 = driver ahead takeoff notification				//Future
 		//-1 = error (sensor error)
-		if ( (1000*fcwtracker.timetocollision_) < settings::fcw::mscollisionwarning ) {
+		if ( (1000*fcwtracker.timetocollision_) < settings::fcw::kmscollisionwarning ) {
 			processvalues->fcwstatus_ = 1;
 			processvalues->fcwpwmvalue_ = 1023 + static_cast<int>((1024.0*(1000*
-				fcwtracker.timetocollision_ - settings::fcw::mscollisionalarm)) /
-				(settings::fcw::mscollisionalarm - settings::fcw::mscollisionwarning));
+				fcwtracker.timetocollision_ - settings::fcw::kmscollisionalarm)) /
+				(settings::fcw::kmscollisionalarm - settings::fcw::kmscollisionwarning));
 		} else if ( vehiclemoving && (1000*fcwtracker.followingtime_) <
-			settings::fcw::msfollowdistwarning ){
+			settings::fcw::kmsfollowdistwarning ){
 			processvalues->fcwstatus_ = 2;
 			processvalues->fcwpwmvalue_ = 1023 + static_cast<int>((1024.0*(1000*
-				fcwtracker.followingtime_ - settings::fcw::msfollowdistalarm)) /
-				(settings::fcw::msfollowdistalarm - settings::fcw::msfollowdistwarning));
-		} else if ( (1000*fcwtracker.timetocollision_) < settings::fcw::mscollisionalarm ){
+				fcwtracker.followingtime_ - settings::fcw::kmsfollowdistalarm)) /
+				(settings::fcw::kmsfollowdistalarm - settings::fcw::kmsfollowdistwarning));
+		} else if ( (1000*fcwtracker.timetocollision_) < settings::fcw::kmscollisionalarm ){
 			processvalues->fcwstatus_ = 3;
 			processvalues->fcwpwmvalue_ = 1023;
 		} else if ( vehiclemoving && (1000*fcwtracker.followingtime_) <
-			settings::fcw::msfollowdistalarm ){
+			settings::fcw::kmsfollowdistalarm ){
 			processvalues->fcwstatus_ = 4;
 			processvalues->fcwpwmvalue_ = 1023;
 		} else if ( false ){	//ToDo - Comm check & takeoff notice
@@ -114,13 +114,13 @@ void LidarPolingThread( ProcessValues *processvalues,
 		if ( !vehiclemoving || (fcwtracker.timetocollision_ < fcwtracker.followingtime_) &&
 			(processvalues->fcwstatus_ == 0) ) {
 			processvalues->fcwpwmvalue_ = 1023 + static_cast<int>((1024.0*(1000*
-				fcwtracker.timetocollision_ - settings::fcw::mscollisionwarning)) /
-				(settings::fcw::mscollisionwarning));			
+				fcwtracker.timetocollision_ - settings::fcw::kmscollisionwarning)) /
+				(settings::fcw::kmscollisionwarning));			
 		} else if ( vehiclemoving && (fcwtracker.timetocollision_ >
 			fcwtracker.followingtime_) && (processvalues->fcwstatus_ == 0) ) {
 			processvalues->fcwpwmvalue_ = 1023 + static_cast<int>((1024.0*(1000*
-				fcwtracker.followingtime_ - settings::fcw::msfollowdistwarning)) /
-				(settings::fcw::msfollowdistwarning));			
+				fcwtracker.followingtime_ - settings::fcw::kmsfollowdistwarning)) /
+				(settings::fcw::kmsfollowdistwarning));			
 		}
 		
 		//Check for driver pullahead

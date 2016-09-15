@@ -188,62 +188,62 @@ int ReadXmlSettings()
 
 //Initialize all namespace constants
 namespace settings{
-	const int readsuccess(ReadXmlSettings());
+	const int kreadsuccess(ReadXmlSettings());
 	namespace gen {
-		const bool enbuzzer{g_genenbuzzer};
-		const bool debugscreen{g_gendebugscreen};
-		const bool debugterminal{g_gendebugterminal};
+		const bool kenbuzzer{g_genenbuzzer};
+		const bool kdebugscreen{g_gendebugscreen};
+		const bool kdebugterminal{g_gendebugterminal};
 	}
 	namespace cam{
-		const bool recordorgimage{g_camrecordorgimage};
-		const std::string filepath{g_camfilepath};
-		const std::string orgfilename{g_camorgfilename};
-		const std::string modfilename{g_cammodfilename};
-		const int pixwidth{g_campixwidth};
-		const int pixheight{g_campixheight};
-		const bool showspeed{g_camshowspeed};
-		const bool showloc{g_camshowloc};
-		const bool shadelanes{g_camshadelanes};
-		const int recfps{g_camrecfps};
-		const int filestokeep{g_camfilestokeep};
-		const int minperfile{g_camminperfile};
+		const bool krecordorgimage{g_camrecordorgimage};
+		const std::string kfilepath{g_camfilepath};
+		const std::string korgfilename{g_camorgfilename};
+		const std::string kmodfilename{g_cammodfilename};
+		const int kpixwidth{g_campixwidth};
+		const int kpixheight{g_campixheight};
+		const bool kshowspeed{g_camshowspeed};
+		const bool kshowloc{g_camshowloc};
+		const bool kshadelanes{g_camshadelanes};
+		const int krecfps{g_camrecfps};
+		const int kfilestokeep{g_camfilestokeep};
+		const int kminperfile{g_camminperfile};
 	}
 	namespace disp{
-		const bool enabled{g_dispenabled};
-		const int pixwidth{g_disppixwidth};
-		const int pixheight{g_disppixheight};
-		const int updatefps{g_dispupdatefps};
+		const bool kenabled{g_dispenabled};
+		const int kpixwidth{g_disppixwidth};
+		const int kpixheight{g_disppixheight};
+		const int kupdatefps{g_dispupdatefps};
 	}
 	namespace comm{
-		const int pollrategps{g_commpollrategps};
-		const int pollratelidar{g_commpollratelidar};
-		const int pollrategpio{g_commpollrategpio};
+		const int kpollrategps{g_commpollrategps};
+		const int kpollratelidar{g_commpollratelidar};
+		const int kpollrategpio{g_commpollrategpio};
 	}
 	namespace gps{
-		const int samplestoaverage{g_gpssamplestoaverage};
+		const int ksamplestoaverage{g_gpssamplestoaverage};
 	}
 	namespace ldw{
-		const bool enabled{g_ldwenabled};
-		const int enablespeed{g_ldwenablespeed};
-		const int samplestokeep{g_ldwsamplestokeep};
-		const int samplestoaverage{g_ldwsamplestoaverage};
-		const int peroffsetwarning{g_ldwperoffsetwarning};
-		const int peroffsetalarm{g_ldwperoffsetalarm};
-		const int msuntilwarning{g_ldwmsuntilwarning};
-		const int msuntilalarm{g_ldwmsuntilalarm};
-		const int updatefps{g_ldwupdatefps};
+		const bool kenabled{g_ldwenabled};
+		const int kenablespeed{g_ldwenablespeed};
+		const int ksamplestokeep{g_ldwsamplestokeep};
+		const int ksamplestoaverage{g_ldwsamplestoaverage};
+		const int kperoffsetwarning{g_ldwperoffsetwarning};
+		const int kperoffsetalarm{g_ldwperoffsetalarm};
+		const int kmsuntilwarning{g_ldwmsuntilwarning};
+		const int kmsuntilalarm{g_ldwmsuntilalarm};
+		const int kupdatefps{g_ldwupdatefps};
 	}
 	namespace fcw{
-		const bool enabled{enabled};
-		const int samplestoaverage{g_fcwsamplestoaverage};
-		const double distanceoffset{g_fcwdistanceoffset};
-		const int msfollowdistwarning{g_fcwmsfollowdistwarning};
-		const int msfollowdistalarm{g_fcwmsfollowdistalarm};
-		const int mscollisionwarning{g_fcwmscollisionwarning};
-		const int mscollisionalarm{g_fcwmscollisionalarm};
+		const bool kenabled{g_fcwenabled};
+		const int ksamplestoaverage{g_fcwsamplestoaverage};
+		const double kdistanceoffset{g_fcwdistanceoffset};
+		const int kmsfollowdistwarning{g_fcwmsfollowdistwarning};
+		const int kmsfollowdistalarm{g_fcwmsfollowdistalarm};
+		const int kmscollisionwarning{g_fcwmscollisionwarning};
+		const int kmscollisionalarm{g_fcwmscollisionalarm};
 	}
 	namespace gpio{
-		const bool enabled{g_gpioenabled};
-		const bool autoshutdown{g_gpioautoshutdown};
+		const bool kenabled{g_gpioenabled};
+		const bool kautoshutdown{g_gpioautoshutdown};
 	}
 }

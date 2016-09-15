@@ -8,63 +8,63 @@
 int ReadXmlSettings();
 
 namespace settings{
-	extern const int readsuccess;
+	extern const int kreadsuccess;
     namespace gen {
-        extern const bool enbuzzer;
-        extern const bool debugscreen;
-        extern const bool debugterminal;
+        extern const bool kenbuzzer;
+        extern const bool kdebugscreen;
+        extern const bool kdebugterminal;
     }
     namespace cam{
-		extern const bool recordorgimage;
-		extern const std::string filepath;
-		extern const std::string orgfilename;
-		extern const std::string modfilename;
-        extern const int pixwidth;
-        extern const int pixheight;
-        extern const bool showspeed;
-        extern const bool showloc;
-        extern const bool shadelanes;
-        extern const int recfps;
-        extern const int filestokeep;
-        extern const int minperfile;
+		extern const bool krecordorgimage;
+		extern const std::string kfilepath;
+		extern const std::string korgfilename;
+		extern const std::string kmodfilename;
+        extern const int kpixwidth;
+        extern const int kpixheight;
+        extern const bool kshowspeed;
+        extern const bool kshowloc;
+        extern const bool kshadelanes;
+        extern const int krecfps;
+        extern const int kfilestokeep;
+        extern const int kminperfile;
     }
     namespace disp{
-        extern const bool enabled;
-        extern const int pixwidth;
-        extern const int pixheight;
-        extern const int updatefps;
+        extern const bool kenabled;
+        extern const int kpixwidth;
+        extern const int kpixheight;
+        extern const int kupdatefps;
     }
     namespace comm{
-        extern const int pollrategps;
-        extern const int pollratelidar;
-        extern const int pollrategpio;
+        extern const int kpollrategps;
+        extern const int kpollratelidar;
+        extern const int kpollrategpio;
     }
     namespace gps{
-        extern const int samplestoaverage;
+        extern const int ksamplestoaverage;
     }
     namespace ldw{
-        extern const bool enabled;
-		extern const int enablespeed;
-        extern const int samplestokeep;
-        extern const int samplestoaverage;
-        extern const int peroffsetwarning;
-        extern const int peroffsetalarm;
-        extern const int msuntilwarning;
-        extern const int msuntilalarm;
-        extern const int updatefps;
+        extern const bool kenabled;
+		extern const int kenablespeed;
+        extern const int ksamplestokeep;
+        extern const int ksamplestoaverage;
+        extern const int kperoffsetwarning;
+        extern const int kperoffsetalarm;
+        extern const int kmsuntilwarning;
+        extern const int kmsuntilalarm;
+        extern const int kupdatefps;
     }
     namespace fcw{
-        extern const bool enabled;
-        extern const int samplestoaverage;
-		extern const double distanceoffset;
-        extern const int msfollowdistwarning;
-        extern const int msfollowdistalarm;
-        extern const int mscollisionwarning;
-        extern const int mscollisionalarm;
+        extern const bool kenabled;
+        extern const int ksamplestoaverage;
+		extern const double kdistanceoffset;
+        extern const int kmsfollowdistwarning;
+        extern const int kmsfollowdistalarm;
+        extern const int kmscollisionwarning;
+        extern const int kmscollisionalarm;
     }
     namespace gpio{
-        extern const bool enabled;
-        extern const bool autoshutdown;
+        extern const bool kenabled;
+        extern const bool kautoshutdown;
     }
 }
 

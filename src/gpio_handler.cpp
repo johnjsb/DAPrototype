@@ -19,7 +19,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	std::cout << "GPIO handler thread starting!" << std::endl;
 	
 	//Check if enabled
-	if ( !settings::gpio::enabled ) {
+	if ( !settings::gpio::kenabled ) {
 		std::cout << "GPIO disabled, exiting!" << std::endl;
 		return;
 	}
@@ -27,8 +27,8 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	//Create thread variables
 	bool warning{false};
 	bool alarm{false};
-	int buzzerinterval{ settings::comm::pollrategpio/2 };	//500ms
-	int blinkinterval{ settings::comm::pollrategpio/2 };	//500ms
+	int buzzerinterval{ settings::comm::kpollrategpio/2 };	//500ms
+	int blinkinterval{ settings::comm::kpollrategpio/2 };	//500ms
 	int buzzercount{0};
 	int blinkercount{0};
 //	wiringPiSetup();
@@ -49,7 +49,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	int inputfailcount{0};
 	
 	//create pace setter
-	PaceSetter gpiopacer(settings::comm::pollrategpio, "GPIO handler");
+	PaceSetter gpiopacer(settings::comm::kpollrategpio, "GPIO handler");
 	
 	//Loop indefinitely
 //	for(;;) {
@@ -68,9 +68,9 @@ void GpioHandlerThread( ProcessValues *processvalues,
 		}
 		
 		//Set buzzer
-		if ( alarm && settings::gen::enbuzzer ) {
+		if ( alarm && settings::gen::kenbuzzer ) {
 			//digitalWrite(BUZZERPIN, 1);
-		} else if ( !alarm && warning && settings::gen::enbuzzer ) {
+		} else if ( !alarm && warning && settings::gen::kenbuzzer ) {
 			buzzercount++;
 			if ( buzzercount % buzzerinterval != 0) continue;
 /*
@@ -214,7 +214,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 		
 /*
 		//Shutdown logic on power loss
-		if ( digitalRead(POWERINPUTPIN) || !settings::gpio::autoshutdown ) {
+		if ( digitalRead(POWERINPUTPIN) || !settings::gpio::kautoshutdown ) {
 			inputfailcount = 0;
 		} else if (!digitalRead(POWERINPUTPIN) && (inputfailcount < 3)) {	//3 exits!
 			inputfailcount++;

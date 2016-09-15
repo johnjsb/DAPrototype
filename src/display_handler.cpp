@@ -14,7 +14,7 @@ void DisplayUpdateThread( cv::Mat *image,
 	std::cout << "Display handler thread starting!" << std::endl;
 
 	//Check xml settings 
-	if ( !settings::disp::enabled ) {
+	if ( !settings::disp::kenabled ) {
 		std::cout << "Display disabled, exiting thread!" << std::endl;
 		return;
 	}
@@ -28,11 +28,11 @@ void DisplayUpdateThread( cv::Mat *image,
 	
 
 	//Create thread variables
-	int resizedwidth{ ((image->cols*image->rows)/settings::disp::pixheight) };
-	int borderthickness{ (settings::disp::pixwidth - resizedwidth)/2 };
+	int resizedwidth{ ((image->cols*image->rows)/settings::disp::kpixheight) };
+	int borderthickness{ (settings::disp::kpixwidth - resizedwidth)/2 };
 	cv::Mat imagetemp{ cv::Mat(image->rows, image->cols, image->type(), cv::Scalar(0)) };
-	cv::Mat borderedimage{ cv::Mat(settings::disp::pixheight,
-		settings::disp::pixwidth, image->type(), cv::Scalar(0)) };
+	cv::Mat borderedimage{ cv::Mat(settings::disp::kpixheight,
+		settings::disp::kpixwidth, image->type(), cv::Scalar(0)) };
 //    if (!gtk_init_check(NULL, NULL);){
 //        std::cout << "Display unavailable, continuing without..." << std::endl;
 //		return;
@@ -45,7 +45,7 @@ void DisplayUpdateThread( cv::Mat *image,
 			cv::resize(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
 		}
 		imagetemp.copyTo(borderedimage.rowRange(0, imagetemp.rows).colRange(
-			borderthickness, settings::disp::pixwidth - borderthickness));
+			borderthickness, settings::disp::kpixwidth - borderthickness));
         cv::namedWindow("Output", CV_WINDOW_NORMAL);
 		//cv::namedWindow("Output", cv::WINDOW_OPENGL );
         //cv::setWindowProperty("Output", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
@@ -55,7 +55,7 @@ void DisplayUpdateThread( cv::Mat *image,
 //    }
 
 	//create pace setter
-	PaceSetter displaypacer(settings::disp::updatefps, "display handler");
+	PaceSetter displaypacer(settings::disp::kupdatefps, "display handler");
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
@@ -66,7 +66,7 @@ void DisplayUpdateThread( cv::Mat *image,
 		cv::resize(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
 		}
 		imagetemp.copyTo(borderedimage.rowRange(0, imagetemp.rows).colRange(
-			borderthickness, settings::disp::pixwidth - borderthickness));
+			borderthickness, settings::disp::kpixwidth - borderthickness));
 		cv::imshow("Output", borderedimage);
 		cv::waitKey(1);
 

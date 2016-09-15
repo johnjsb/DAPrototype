@@ -28,8 +28,8 @@ void ImageEditorThread( cv::Mat *orgimage,
 	timetext.pop_back();
 
 	//create pace setter
-	PaceSetter editorpacer(std::max(settings::disp::updatefps,
-		settings::cam::recfps), "image editor");
+	PaceSetter editorpacer(std::max(settings::disp::kupdatefps,
+		settings::cam::krecfps), "image editor");
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
@@ -83,7 +83,7 @@ void ImageEditorThread( cv::Mat *orgimage,
 		Polygon newpolygon{ processvalues->GetPolygon() };
 		cv::Point cvpointarray[4];
 		std::copy( newpolygon.begin(), newpolygon.end(), cvpointarray );
-		if ( (newpolygon[0] != cv::Point(0,0)) && settings::cam::shadelanes &&
+		if ( (newpolygon[0] != cv::Point(0,0)) && settings::cam::kshadelanes &&
 			(processvalues->ldwstatus_ > 0) ) {
 			cv::Mat polygonimage{ modifiedimage.size(), modifiedimage.type(),
 				cv::Scalar(0) };

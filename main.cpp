@@ -67,7 +67,7 @@ int main()
     std::cout.rdbuf(out.rdbuf());
 	
     //Check XML Properties
-	if (settings::readsuccess < 0) {
+	if (settings::kreadsuccess < 0) {
         std::cout << "XML reading failed, using defaults." << std::endl;
     } else {
         std::cout << "XML reading successful!" << std::endl;

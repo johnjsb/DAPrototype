@@ -24,7 +24,7 @@ void VideoWriterThread ( cv::Mat *orgimage,
 	std::cout << "Video writer thread starting!" << std::endl;
 
 	//Check image is initialized
-	if ( settings::cam::recordorgimage ) {
+	if ( settings::cam::krecordorgimage ) {
 		while ( orgimage->empty() ) {
 			if (*exitsignal) {
 				return;
@@ -41,23 +41,23 @@ void VideoWriterThread ( cv::Mat *orgimage,
 	std::string filepath;
 	cv::Size size;
 
-	if ( settings::cam::recordorgimage ) {
-		filepath = settings::cam::filepath + settings::cam::orgfilename;
+	if ( settings::cam::krecordorgimage ) {
+		filepath = settings::cam::kfilepath + settings::cam::korgfilename;
 		size = cv::Size(orgimage->cols, orgimage->rows);
 	} else {
-		filepath = settings::cam::filepath + settings::cam::modfilename;
+		filepath = settings::cam::kfilepath + settings::cam::kmodfilename;
 		size = cv::Size(modimage->cols, modimage->rows);
 	}
 				
 	//Shift files
-	fileShift(filepath, settings::cam::filestokeep);
+	fileShift(filepath, settings::cam::kfilestokeep);
 	
     FrameQueue queue;
 	StorageWorker storage{ queue,
 			               1,
 			               filepath,
 						   CV_FOURCC('D', 'I', 'V', 'X'),
-						   static_cast<double>(settings::cam::recfps),
+						   static_cast<double>(settings::cam::krecfps),
 						   size,
 						   true };
 
@@ -67,16 +67,16 @@ void VideoWriterThread ( cv::Mat *orgimage,
 	//Create thread variables
 	std::chrono::high_resolution_clock::time_point startime(
 		std::chrono::high_resolution_clock::now());
-	int32_t filelengthseconds{60 * settings::cam::minperfile};
+	int32_t filelengthseconds{60 * settings::cam::kminperfile};
 	
 	//Create pace setter
-	PaceSetter videopacer(settings::cam::recfps, "video writer");
+	PaceSetter videopacer(settings::cam::krecfps, "video writer");
 
 	//Loop
 	while( !(*exitsignal) ) {
 		
 		//Normal Execution
-		if ( settings::cam::recordorgimage ) {
+		if ( settings::cam::krecordorgimage ) {
 			capturemutex->lock();
 			queue.Push(orgimage->clone());
 			capturemutex->unlock();
@@ -96,7 +96,7 @@ void VideoWriterThread ( cv::Mat *orgimage,
 			queue.Stop();
 			
 			//Shift files
-			fileShift(filepath, settings::cam::filestokeep);
+			fileShift(filepath, settings::cam::kfilestokeep);
 			
 			//Restart thread
 			queue.Restart();
