@@ -62,8 +62,8 @@ void ProcessImage ( cv::Mat image,
 
 	//ToDo - There's way more I could be doing:
 		//Dilate?
-		//Hough's transformation?
 		//HoughLineP evaluation?
+		//LSDDetector?
 
 
 //-----------------------------------------------------------------------------------------
