@@ -60,6 +60,11 @@ void ProcessImage ( cv::Mat image,
 		CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
 	//Contours removed by position in function
 
+	//ToDo - There's way more I could be doing:
+		//Dilate?
+		//Hough's transformation?
+		//HoughLineP evaluation?
+
 
 //-----------------------------------------------------------------------------------------
 //Construct contours from blobs only

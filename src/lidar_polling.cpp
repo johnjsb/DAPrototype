@@ -65,6 +65,8 @@ void LidarPolingThread( ProcessValues *processvalues,
 		
 		fcwtracker.Update( followingdistance, processvalues->gpsspeed_);
 		
+		//ToDo - Fudge factor based on road angle (anticipate turn)
+		
 		//Update everything
 		processvalues->forwarddistance_ = fcwtracker.followingdistance_;
 		if ( fcwtracker.followingtime_ < fcwtracker.timetocollision_ ) {

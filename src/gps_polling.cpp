@@ -1,6 +1,7 @@
 #include <iostream>
 #include <libgpsmm.h>
 #include <atomic>
+#include <deque>
 #include "pace_setter_class.h"
 #include "process_values_class.h"
 #include "xml_reader.h"
@@ -13,6 +14,9 @@ void GpsPollingThread( ProcessValues *processvalues,
 
 	//Create thread variables
 	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
+	std::deque<double> latitudevalues;
+	std::deque<double> longitudevalues;
+	std::deque<double> speedvalues;
 
     if (gps_rec.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
         std::cout << "No GPSD running. exiting GPS thread." << std::endl;
@@ -40,9 +44,12 @@ void GpsPollingThread( ProcessValues *processvalues,
 			if ( newdata->fix.mode > 1) {
 				
 				//Write values
-				alarmmonitor::latitude = newdata->fix.latitude;
-				alarmmonitor::longitude = newdata->fix.longitude;
-				alarmmonitor::gpsspeed = newdata->fix.speed;
+				processvalues->latitude_ = Average(newdata->fix.latitude,
+					latitudevalues, settings::gps::ksamplestoaverage);
+				processvalues->longitude_ = Average(newdata->fix.longitude,
+					longitudevalues, settings::gps::ksamplestoaverage);
+				processvalues->gpsspeed_ = Average(newdata->fix.speed,
+					speedvalues, settings::gps::ksamplestoaverage);
 				if ( newdata->fix.speed > settings::ldw::kenablespeed ) {
 					processvalues->gpsstatus_ =  3;
 				} else {
@@ -62,4 +69,19 @@ void GpsPollingThread( ProcessValues *processvalues,
 	
 	std::cout << "Exiting GPS polling thread!" << std::endl;
 
+}
+
+double Average ( double value,
+			     std::deque<double> &values,
+			     int tokeep )
+{
+	values.push_back(value);
+	if ( values.size() > tokeep ) {
+		values.pop_front();
+		for ( i = 1; i < values.size(); i++ ) {
+			value += values[i];
+		}
+		value /= values.size();
+	}
+	return;
 }

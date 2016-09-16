@@ -7,4 +7,8 @@
 void GpsPollingThread( ProcessValues *processvalues,
 					   std::atomic<bool> *exitsignal);
 
+double Average ( double value,
+				 std::deque<double> &values,
+			     int tokeep )
+
 #endif // GPS_POLLING_H_INCLUDED
