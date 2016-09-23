@@ -1,5 +1,5 @@
-#ifndef LANE_DETECT_PROCESSOR_HPP_INCLUDED
-#define LANE_DETECT_PROCESSOR_HPP_INCLUDED
+#ifndef LANEDETECTPROCESSOR_H
+#define LANEDETECTPROCESSOR_H
 
 #include <deque>
 #include <array>
@@ -13,8 +13,6 @@ struct EvaluatedContour {
     cv::RotatedRect ellipse;
     float lengthwidthratio;
 	float angle;
-	//cv::Moments moment;
-	//cv::Point center;
     cv::Vec4f fitline;
 };
 
@@ -28,11 +26,6 @@ void CreateKeypoints( const std::vector<Contour>& contours,
 void EvaluateSegment( const Contour& contour,
 					  const int imageheight,
 	                  std::vector<EvaluatedContour>&	evaluatedsegments );
-void ConstructFromBlobs( const std::vector<cv::KeyPoint>& keypoints,
-	                     std::vector<Contour>& constructedcontours );
-void ConstructFromSegmentAndBlob( const std::vector<EvaluatedContour>& evaluatedsegments,
-	                              const std::vector<cv::KeyPoint>& keypoints,
-								  std::vector<Contour>&	constructedcontours );
 void ConstructFromSegments( const std::vector<EvaluatedContour>& evaluatedsegments,
                             std::vector<Contour>& constructedcontours );
 void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
@@ -43,7 +36,8 @@ void FindPolygon( Polygon& polygon,
 				  const Contour& leftcontour,
 				  const Contour& rightcontour );
 double ScoreContourPair( const Polygon& polygon,
-						 const int imagewidth,
+                         const int imagewidth,
+						 const int imageheight,
 						 const EvaluatedContour& leftcontour,
 						 const EvaluatedContour& rightcontour );
 void AveragePolygon ( Polygon& polygon,
@@ -54,4 +48,4 @@ void ProcessImage ( cv::Mat image,
 					Polygon& polygon );
 //void ProcessImage ( cv::Mat image, cv::Mat& cannyimage, Polygon& polygon );
 
-#endif // LANE_DETECT_PROCESSOR_HPP_INCLUDED
+#endif // LANEDETECTPROCESSOR_H

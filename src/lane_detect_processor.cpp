@@ -15,6 +15,28 @@
 #include "lane_detect_constants.h"
 #include "lane_detect_processor.h"
 
+namespace lanedetectconstants {
+	
+	uint16_t ksegmentellipseheight{10};
+	float ksegmentanglewindow{89.0f};
+	float ksegmentlengthwidthratio{2.04f};
+	float ksegmentsanglewindow{45.0f};
+	uint16_t kellipseheight{21};
+	float kanglewindow{78.2f};
+	float klengthwidthratio{5.92f};
+    double kcommonanglewindow{33.3};
+    uint16_t kminroadwidth {303};
+    uint16_t kmaxroadwidth {628};
+	uint16_t koptimumwidth {400};
+	double kellipseratioweight{1.3};
+	double kangleweight{-2.2};
+	double kcenteredweight{-1.0};
+	double kwidthweight{-2.0};
+	double klowestpointweight{-1.0};
+	double klowestscorelimit{-DBL_MAX};
+	
+}
+
 //Main function
 void ProcessImage ( cv::Mat image,
                     Polygon& polygon )
@@ -27,23 +49,6 @@ void ProcessImage ( cv::Mat image,
 	cv::cvtColor( image, image, CV_BGR2GRAY );
 	//Blur to reduce noise
     cv::blur( image, image, cv::Size(3,3) );
-		
-//-----------------------------------------------------------------------------------------
-//Find blob keypoints
-//-----------------------------------------------------------------------------------------	
-    std::vector<cv::KeyPoint> keypoints;
-	if ( lanedetectconstants::enableblobcontour ||
-		lanedetectconstants::enablesegmentblobcontour ) {
-			cv::Ptr<cv::SimpleBlobDetector> blobdetector { cv::SimpleBlobDetector::create(
-			lanedetectconstants::klanedetectblobparams()) };
-			blobdetector->detect(image, keypoints);
-		}
-	//Remove all keypoints by position
-	for (int i = 0; i < keypoints.size(); i++ ) {
-		if ( keypoints[i].pt.y < (image.rows/3) ) {
-			keypoints.erase( keypoints.begin() + i );
-		}
-	}
 	
 //-----------------------------------------------------------------------------------------
 //Find contours
@@ -64,15 +69,6 @@ void ProcessImage ( cv::Mat image,
 		//Dilate?
 		//HoughLineP evaluation?
 		//LSDDetector?
-
-
-//-----------------------------------------------------------------------------------------
-//Construct contours from blobs only
-//-----------------------------------------------------------------------------------------	
-    std::vector<Contour> constructedcontours;
-	if ( lanedetectconstants::enableblobcontour ) {
-		ConstructFromBlobs( keypoints , constructedcontours );	
-	}
 		
 //-----------------------------------------------------------------------------------------
 //Evaluate contours
@@ -88,16 +84,9 @@ void ProcessImage ( cv::Mat image,
     }
 
 //-----------------------------------------------------------------------------------------
-//Construct from segment and a blob
-//-----------------------------------------------------------------------------------------	
-	if ( lanedetectconstants::enablesegmentblobcontour ) {
-		ConstructFromSegmentAndBlob( evaluatedchildsegments, keypoints ,
-			constructedcontours );	
-	}
-
-//-----------------------------------------------------------------------------------------
 //Construct from segments
 //-----------------------------------------------------------------------------------------	
+    std::vector<std::vector<cv::Point>> constructedcontours;
 	ConstructFromSegments( evaluatedchildsegments, constructedcontours );
 
 //-----------------------------------------------------------------------------------------
@@ -131,8 +120,8 @@ void ProcessImage ( cv::Mat image,
 			//If invalid polygon created, goto next
 			if ( newpolygon[0] == cv::Point(0,0) ) continue;
 			//If valid score
-			double score{ ScoreContourPair( newpolygon, image.cols, leftevaluatedontour,
-				rightevaluatedcontour) };
+			double score{ ScoreContourPair( newpolygon, image.cols, image.rows,
+				leftevaluatedontour, rightevaluatedcontour) };
 			//If highest score update
 			if ( score > maxscore ) {
 				leftcontour = leftevaluatedontour.contour;
@@ -206,59 +195,6 @@ void EvaluateSegment( const Contour& contour,
 	//	moment, center, fitline} );
 	evaluatedsegments.push_back( EvaluatedContour{contour, ellipse, lengthwidthratio,
 		angle, fitline} );
-	return;
-}
-
-/*****************************************************************************************/	
-void ConstructFromBlobs( const std::vector<cv::KeyPoint>& keypoints,
-                         std::vector<Contour>& constructedcontours )
-{
-	for( const cv::KeyPoint &keypoint1 : keypoints ) {
-        float xpos1 = keypoint1.pt.x;
-        float ypos1 = keypoint1.pt.y;
-        for( const cv::KeyPoint &keypoint2 : keypoints ) {
-            float xpos2 = keypoint2.pt.x;
-            float ypos2 = keypoint2.pt.y;
-            for( const cv::KeyPoint &keypoint3 : keypoints ) {
-                float xpos3 = keypoint3.pt.x;
-                float ypos3 = keypoint3.pt.y;
-                float slope12 = abs((ypos1 - ypos2)/(xpos1 - xpos2));
-                float slope23 = abs((ypos2 - ypos3)/(xpos2 - xpos3));
-                float slope13 = abs((ypos1 - ypos3)/(xpos1 - xpos3));
-                if (((slope12 - slope23) < lanedetectconstants::kblobslopewindow) &&
-                    ((slope23 - slope13) < lanedetectconstants::kblobslopewindow) &&
-                    ((slope13 - slope12) < lanedetectconstants::kblobslopewindow)){
-					constructedcontours.push_back( Contour {
-						cv::Point(xpos1,ypos1),
-						cv::Point(((xpos1 + xpos2)/2),((ypos1 + ypos2)/2)),
-						cv::Point(xpos2,ypos2),
-						cv::Point(((xpos2 + xpos3)/2),((ypos2 + ypos3)/2)),
-						cv::Point(xpos3,ypos3)					
-					} );
-				}
-            }
-        }
-    }
-	return;
-}
-
-/*****************************************************************************************/	
-void ConstructFromSegmentAndBlob( const std::vector<EvaluatedContour>& evaluatedsegments,
-                                  const std::vector<cv::KeyPoint>& keypoints,
-								  std::vector<Contour>& constructedcontours )
-{
-    for ( const EvaluatedContour &segcontour : evaluatedsegments ) {
-		for ( const cv::KeyPoint &keypoint : keypoints ) {
-			float createdangle = (180.0 / CV_PI) * atan2(segcontour.ellipse.center.y -
-				keypoint.pt.y, segcontour.ellipse.center.x - keypoint.pt.x);
-			float angledifference = abs(segcontour.angle - createdangle);
-			if (angledifference < lanedetectconstants::ksegmentblobanglewindow){
-				Contour newcontour{ segcontour.contour };
-				newcontour.push_back( keypoint.pt );
-				constructedcontours.push_back( newcontour );
-			}
-		}
-    }
 	return;
 }
 
@@ -377,6 +313,7 @@ void FindPolygon( Polygon& polygon,
 /*****************************************************************************************/
 double ScoreContourPair( const Polygon& polygon,
                          const int imagewidth,
+						 const int imageheight,
 						 const EvaluatedContour& leftcontour,
 						 const EvaluatedContour& rightcontour )
 {
@@ -390,15 +327,15 @@ double ScoreContourPair( const Polygon& polygon,
 	if ( roadwidth > lanedetectconstants::kmaxroadwidth ) return (-DBL_MAX);
 	//Calculate score
 	double weightedscore(0.0);
-	weightedscore += lanedetectconstants::klengthweight * (
-		leftcontour.ellipse.size.height + rightcontour.ellipse.size.height);
+	weightedscore += lanedetectconstants::kellipseratioweight * (
+		leftcontour.lengthwidthratio + rightcontour.lengthwidthratio);
 	weightedscore += lanedetectconstants::kangleweight * abs(deviationangle);
 	weightedscore += lanedetectconstants::kcenteredweight * (
 		abs(imagewidth - polygon[0].x - polygon[1].x));
 	weightedscore += lanedetectconstants::kwidthweight * (
-		abs(lanedetectconstants::koptimumwidth -(polygon[0].x - polygon[1].x)));
+		abs(lanedetectconstants::koptimumwidth -(polygon[1].x - polygon[0].x)));
 	weightedscore += lanedetectconstants::klowestpointweight * (
-		imagewidth - polygon[0].x);
+		imageheight - polygon[0].y);
 	return weightedscore;
 }
 
