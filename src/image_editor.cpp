@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
-#include <algorithm> 
-#include <Math.h>
+#include <algorithm>
+#include <math.h>
 #include <sstream>
 #include <mutex>
 #include <atomic>
@@ -80,7 +80,7 @@ void ImageEditorThread( cv::Mat *orgimage,
 		
 				
 		//Overlay lanes
-		Polygon newpolygon{ processvalues->GetPolygon() };
+		Polygon newpolygon = processvalues->GetPolygon();
 		cv::Point cvpointarray[4];
 		std::copy( newpolygon.begin(), newpolygon.end(), cvpointarray );
 		if ( (newpolygon[0] != cv::Point(0,0)) && settings::cam::kshadelanes &&

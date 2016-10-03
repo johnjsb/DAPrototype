@@ -3,19 +3,6 @@
 #include "tinyxml2.h"
 #include "xml_reader.h"
 
-
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
-#include <direct.h>
-//#include <crtdbg.h>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <io.h>
-#include <sys/stat.h>
-
-//Placeholder variables for constant initialization
-
 //GEN
 static bool g_genenbuzzer{true};
 static bool g_gendebugscreen{false};
