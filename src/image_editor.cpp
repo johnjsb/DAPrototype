@@ -21,11 +21,35 @@ void ImageEditorThread( cv::Mat *orgimage,
 {
 
 	std::cout << "Image editor thread starting!" << std::endl;
+		
+	//Check image is initialized
+	while ( orgimage->empty() ) {
+		if (*exitsignal) {
+			return;
+		}	  
+	}
 	
 	//Thread variables
     time_t now{time(0)};
-	std::string timetext{asctime(localtime(&now))};
+	std::string timetext{ asctime(localtime(&now)) };
 	timetext.pop_back();
+	capturemutex->lock();
+	double widthscalefactor{ orgimage->cols / 640.0};
+	double heightscalefactor{ orgimage->rows / 480.0};
+	capturemutex->unlock();
+	cv::Point datetimelocation{ cv::Point(395 * widthscalefactor,470 * heightscalefactor) };
+	float datetimesize{ 0.5f * heightscalefactor };
+	cv::Point speedlocation{ cv::Point(515 * widthscalefactor,30 * heightscalefactor) };
+	float speedsize{ 0.75f * heightscalefactor };
+	cv::Point latlonglocation{ cv::Point(10 * widthscalefactor, 470 * heightscalefactor) };
+	float latlongsize{ 0.5f * heightscalefactor };
+	cv::Point followingtimelocation{ cv::Point(10 * widthscalefactor, 455 * heightscalefactor) };
+	float followingtimesize{ 0.5f * heightscalefactor };
+	cv::Point distancelocation{ cv::Point(100 * widthscalefactor, 455 * heightscalefactor) };
+	float distancesize{ 0.5f * heightscalefactor };
+	cv::Point diagnosticlocation{ cv::Point(10 * widthscalefactor, 20 * heightscalefactor) };
+	float diagnosticsize{ 0.5f * heightscalefactor };
+	
 
 	//create pace setter
 	PaceSetter editorpacer(std::max(settings::disp::kupdatefps,
@@ -41,40 +65,42 @@ void ImageEditorThread( cv::Mat *orgimage,
 		timetext = asctime( localtime(&now) );
 		timetext.pop_back();
 		
+		//Resize (if necesssary)
+		
 		//Show time
-		putText( modifiedimage, timetext, cv::Point(395,470), CV_FONT_HERSHEY_COMPLEX,
-				0.5, cv::Scalar(255,255,0), 1, cv::LINE_8, false );
+		putText( modifiedimage, timetext, datetimelocation, CV_FONT_HERSHEY_COMPLEX,
+				datetimesize, cv::Scalar(255,255,0), 1, cv::LINE_8, false );
 		//Show speed
 		std::stringstream speedtext;
 		speedtext << std::fixed << std::setprecision(1) << processvalues->gpsspeed_ << " mph";
-		putText( modifiedimage, speedtext.str(), cv::Point(515,30), CV_FONT_HERSHEY_COMPLEX,
-				0.75, cv::Scalar(0,255,0), 1, cv::LINE_8, false );
+		putText( modifiedimage, speedtext.str(), speedlocation, CV_FONT_HERSHEY_COMPLEX,
+				speedsize, cv::Scalar(0,255,0), 1, cv::LINE_8, false );
 		
 		//Show latitude and longitude
 		putText( modifiedimage, ConvertLatLong(processvalues->latitude_, processvalues->longitude_),
-			cv::Point(10, 470), CV_FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255,0,255), 1,
+			latlonglocation, CV_FONT_HERSHEY_COMPLEX, latlongsize, cv::Scalar(255,0,255), 1,
 			cv::LINE_8,	false );
 			
 		//Show following time
 		std::stringstream timetext;
 		timetext  << std::fixed << std::setprecision(2) << processvalues->timetocollision_ <<
 			" s";
-		putText( modifiedimage, timetext.str(),	cv::Point(10, 455),
-			CV_FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255,255,255), 1, cv::LINE_8, false );
+		putText( modifiedimage, timetext.str(),	followingtimelocation,
+			CV_FONT_HERSHEY_COMPLEX, followingtimesize, cv::Scalar(255,255,255), 1, cv::LINE_8,	false );
 		
 		//Show following distance
 		std::stringstream distancetext;
 		distancetext  << std::fixed << std::setprecision(2) << processvalues->forwarddistance_ <<
 			" m";
-		putText( modifiedimage, distancetext.str(),	cv::Point(100, 455),
-			CV_FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(255,255,255), 1, cv::LINE_8, false );
+		putText( modifiedimage, distancetext.str(),	distancelocation,
+			CV_FONT_HERSHEY_COMPLEX, distancesize, cv::Scalar(255,255,255), 1, cv::LINE_8, false );
 			
 		//Show diagnostic message
 		std::string diagnosticmessage{ GetDiagnosticString(processvalues->ldwstatus_,
 			processvalues->fcwstatus_, processvalues-> gpsstatus_) };
 		if ( diagnosticmessage.length() != 0 ) {
-			putText( modifiedimage, diagnosticmessage, cv::Point(10, 20),
-				CV_FONT_HERSHEY_COMPLEX, 0.5, cv::Scalar(0,0,255), 1, cv::LINE_8,
+			putText( modifiedimage, diagnosticmessage, diagnosticlocation,
+				CV_FONT_HERSHEY_COMPLEX, diagnosticsize, cv::Scalar(0,0,255), 1, cv::LINE_8,
 				false );
 		}
 		

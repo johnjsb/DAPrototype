@@ -22,7 +22,7 @@
 		<minPerFile>1</minPerFile>
 	</CAM>
 	<DISP>
-		<enabled>0</enabled>
+		<enabled>1</enabled>
 		<pixWidth>800</pixWidth>
 		<pixHeight>480</pixHeight>
 		<updateFPS>10</updateFPS>

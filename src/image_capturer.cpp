@@ -5,7 +5,10 @@
 #include "pace_setter_class.h"
 #include "xml_reader.h"
 #include "opencv2/opencv.hpp"
-//#include "raspicam/raspicam_cv.h"             //For Raspberry Pi
+
+#ifdef __arm__									//Detect if compiling for raspberry pi
+	#include "raspicam/raspicam_cv.h"             	//For Raspberry Pi
+#endif
 
 void CaptureImageThread( cv::Mat *capture,
                          std::mutex *capturemutex,
@@ -14,15 +17,23 @@ void CaptureImageThread( cv::Mat *capture,
 	std::cout << "Image capturer thread starting!" << std::endl;
 
     //Create camera
-    cv::VideoCapture stream1(0);                //For Laptop
-	//raspicam::RaspiCam_Cv Camera;             //For Raspberry Pi
+	#ifdef __arm__								//Detect if compiling for raspberry pi
+		raspicam::RaspiCam_Cv Camera;             	//For Raspberry Pi
+	#else
+		cv::VideoCapture stream1(0);                //For Laptop
+	#endif
 
 	//Set properties
-    //Camera.set(CV_CAP_PROP_FORMAT, CV_16U);   //For Raspberry Pi
+	#ifdef __arm__								//Detect if compiling for raspberry pi
+		Camera.set(CV_CAP_PROP_FORMAT, CV_16U);   	//For Raspberry Pi
+	#endif
 
     //Open
-    if (!stream1.isOpened())                    //For Laptop
-    //if (!Camera.open())                       //For Raspberry Pi
+	#ifdef __arm__								//Detect if compiling for raspberry pi
+		if (!Camera.open())                       	//For Raspberry Pi
+	#else
+		if (!stream1.isOpened())                    //For Laptop
+	#endif
 	{
 		std::cerr<<"Error opening the camera"<<std::endl;
 		exit(-1);
@@ -33,14 +44,20 @@ void CaptureImageThread( cv::Mat *capture,
 	cv::Mat newimage;
 
 	//create pace setter
-	PaceSetter camerapacer(std::max(settings::disp::kupdatefps,
-		settings::cam::krecfps), "Image capturer");
+	PaceSetter camerapacer(std::max(std::max(settings::disp::kupdatefps,
+		settings::cam::krecfps), settings::ldw::kupdatefps), "Image capturer");
 
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
-        stream1.read(newimage);                 //For Laptop
-        //(Camera->grab());                       //For Raspberry Pi
-		//(Camera->retrieve(newimage));           //For Raspberry Pi
+		#ifdef __arm__							//Detect if compiling for raspberry pi
+			(Camera.grab());                       	//For Raspberry Pi
+			(Camera.retrieve(newimage));           	//For Raspberry Pi
+		#else
+			stream1.read(newimage);                 //For Laptop
+		#endif
+		//resize image
+		cv::resize(newimage, newimage, cv::Size(settings::cam::kpixwidth,
+			settings::cam::kpixheight));
 		capturemutex->lock();
 		*capture = newimage;
 		capturemutex->unlock(); 
