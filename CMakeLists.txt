@@ -18,7 +18,7 @@ add_library(XML_READER_LIBRARIES src/xml_reader.cpp)
 add_library(PROCESS_VALUES_LIBRARIES src/process_values_class.cpp)
 add_library(DISPLAY_HANDLER_LIBRARIES src/display_handler.cpp)
 add_library(GPIO_HANDLER_LIBRARIES src/gpio_handler.cpp)
-#add_library(GPS_POLLING_LIBRARIES src/gps_polling.cpp)
+add_library(GPS_POLLING_LIBRARIES src/gps_polling.cpp)
 add_library(IMAGE_CAPTURER_LIBRARIES src/image_capturer.cpp)
 add_library(IMAGE_EDITOR_LIBRARIES src/image_editor.cpp)
 add_library(IMAGE_PROCESSOR_LIBRARIES src/image_processor.cpp)
@@ -30,7 +30,7 @@ add_library(STORAGE_WORKER_LIBRARIES src/storage_worker_class.cpp)
 add_library(TINYXML_LIBRARIES src/tinyxml2.cpp)
 add_library(VIDEO_WRITER_LIBRARIES src/video_writer.cpp)
 add_library(LANE_DETECT_LIBRARIES src/lane_detect_processor.cpp)
-#add_library(GPS_LIBRARIES src/libgpsmm.cpp)
+add_library(GPS_LIBRARIES src/libgpsmm.cpp)
 include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable (main main.cpp)
 target_link_libraries(main
@@ -41,7 +41,7 @@ target_link_libraries(main
 #	${WIRINGPI_LIBRARIES}
 	DISPLAY_HANDLER_LIBRARIES
 	GPIO_HANDLER_LIBRARIES
-#	GPS_POLLING_LIBRARIES
+	GPS_POLLING_LIBRARIES
 	IMAGE_CAPTURER_LIBRARIES
 	IMAGE_EDITOR_LIBRARIES
 	IMAGE_PROCESSOR_LIBRARIES
@@ -54,6 +54,6 @@ target_link_libraries(main
 	STORAGE_WORKER_LIBRARIES
 	LANE_DETECT_LIBRARIES
 	PROCESS_VALUES_LIBRARIES
-#	GPS_LIBRARIES
+	GPS_LIBRARIES
 )
 #####################################

@@ -46,7 +46,7 @@
 //DAPrototype source files
 #include "display_handler.h"
 #include "gpio_handler.h"
-//#include "gps_polling.h"
+#include "gps_polling.h"
 #include "image_capturer.h"
 #include "image_editor.h"
 #include "image_processor.h"
@@ -118,9 +118,9 @@ int main()
 							   &displaymutex,
 							   &exitsignal );
 	//Start GPS poling thread
-//	std::thread t_gpspolling( GpsPollingThread,
-//							  &processvalues,
-//							  &exitsignal );
+	std::thread t_gpspolling( GpsPollingThread,
+							  &processvalues,
+							  &exitsignal );
 	//Start LIDAR polling thread
 	std::thread t_lidarpolling( LidarPolingThread,
 								&processvalues,
@@ -142,7 +142,7 @@ int main()
 	t_videowriter.join();
 	t_imageprocessor.join();
 	t_lidarpolling.join();
-//	t_gpspolling.join();
+	t_gpspolling.join();
 	t_imeageeditor.join();
 	t_imagecapture.join();
 	t_displayupdate.join();
