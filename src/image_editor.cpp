@@ -34,8 +34,8 @@ void ImageEditorThread( cv::Mat *orgimage,
 	std::string timetext{ asctime(localtime(&now)) };
 	timetext.pop_back();
 	capturemutex->lock();
-	float widthscalefactor{ orgimage->cols / 640.0};
-	float heightscalefactor{ orgimage->rows / 480.0};
+	float widthscalefactor{ orgimage->cols / 640.0f};
+	float heightscalefactor{ orgimage->rows / 480.0f};
 	capturemutex->unlock();
 	cv::Point datetimelocation{ cv::Point(395 * widthscalefactor,470 * heightscalefactor) };
 	float datetimesize{ 0.5f * heightscalefactor };
