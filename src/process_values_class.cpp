@@ -9,7 +9,7 @@ ProcessValues::ProcessValues() :
 	ldwpwmvalue_{0},
 	fcwstatus_{0},
 	fcwpwmvalue_{0},
-	gpsstatus_{0},
+	gpsstatus_{3},
 	gpsspeed_{0.0},
 	latitude_{0.0},
 	longitude_{0.0},
