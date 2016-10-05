@@ -21,8 +21,6 @@ struct PolygonDifferences {
 	float differencefromaverage;
 };
 
-void CreateKeypoints( const std::vector<Contour>& contours,
-	                  std::vector<cv::KeyPoint>& keypoints );
 void EvaluateSegment( const Contour& contour,
 					  const int imageheight,
 	                  std::vector<EvaluatedContour>&	evaluatedsegments );

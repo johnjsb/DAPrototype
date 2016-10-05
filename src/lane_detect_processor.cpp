@@ -6,10 +6,7 @@
 #include <algorithm>
 
 //3rd party libraries
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/features2d/features2d.hpp"
+include "opencv2/core/core.hpp"
 
 //project libraries
 #include "lane_detect_constants.h"
@@ -144,21 +141,6 @@ void ProcessImage ( cv::Mat image,
 	}
 }
 
-/*****************************************************************************************/	
-void CreateKeypoints( const std::vector<Contour>& contours,
-                      std::vector<cv::KeyPoint>& keypoints )
-{
-	for ( const Contour &contour : contours ) {
-		//Get contour moment
-		cv::Moments moment{ cv::moments( contour, false ) };
-		//Push into keypoint vector
-		keypoints.push_back( cv::KeyPoint{ static_cast<float>(moment.m10/moment.m00),
-		static_cast<float>(moment.m01/moment.m00), static_cast<float>
-			(cv::contourArea(contour)) } );
-	}
-	return;
-}
-	
 /*****************************************************************************************/	
 void EvaluateSegment( const Contour& contour,
                       const int imageheight,
