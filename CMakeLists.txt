@@ -3,7 +3,7 @@ cmake_minimum_required (VERSION 3.0)
 project (DAPrototype)
 include_directories(include)
 add_compile_options(-std=c++11)
-SET( CMAKE_CXX_FLAGS "-l pthread" )
+SET( CMAKE_CXX_FLAGS "-l pthread -l wiringPi" )
 add_library(XML_READER_LIBRARIES src/xml_reader.cpp)
 add_library(PROCESS_VALUES_LIBRARIES src/process_values_class.cpp)
 add_library(DISPLAY_HANDLER_LIBRARIES src/display_handler.cpp)
@@ -23,18 +23,21 @@ add_library(LANE_DETECT_LIBRARIES src/lane_detect_processor.cpp)
 #add_library(GPS_LIBRARIES src/libgpsmm.cpp)
 #add_library(WIRING_PI_LIBRARIES src/??.cpp)
 find_package(OpenCV REQUIRED)
-#find_package(raspicam REQUIRED)
-#find_package(PkgConfig REQUIRED)
-#pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
-#include_directories(${GTK2_INCLUDE_DIRS})
+find_package(raspicam REQUIRED)
+#find_package(WiringPi REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
+include_directories(${GTK2_INCLUDE_DIRS})
 #add_definitions(${GTK2_CFLAGS_OTHER})
 include_directories(${OpenCV_INCLUDE_DIRS})
+#INCLUDE_DIRECTORIES(${WIRINGPI_INCLUDE_DIRS})
 add_executable (main main.cpp)
 target_link_libraries(main
 	XML_READER_LIBRARIES
 	${OpenCV_LIBS}
-#	${raspicam_CV_LIBS}
-#	${GTK2_LIBRARIES}
+	${raspicam_CV_LIBS}
+	${GTK2_LIBRARIES}
+#	${WIRINGPI_LIBRARIES}
 	DISPLAY_HANDLER_LIBRARIES
 	GPIO_HANDLER_LIBRARIES
 #	GPS_POLLING_LIBRARIES

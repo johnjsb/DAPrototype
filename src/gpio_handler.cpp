@@ -10,9 +10,20 @@
 	#include <wiringPiI2C.h>
 #endif
 
+//ToDo - Pin numbers aren't correct
 #define BUZZERPIN 17
 #define POWERINPUTPIN 7
-#define POWEROUTPUTPIN 29
+#define POWEROUTPUTPIN 1
+#define LEFTALARMPIN 2
+#define LEFTWARNINGPIN 3
+#define LEFTOKPIN 4
+#define RIGHTALARMPIN 5
+#define RIGHTWARNINGPIN 6
+#define RIGHTOKPIN 7
+#define FORWARDALARMPIN 8
+#define FORWARDWARNINGPIN 9
+#define FORWARDOKPIN 10
+#define CENTERPIN 11
 
 void GpioHandlerThread( ProcessValues *processvalues,
 						std::atomic<bool> *exitsignal,
@@ -79,7 +90,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 			} else if ( !alarm && warning && settings::gen::kenbuzzer ) {
 				buzzercount++;
 				if ( buzzercount % buzzerinterval != 0) continue;
-				if (digitalRead(BUZZERPIN) {
+				if (digitalRead(BUZZERPIN)) {
 				digitalWrite(BUZZERPIN, 1);
 				} else {
 					digitalWrite(BUZZERPIN, 0);
@@ -191,7 +202,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 				(processvalues->gpsstatus_ == 0) ) {
 				blinkercount++;
 				if ( blinkercount % blinkinterval != 0) continue;
-					if (digitalRead(CENTERPIN) {
+					if (digitalRead(CENTERPIN)) {
 					digitalWrite(CENTERPIN, 1);
 				} else {
 					digitalWrite(CENTERPIN, 0);

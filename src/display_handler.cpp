@@ -54,10 +54,8 @@ void DisplayUpdateThread( cv::Mat *image,
 	}
 	imagetemp.copyTo(borderedimage.rowRange(0, imagetemp.rows).colRange(
 		borderthickness, settings::disp::kpixwidth - borderthickness));
-	if (FULLSCREENMODE)
-	cv::namedWindow("Output", CV_WINDOW_NORMAL);
-	//OpenGL libraries are compiled with OpenCV, but performance isn't improved?
-	//cv::namedWindow("Output", cv::WINDOW_OPENGL );
+	//cv::namedWindow("Output", CV_WINDOW_NORMAL);
+	cv::namedWindow("Output", cv::WINDOW_OPENGL );
 	if (FULLSCREENMODE){
 		cv::setWindowProperty("Output", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 	}

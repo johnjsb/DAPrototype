@@ -52,6 +52,7 @@ void CaptureImageThread( cv::Mat *capture,
 		#ifdef __arm__							//Detect if compiling for raspberry pi
 			(Camera.grab());                       	//For Raspberry Pi
 			(Camera.retrieve(newimage));           	//For Raspberry Pi
+			cv::flip(newimage, newimage, -1);
 		#else
 			stream1.read(newimage);                 //For Laptop
 		#endif
