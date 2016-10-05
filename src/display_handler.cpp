@@ -54,8 +54,11 @@ void DisplayUpdateThread( cv::Mat *image,
 	}
 	imagetemp.copyTo(borderedimage.rowRange(0, imagetemp.rows).colRange(
 		borderthickness, settings::disp::kpixwidth - borderthickness));
-	//cv::namedWindow("Output", CV_WINDOW_NORMAL);
-	cv::namedWindow("Output", cv::WINDOW_OPENGL );
+	#ifdef __arm__								//Detect if compiling for raspberry pi
+		cv::namedWindow("Output", cv::WINDOW_OPENGL );
+	#else
+		cv::namedWindow("Output", CV_WINDOW_NORMAL);
+	#endif
 	if (FULLSCREENMODE){
 		cv::setWindowProperty("Output", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 	}
