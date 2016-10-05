@@ -4,6 +4,7 @@
 
   Project:
       DAPrototype: Driver Assist Prototype (Raspberry Pi Application)
+	  http://github.com/NateGreco/DAPrototype.git
 
   Description:
       This project is an attempt to create a standalone, windshield mounted driver assist
@@ -12,15 +13,16 @@
 	  bluetooth inteface.
 
   Target Hardware:
-      Raspberry Pi (v3) with RPi (v2) 5MP camera, LidarLite (v3) LIDAR rangefinder, and
-      adafruit Ultimate GPS.
+      Raspberry Pi (v3) with RPi (v1.3) 5MP camera, LidarLite (v3) LIDAR rangefinder,
+      adafruit Ultimate GPS, and custom built HAT.
 
   Target Software platform:
-      Debian disto with X11 GUI (GTK2.0)
+      Debian disto (DietPi) running LDXE
 
   3rd Party Libraries:
-      OpenCV 3.1.0 -> Compiled with OpenGL support, www.opencv.org
-      Raspicam ?? -> , ??
+      OpenCV 3.1.0		-> Compiled with OpenGL support, www.opencv.org
+      Raspicam 0.1.3	-> http://www.uco.es/investiga/grupos/ava/node/40
+	  WiringPi 2.29		-> http://wiringpi.com/
 
   Other notes:
       Style is following the Google C++ styleguide
@@ -100,7 +102,7 @@ int main()
 								 &displayimage,
 								 &displaymutex,
 								 &exitsignal );
-	//Start imeage editor thread
+	//Start image editor thread
     std::thread t_imeageeditor( ImageEditorThread,
 								&captureimage,
 								&capturemutex,
