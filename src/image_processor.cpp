@@ -36,9 +36,7 @@ void ProcessImageThread( cv::Mat *orgimage,
 	std::deque<Polygon> pastpolygons;
 	
 	//create pace setter
-	PaceSetter processorpacer( 50, "image processor");
-//	PaceSetter processorpacer(std::max(settings::disp::kupdatefps,
-//		settings::cam::krecfps), "image processor");
+	PaceSetter processorpacer(settings::ldw::kupdatefps, "image processor");
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
