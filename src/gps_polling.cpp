@@ -7,12 +7,16 @@
 #include "xml_reader.h"
 #include "gps_polling.h"
 
+#ifdef __arm__									//Detect if compiling for raspberry pi
+	#include "gpsd.h"
+#endif
+
 void GpsPollingThread( ProcessValues *processvalues,
 					   std::atomic<bool> *exitsignal )
 {
 
 	std::cout << "GPS polling thread starting!" << std::endl;
-
+#ifdef __arm__									//Detect if compiling for raspberry pi
 	//Create thread variables
 	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
 	std::deque<double> latitudevalues;
@@ -67,6 +71,9 @@ void GpsPollingThread( ProcessValues *processvalues,
 
 		gpspacer.SetPace();
 	}
+#else
+	std::cout << "Hardware doesn't support GPS!" << std::endl;
+#endif
 	
 	std::cout << "Exiting GPS polling thread!" << std::endl;
 
