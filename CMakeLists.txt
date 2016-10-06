@@ -34,7 +34,6 @@ add_library(STORAGE_WORKER_LIBRARIES src/storage_worker_class.cpp)
 add_library(TINYXML_LIBRARIES src/tinyxml2.cpp)
 add_library(VIDEO_WRITER_LIBRARIES src/video_writer.cpp)
 add_library(LANE_DETECT_LIBRARIES src/lane_detect_processor.cpp)
-#add_library(GPS_LIBRARIES src/libgpsmm.cpp)
 include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable (main main.cpp)
 target_link_libraries(main
