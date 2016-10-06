@@ -5,9 +5,10 @@
 #include "pace_setter_class.h"
 #include "process_values_class.h"
 #include "xml_reader.h"
+#include "gps_polling.h"
 
 void GpsPollingThread( ProcessValues *processvalues,
-					   std::atomic<bool> *exitsignal)
+					   std::atomic<bool> *exitsignal )
 {
 
 	std::cout << "GPS polling thread starting!" << std::endl;
@@ -38,7 +39,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 
 		if ((newdata = gps_rec.read()) == NULL) {
 			processvalues->gpsstatus_ = -1;
-			std::cout << "GPS read error!" std::cout;
+			std::cout << "GPS read error!" << std::cout;
 			continue;
 		} else {
 			if ( newdata->fix.mode > 1) {
@@ -78,10 +79,10 @@ double Average ( double value,
 	values.push_back(value);
 	if ( values.size() > tokeep ) {
 		values.pop_front();
-		for ( i = 1; i < values.size(); i++ ) {
+		for ( int i = 1; i < values.size(); i++ ) {
 			value += values[i];
 		}
 		value /= values.size();
 	}
-	return;
+	return value;
 }

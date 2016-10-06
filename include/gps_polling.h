@@ -9,6 +9,6 @@ void GpsPollingThread( ProcessValues *processvalues,
 
 double Average ( double value,
 				 std::deque<double> &values,
-			     int tokeep )
+			     int tokeep );
 
 #endif // GPS_POLLING_H_INCLUDED
