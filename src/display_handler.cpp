@@ -9,8 +9,6 @@
 	#include <gtk/gtk.h>
 #endif
 
-#define FULLSCREENMODE false
-
 void DisplayUpdateThread( cv::Mat *image,
                           std::mutex *displaymutex,
 	                      std::atomic<bool> *exitsignal )
@@ -56,12 +54,10 @@ void DisplayUpdateThread( cv::Mat *image,
 		borderthickness, settings::disp::kpixwidth - borderthickness));
 	#ifdef __arm__								//Detect if compiling for raspberry pi
 		cv::namedWindow("Output", cv::WINDOW_OPENGL );
+		cv::setWindowProperty("Output", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 	#else
 		cv::namedWindow("Output", CV_WINDOW_NORMAL);
 	#endif
-	if (FULLSCREENMODE){
-		cv::setWindowProperty("Output", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-	}
 	cv::imshow("Output", borderedimage);
 	cv::waitKey(1);
 	std::cout << "Display opened!" << std::endl;
