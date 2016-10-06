@@ -70,8 +70,10 @@ void DisplayUpdateThread( cv::Mat *image,
 		displaymutex->lock();
 		imagetemp = *image;
 		displaymutex->unlock();
-		if ( imagetemp.rows != borderedimage.rows ) {
-			cv::resize(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
+		if ( imagetemp.rows < borderedimage.rows ) {
+			cv::pyrUp(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
+		} else if ( imagetemp.rows > borderedimage.rows ) {
+			cv::pyrDown(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
 		}
 		imagetemp.copyTo(borderedimage.rowRange(0, imagetemp.rows).colRange(
 			borderthickness, settings::disp::kpixwidth - borderthickness));

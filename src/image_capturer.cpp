@@ -56,9 +56,18 @@ void CaptureImageThread( cv::Mat *capture,
 		#else
 			stream1.read(newimage);                 //For Laptop
 		#endif
-		//resize image
-		cv::resize(newimage, newimage, cv::Size(settings::cam::kpixwidth,
-			settings::cam::kpixheight));
+		//resize image - pyrDown/Up should provide better performance
+		if ( newimage.rows < settings::cam::kpixheight ) {
+			cv::pyrUp(newimage, newimage, cv::Size(settings::cam::kpixwidth,
+				settings::cam::kpixheight));
+			//cv::resize(newimage, newimage, cv::Size(settings::cam::kpixwidth,
+			//	settings::cam::kpixheight));
+		} else if ( newimage.rows > settings::cam::kpixheight ) {
+			cv::pyrDown(newimage, newimage, cv::Size(settings::cam::kpixwidth,
+				settings::cam::kpixheight));
+			//cv::resize(newimage, newimage, cv::Size(settings::cam::kpixwidth,
+			//	settings::cam::kpixheight));
+		}
 		capturemutex->lock();
 		*capture = newimage;
 		capturemutex->unlock(); 
