@@ -17,7 +17,7 @@
       adafruit Ultimate GPS, and custom built HAT.
 
   Target Software platform:
-      Debian disto (DietPi) running LDXE
+      Debian disto (DietPi) running LDXE, with below libraries installed
 
   3rd Party Libraries:
       OpenCV 3.1.0		-> Compiled with OpenGL support, www.opencv.org
@@ -26,11 +26,14 @@
 
   Other notes:
       Style is following the Google C++ styleguide
+	  Compiles on non-raspberry pi hardware without IO dependent functionality (LDW only)
 
   History:
       Date         Author      Description
 -------------------------------------------------------------------------------------------
       12.08.2016   N. Greco    Initial creation
+      07.09.2016   N. Greco    GIT repository created
+	  04.10.2016   N. Greco    Compiled and tested on raspberry pi hardware
 ******************************************************************************************/
 
 

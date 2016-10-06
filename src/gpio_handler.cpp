@@ -11,19 +11,19 @@
 #endif
 
 //ToDo - Pin numbers aren't correct
-#define BUZZERPIN 17
-#define POWERINPUTPIN 7
-#define POWEROUTPUTPIN 1
-#define LEFTALARMPIN 2
-#define LEFTWARNINGPIN 3
-#define LEFTOKPIN 4
-#define RIGHTALARMPIN 5
-#define RIGHTWARNINGPIN 6
-#define RIGHTOKPIN 7
-#define FORWARDALARMPIN 8
-#define FORWARDWARNINGPIN 9
-#define FORWARDOKPIN 10
-#define CENTERPIN 11
+#define BUZZERPIN 27
+#define POWERINPUTPIN 4
+#define POWEROUTPUTPIN 5
+#define LEFTALARMPIN 17
+#define LEFTWARNINGPIN 13
+#define LEFTOKPIN 12
+#define RIGHTALARMPIN 23
+#define RIGHTWARNINGPIN 22
+#define RIGHTOKPIN 18
+#define FORWARDALARMPIN 26
+#define FORWARDWARNINGPIN 25
+#define FORWARDOKPIN 24
+#define CENTERPIN 6
 
 void GpioHandlerThread( ProcessValues *processvalues,
 						std::atomic<bool> *exitsignal,
