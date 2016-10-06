@@ -134,7 +134,7 @@ int main()
 							   &exitsignal,
 							   &shutdownsignal );
 	
-    //Test pace setter class!
+    //Set pace setter class!
     PaceSetter mypacesetter( 10, "main" );
 	while( !exitsignal ){
 		//Should check all threads still running
@@ -151,7 +151,7 @@ int main()
 	t_displayupdate.join();
 	shutdownsignal = true;
 	t_gpiohandler.join();
-    std::cout.rdbuf(coutbuf); //reset to standard output again
+    std::cout.rdbuf(coutbuf);
 	std::cout << "Program exited gracefully!"  << std::endl;
 
     return 0;
