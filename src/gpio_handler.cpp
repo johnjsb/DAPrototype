@@ -231,7 +231,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 		//Just wait for video writer thread to exit
 	}
 	#ifdef __arm__									//Detect if compiling for raspberry pi
-//	digitalWrite(POWEROUTPUTPIN, 0);				//Kill power to RPi
+	digitalWrite(POWEROUTPUTPIN, 0);				//Kill power to RPi
 
 //	system ("sudo shutdown -h now");				//Shutdown RPi
 	#endif
