@@ -46,7 +46,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	int buzzercount{0};
 	int blinkercount{0};
 	#ifdef __arm__									//Detect if compiling for raspberry pi
-	wiringPiSetup();
+	wiringPiSetupGpio();
 	pinMode(POWERINPUTPIN, INPUT); 
 	pinMode(POWEROUTPUTPIN, OUTPUT); 
 	digitalWrite(POWEROUTPUTPIN, 1);				//Switch to delayed power
@@ -68,8 +68,8 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	PaceSetter gpiopacer(settings::comm::kpollrategpio, "GPIO handler");
 	
 	//Loop indefinitely
-//	for(;;) {
-    for(int i = 0; i < 1000; i++) {		//For testing
+	for(;;) {
+//    for(int i = 0; i < 1000; i++) {		//For testing
 		//Check for Warnings
 		if ( (processvalues->ldwstatus_ > 2) || (processvalues->fcwstatus_ > 0) ||
 			(processvalues->gpsstatus_ > 3) ) {

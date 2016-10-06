@@ -8,7 +8,7 @@
 #include "gps_polling.h"
 
 #ifdef __arm__									//Detect if compiling for raspberry pi
-	#include "gpsd.h"
+	#include "gps.h"
 #endif
 
 void GpsPollingThread( ProcessValues *processvalues,

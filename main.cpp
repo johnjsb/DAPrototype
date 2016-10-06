@@ -121,9 +121,9 @@ int main()
 							   &displaymutex,
 							   &exitsignal );
 	//Start GPS poling thread
-	std::thread t_gpspolling( GpsPollingThread,
-							  &processvalues,
-							  &exitsignal );
+//	std::thread t_gpspolling( GpsPollingThread,
+//							  &processvalues,
+//							  &exitsignal );
 	//Start LIDAR polling thread
 	std::thread t_lidarpolling( LidarPolingThread,
 								&processvalues,
@@ -145,7 +145,7 @@ int main()
 	t_videowriter.join();
 	t_imageprocessor.join();
 	t_lidarpolling.join();
-	t_gpspolling.join();
+//	t_gpspolling.join();
 	t_imeageeditor.join();
 	t_imagecapture.join();
 	t_displayupdate.join();
