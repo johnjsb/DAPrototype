@@ -67,9 +67,9 @@ int main()
 {
 	std::cout << "Program launched, starting log file..." << std::endl;
 	//Quick and dirty log file
-	//std::ofstream out("/log.txt");
-    //std::streambuf *coutbuf = std::cout.rdbuf();
-    //std::cout.rdbuf(out.rdbuf());
+	std::ofstream out("/log.txt");
+    std::streambuf *coutbuf = std::cout.rdbuf();
+    std::cout.rdbuf(out.rdbuf());
 	
     //Check XML Properties
 	if (settings::kreadsuccess < 0) {
@@ -152,7 +152,7 @@ int main()
 	t_displayupdate.join();
 	shutdownsignal = true;
 	t_gpiohandler.join();
-    //std::cout.rdbuf(coutbuf);
+    std::cout.rdbuf(coutbuf);
 	std::cout << "Program exited gracefully!"  << std::endl;
 
     return 0;
