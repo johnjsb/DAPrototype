@@ -25,7 +25,9 @@ void CaptureImageThread( cv::Mat *capture,
 
 	//Set properties
 	#ifdef __arm__								//Detect if compiling for raspberry pi
-		Camera.set(CV_CAP_PROP_FORMAT, CV_16U);   	//For Raspberry Pi
+		Camera.set(CV_CAP_PROP_FRAME_WIDTH, settings::cam::kpixwidth);
+		Camera.set(CV_CAP_PROP_FRAME_HEIGHT, settings::cam::kpixheight);
+		Camera.set(CV_CAP_PROP_FORMAT, CV_8UC3);
 	#endif
 
     //Open
@@ -39,9 +41,6 @@ void CaptureImageThread( cv::Mat *capture,
 		exit(-1);
 	}
 	std::cout << "Camera opened succesfully!" << std::endl;
-	
-	//Create thread variables
-	cv::Mat newimage;
 
 	//create pace setter
 	PaceSetter camerapacer(std::max(std::max(settings::disp::kupdatefps,
@@ -49,6 +48,7 @@ void CaptureImageThread( cv::Mat *capture,
 
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
+		cv::Mat newimage;
 		#ifdef __arm__							//Detect if compiling for raspberry pi
 			(Camera.grab());                       	//For Raspberry Pi
 			(Camera.retrieve(newimage));           	//For Raspberry Pi
@@ -56,18 +56,14 @@ void CaptureImageThread( cv::Mat *capture,
 		#else
 			stream1.read(newimage);                 //For Laptop
 		#endif
-		//resize image - pyrDown/Up should provide better performance
-		if ( newimage.rows < settings::cam::kpixheight ) {
-			cv::pyrUp(newimage, newimage, cv::Size(settings::cam::kpixwidth,
+		//resize image
+		#ifndef __arm__
+		if (newimage.rows != settings::cam::kpixheight) {
+			cv::resize(newimage, newimage, cv::Size(settings::cam::kpixwidth,
 				settings::cam::kpixheight));
-			//cv::resize(newimage, newimage, cv::Size(settings::cam::kpixwidth,
-			//	settings::cam::kpixheight));
-		} else if ( newimage.rows > settings::cam::kpixheight ) {
-			cv::pyrDown(newimage, newimage, cv::Size(settings::cam::kpixwidth,
-				settings::cam::kpixheight));
-			//cv::resize(newimage, newimage, cv::Size(settings::cam::kpixwidth,
-			//	settings::cam::kpixheight));
 		}
+		#endif
+		
 		capturemutex->lock();
 		*capture = newimage;
 		capturemutex->unlock(); 

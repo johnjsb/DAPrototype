@@ -42,8 +42,7 @@ void AveragePolygon ( Polygon& polygon,
 					  std::deque<Polygon>& pastpolygons,
 					  int samplestoaverage,
 					  int samplestokeep );
-void ProcessImage ( cv::Mat image,
+void ProcessImage ( cv::Mat& image,
 					Polygon& polygon );
-//void ProcessImage ( cv::Mat image, cv::Mat& cannyimage, Polygon& polygon );
 
 #endif // LANEDETECTPROCESSOR_H

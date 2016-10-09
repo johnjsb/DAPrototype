@@ -69,7 +69,6 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	
 	//Loop indefinitely
 	for(;;) {
-//    for(int i = 0; i < 1000; i++) {		//For testing
 		//Check for Warnings
 		if ( (processvalues->ldwstatus_ > 2) || (processvalues->fcwstatus_ > 0) ||
 			(processvalues->gpsstatus_ > 3) ) {
@@ -214,7 +213,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 			//Shutdown logic on power loss
 			if ( digitalRead(POWERINPUTPIN) || !settings::gpio::kautoshutdown ) {
 				inputfailcount = 0;
-			} else if (!digitalRead(POWERINPUTPIN) && (inputfailcount < 3)) {	//3 exits!
+			} else if (!digitalRead(POWERINPUTPIN) && (inputfailcount < 1)) {	//debounce
 				std::cout << "Power pin input loss!" << std::endl;
 				inputfailcount++;
 			} else {

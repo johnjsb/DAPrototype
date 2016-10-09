@@ -43,7 +43,7 @@ void ProcessImageThread( cv::Mat *orgimage,
 		if ( (processvalues->gpsstatus_ > 2) && settings::ldw::kenabled ) {
 			//Get image
 			capturemutex->lock();
-			cv::Mat processimage{ orgimage->clone() };
+			cv::Mat processimage{ *orgimage };
 			capturemutex->unlock();
 			
 			//Get lanes

@@ -48,14 +48,15 @@ void DisplayUpdateThread( cv::Mat *image,
 	imagetemp = *image;
 	displaymutex->unlock();
 	if ( imagetemp.rows < borderedimage.rows ) {
-		cv::pyrUp(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
+		cv::resize(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
 	} else if ( imagetemp.rows > borderedimage.rows ) {
-		cv::pyrDown(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
+		cv::resize(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
+	} else {
 	}
 	imagetemp.copyTo(borderedimage.rowRange(0, imagetemp.rows).colRange(
 		borderthickness, settings::disp::kpixwidth - borderthickness));
 	#ifdef __arm__								//Detect if compiling for raspberry pi
-		//cv::namedWindow("Output", cv::WINDOW_OPENGL );
+		//cv::namedWindow("Output", cv::WINDOW_OPENGL );	//Performance worse?
 		cv::namedWindow("Output", CV_WINDOW_NORMAL );
 		cv::setWindowProperty("Output", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 	#else
@@ -74,9 +75,9 @@ void DisplayUpdateThread( cv::Mat *image,
 		imagetemp = *image;
 		displaymutex->unlock();
 		if ( imagetemp.rows < borderedimage.rows ) {
-			cv::pyrUp(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
+			cv::resize(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
 		} else if ( imagetemp.rows > borderedimage.rows ) {
-			cv::pyrDown(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
+			cv::resize(imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows));
 		}
 		imagetemp.copyTo(borderedimage.rowRange(0, imagetemp.rows).colRange(
 			borderthickness, settings::disp::kpixwidth - borderthickness));
@@ -89,5 +90,3 @@ void DisplayUpdateThread( cv::Mat *image,
 	std::cout << "Exiting display handler thread!" << std::endl;
 
 }
-
-#undef FULLSCREENMODE

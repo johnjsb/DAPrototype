@@ -1,5 +1,4 @@
 #include <iostream>
-#include <libgpsmm.h>
 #include <atomic>
 #include <deque>
 #include "pace_setter_class.h"
@@ -8,6 +7,7 @@
 #include "gps_polling.h"
 
 #ifdef __arm__									//Detect if compiling for raspberry pi
+	#include <libgpsmm.h>
 	#include "gps.h"
 #endif
 
@@ -35,11 +35,11 @@ void GpsPollingThread( ProcessValues *processvalues,
 	while( !(*exitsignal) ) {
 		struct gps_data_t* newdata;
 
-		//if (!gps_rec.waiting(5000000)) {
-		//	processvalues->gpsstatus_ = -1;
-		//	std::cout << "GPS timeout." std::cout;
-		//	continue;
-		//}
+		if (!gps_rec.waiting(5000000)) {
+			processvalues->gpsstatus_ = -1;
+			std::cout << "GPS timeout." << std::cout;
+			continue;
+		}
 
 		if ((newdata = gps_rec.read()) == NULL) {
 			processvalues->gpsstatus_ = -1;
@@ -76,6 +76,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 #endif
 	
 	std::cout << "Exiting GPS polling thread!" << std::endl;
+	return;
 
 }
 
