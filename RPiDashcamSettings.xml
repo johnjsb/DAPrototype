@@ -3,13 +3,13 @@
 <SETTINGS>
 	<GEN>
 		<!Value of 0 disables>
-		<enBuzzer>1</enBuzzer>
+		<enBuzzer>0</enBuzzer>
 		<debugScreen>1</debugScreen>
 		<debugTerminal>1</debugTerminal>
 	</GEN>
 	<CAM>
 		<recordOrgImage>0</recordOrgImage>
-		<filePath>./</filePath>
+		<filePath>/</filePath>
 		<orgFileName>original.avi</orgFileName>
 		<modFileName>modified.avi</modFileName>
 		<pixWidth>640</pixWidth>
@@ -17,7 +17,7 @@
 		<showSpeed>1</showSpeed>
 		<showLoc>1</showLoc>
 		<shadeLanes>1</shadeLanes>
-		<recFPS>30</recFPS>
+		<recFPS>15</recFPS>
 		<filesToKeep>20</filesToKeep>
 		<minPerFile>1</minPerFile>
 	</CAM>
@@ -25,12 +25,12 @@
 		<enabled>1</enabled>
 		<pixWidth>800</pixWidth>
 		<pixHeight>480</pixHeight>
-		<updateFPS>30</updateFPS>
+		<updateFPS>15</updateFPS>
 	</DISP>
 	<COMM>
-		<pollRateGPS>10</pollRateGPS>
-		<pollRateLIDAR>10</pollRateLIDAR>
-		<pollRateGpio>10</pollRateGpio>
+		<pollRateGPS>5</pollRateGPS>
+		<pollRateLIDAR>5</pollRateLIDAR>
+		<pollRateGpio>5</pollRateGpio>
 	</COMM>
 	<GPS>
 		<samplesToAverage>3</samplesToAverage>
@@ -38,15 +38,15 @@
 	<LDW>
 		<enabled>1</enabled>
 		<enableSpeed>30</enableSpeed>
-		<samplesToKeep>10</samplesToKeep>
-		<samplesToAverage>6</samplesToAverage>
+		<samplesToKeep>5</samplesToKeep>
+		<samplesToAverage>3</samplesToAverage>
 		<!Warning limit as % of screen width>
 		<perOffsetWarning>15</perOffsetWarning>
 		<!Alarm limit as % of screen width>
 		<perOffsetAlarm>20</perOffsetAlarm>
 		<msUntilWarning>500</msUntilWarning>
 		<msUntilAlarm>500</msUntilAlarm>
-		<updateFPS>30</updateFPS>
+		<updateFPS>15</updateFPS>
 	</LDW>
 	<FCW>
 		<enabled>0</enabled>

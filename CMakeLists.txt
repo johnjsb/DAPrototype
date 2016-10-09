@@ -35,8 +35,8 @@ add_library(TINYXML_LIBRARIES src/tinyxml2.cpp)
 add_library(VIDEO_WRITER_LIBRARIES src/video_writer.cpp)
 add_library(LANE_DETECT_LIBRARIES src/lane_detect_processor.cpp)
 include_directories(${OpenCV_INCLUDE_DIRS})
-add_executable (main main.cpp)
-target_link_libraries(main
+add_executable (DAPrototype main.cpp)
+target_link_libraries(DAPrototype
 	XML_READER_LIBRARIES
 	${OpenCV_LIBS}
 	${raspicam_CV_LIBS}

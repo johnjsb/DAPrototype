@@ -67,9 +67,9 @@ int main()
 {
 	std::cout << "Program launched, starting log file..." << std::endl;
 	//Quick and dirty log file
-	std::ofstream out("log.txt");
-    std::streambuf *coutbuf = std::cout.rdbuf();
-    std::cout.rdbuf(out.rdbuf());
+	//std::ofstream out("/log.txt");
+    //std::streambuf *coutbuf = std::cout.rdbuf();
+    //std::cout.rdbuf(out.rdbuf());
 	
     //Check XML Properties
 	if (settings::kreadsuccess < 0) {
@@ -121,9 +121,9 @@ int main()
 							   &displaymutex,
 							   &exitsignal );
 	//Start GPS poling thread
-//	std::thread t_gpspolling( GpsPollingThread,
-//							  &processvalues,
-//							  &exitsignal );
+	std::thread t_gpspolling( GpsPollingThread,
+							  &processvalues,
+							  &exitsignal );
 	//Start LIDAR polling thread
 	std::thread t_lidarpolling( LidarPolingThread,
 								&processvalues,
@@ -136,6 +136,7 @@ int main()
 	
     //Set pace setter class!
     PaceSetter mypacesetter( 10, "main" );
+    
 	while( !exitsignal ){
 		//Should check all threads still running
 		mypacesetter.SetPace();
@@ -145,13 +146,13 @@ int main()
 	t_videowriter.join();
 	t_imageprocessor.join();
 	t_lidarpolling.join();
-//	t_gpspolling.join();
+	t_gpspolling.join();
 	t_imeageeditor.join();
 	t_imagecapture.join();
 	t_displayupdate.join();
 	shutdownsignal = true;
 	t_gpiohandler.join();
-    std::cout.rdbuf(coutbuf);
+    //std::cout.rdbuf(coutbuf);
 	std::cout << "Program exited gracefully!"  << std::endl;
 
     return 0;
