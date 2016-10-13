@@ -18,6 +18,9 @@ void LidarPolingThread( ProcessValues *processvalues,
 {
 
 	std::cout << "Lidar polling thread starting!" << std::endl;
+	processvalues->fcwstatus_ = 0;
+	std::cout << "Lidar not operational, exiting thread!" << std::endl;
+	return;
 	
 	//Create thread variables
 	double followingdistance{0.0};

@@ -11,6 +11,8 @@
 	#include "gps.h"
 #endif
 
+#define MPSTOMPHCONVERSION 2.237
+
 void GpsPollingThread( ProcessValues *processvalues,
 					   std::atomic<bool> *exitsignal )
 {
@@ -53,7 +55,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 					latitudevalues, settings::gps::ksamplestoaverage);
 				processvalues->longitude_ = Average(newdata->fix.longitude,
 					longitudevalues, settings::gps::ksamplestoaverage);
-				processvalues->gpsspeed_ = Average(newdata->fix.speed,
+				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * Average(newdata->fix.speed,
 					speedvalues, settings::gps::ksamplestoaverage);
 				if ( newdata->fix.speed > settings::ldw::kenablespeed ) {
 					processvalues->gpsstatus_ =  3;
