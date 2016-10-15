@@ -83,6 +83,12 @@ void GpioHandlerThread( ProcessValues *processvalues,
 		}
 				
 		#ifdef __arm__							//Detect if compiling for raspberry pi
+
+			//Shutdown logic on power loss
+			if (!digitalRead(POWERINPUTPIN) && settings::gpio::kautoshutdown) {
+				break;
+			}
+			
 			//Set buzzer
 			if ( alarm && settings::gen::kenbuzzer ) {
 				digitalWrite(BUZZERPIN, 1);
@@ -208,16 +214,6 @@ void GpioHandlerThread( ProcessValues *processvalues,
 				}
 				} else {
 				digitalWrite(CENTERPIN, 0);
-			}
-
-			//Shutdown logic on power loss
-			if ( digitalRead(POWERINPUTPIN) || !settings::gpio::kautoshutdown ) {
-				inputfailcount = 0;
-			} else if (!digitalRead(POWERINPUTPIN) && (inputfailcount < 1)) {	//debounce
-				std::cout << "Power pin input loss!" << std::endl;
-				inputfailcount++;
-			} else {
-				break;								//Initiates exit of entire program
 			}
 		#endif
 	
