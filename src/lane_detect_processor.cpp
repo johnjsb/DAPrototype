@@ -59,7 +59,7 @@ void ProcessImage ( cv::Mat& image,
     std::vector<cv::Vec4i> detectedhierarchy;
     cv::findContours( image, detectedcontours, detectedhierarchy,
 		CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
-	std::cout << "Contours found: " << detectedcontours.size() << std::endl;
+	//std::cout << "Contours found: " << detectedcontours.size() << std::endl;
 	//Contours removed by position in function
 
 	//ToDo - There's way more I could be doing:
@@ -83,7 +83,7 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------	
     std::vector<std::vector<cv::Point>> constructedcontours;
 	ConstructFromSegments( evaluatedchildsegments, constructedcontours );
-	std::cout << "Contours constructed: " << constructedcontours.size() << std::endl;
+	//std::cout << "Contours constructed: " << constructedcontours.size() << std::endl;
 
 //-----------------------------------------------------------------------------------------
 //Evaluate constructed segments
@@ -98,9 +98,9 @@ void ProcessImage ( cv::Mat& image,
 	std::vector<EvaluatedContour> leftcontours;
 	std::vector<EvaluatedContour> rightcontours;
 	SortContours( evaluatedparentsegments, image.cols, leftcontours, rightcontours );
-	std::cout << "Left pairs: " << leftcontours.size() << std::endl;
+	//std::cout << "Left pairs: " << leftcontours.size() << std::endl;
 	SortContours( evaluatedchildsegments, image.cols, leftcontours, rightcontours );
-	std::cout << "Right pairs: " << rightcontours.size() << std::endl;
+	//std::cout << "Right pairs: " << rightcontours.size() << std::endl;
 	
 //-----------------------------------------------------------------------------------------
 //Find highest scoring pair of contours
