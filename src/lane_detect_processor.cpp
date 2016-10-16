@@ -267,7 +267,7 @@ void FindPolygon( Polygon& polygon,
     cv::Point rightcenter = cv::Point((rightmaxx + rightminx)/2.0,(rightmaxy + rightminy)/2.0);
 
 	//If valid slopes found, calculate 4 vertices of the polygon
-    if ( (std::fpclassify(leftslope) == 1024) && (std::fpclassify(rightslope) == 1024) ){
+    if ( (std::fpclassify(leftslope) == FP_NORMAL) && (std::fpclassify(rightslope) == FP_NORMAL) ){
         //Calculate points
         cv::Point bottomleft = cv::Point(leftcenter.x +
 			(maxy - leftcenter.y)/leftslope, maxy);
