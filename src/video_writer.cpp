@@ -85,8 +85,6 @@ void VideoWriterThread ( cv::Mat *orgimage,
 			queue.Push(modimage->clone());	
 			displaymutex->unlock();
 		}
-				
-		videopacer.SetPace();
 		
 		//New file changeover
 		if (static_cast<long>(std::chrono::duration_cast<std::chrono::seconds>(
@@ -104,6 +102,9 @@ void VideoWriterThread ( cv::Mat *orgimage,
 			//Restart timer
 			startime = std::chrono::high_resolution_clock::now();
 		}
+				
+		videopacer.SetPace();
+		
 	}
 
     queue.Cancel();
