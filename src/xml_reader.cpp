@@ -9,17 +9,17 @@ static bool g_gendebugscreen{false};
 static bool g_gendebugterminal{false};
 //CAM
 static bool g_camrecordorgimage{false};
-static std::string g_camfilepath{"/home/pi/videos/"};
-static std::string g_camorgfilename{"in.avi"};
-static std::string g_cammodfilename{"out.avi"};
+static std::string g_camfilepath{"/"};
+static std::string g_camorgfilename{"original.avi"};
+static std::string g_cammodfilename{"modified.avi"};
 static int g_campixwidth{640};
 static int g_campixheight{480};
 static bool g_camshowspeed{true};
 static bool g_camshowloc{true};
 static bool g_camshadelanes{true};
-static int g_camrecfps{10};
+static int g_camrecfps{15};
 static int g_camfilestokeep{20};
-static int g_camminperfile{30};
+static int g_camminperfile{15};
 //DISP
 static bool g_dispenabled{true};
 static int g_disppixwidth{800};
@@ -30,12 +30,12 @@ static int g_commpollrategps{10};
 static int g_commpollratelidar{10};
 static int g_commpollrategpio{10};
 //GPS
-static int g_gpssamplestoaverage{5};
+static int g_gpssamplestoaverage{3};
 //LDW
 static bool g_ldwenabled{true};
-static int g_ldwenablespeed{0};
-static int g_ldwsamplestokeep{7};
-static int g_ldwsamplestoaverage{4};
+static int g_ldwenablespeed{15};
+static int g_ldwsamplestokeep{5};
+static int g_ldwsamplestoaverage{3};
 static int g_ldwperoffsetwarning{15};
 static int g_ldwperoffsetalarm{20};
 static int g_ldwmsuntilwarning{500};
