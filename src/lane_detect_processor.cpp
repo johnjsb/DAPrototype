@@ -30,7 +30,7 @@ namespace lanedetectconstants {
 	float kcenteredweight{-1.0f};
 	float kwidthweight{-3.0f};
 	float klowestpointweight{-2.0f};
-	float klowestscorelimit{-FP_MAX};
+	float klowestscorelimit{FLT_MIN};
 	
 }
 
@@ -303,11 +303,11 @@ float ScoreContourPair( const Polygon& polygon,
 	//Filter by common angle
 	float deviationangle{ 180.0 - leftcontour.angle -
 		rightcontour.angle };
-	if ( abs(deviationangle) > lanedetectconstants::kcommonanglewindow ) return (-DBL_MAX);
+	if ( abs(deviationangle) > lanedetectconstants::kcommonanglewindow ) return (FLT_MIN);
 	//Filter by road width
 	int roadwidth{ polygon[1].x - polygon[0].x };
-	if ( roadwidth < lanedetectconstants::kminroadwidth ) return (-DBL_MAX);
-	if ( roadwidth > lanedetectconstants::kmaxroadwidth ) return (-DBL_MAX);
+	if ( roadwidth < lanedetectconstants::kminroadwidth ) return (FLT_MIN);
+	if ( roadwidth > lanedetectconstants::kmaxroadwidth ) return (FLT_MIN);
 	//Calculate score
 	float weightedscore(0.0);
 	weightedscore += lanedetectconstants::kellipseratioweight * (
