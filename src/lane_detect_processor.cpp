@@ -23,7 +23,7 @@ namespace lanedetectconstants {
 	float klengthwidthratio{5.92f};
     double kcommonanglewindow{33.3};
     uint16_t kminroadwidth {250};
-    uint16_t kmaxroadwidth {450};d
+    uint16_t kmaxroadwidth {450};
 	uint16_t koptimumwidth {350};
 	double kellipseratioweight{1.3};
 	double kangleweight{-2.2};

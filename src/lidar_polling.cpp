@@ -46,7 +46,7 @@
 		int dacModule = wiringPiI2CSetup(0x48);
 		if (dacModule < 0)
 		{
-			cout << "I2C Setup Error" << endl;
+			std::cout << "I2C Setup Error" << std::endl;
 			return;
 		}
 
@@ -71,9 +71,7 @@
 
 			wiringPiI2CWriteReg8(dacModule, 0x40, (A[0]+A[1]+A[2]+A[3])/4);
 
-			cout << endl;
-			for (i=0;i<4;i++) cout << i << " : " << A[i] << endl;
-
+			//ToDo - Get following distance from the register read!
 			fcwtracker.Update( followingdistance, processvalues->gpsspeed_);
 
 			//ToDo - Fudge factor based on road angle (anticipate turn)

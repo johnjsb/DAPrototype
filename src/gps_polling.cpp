@@ -60,7 +60,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * Average(newdata->fix.speed,
 					speedvalues, settings::gps::ksamplestoaverage);
 				*/
-				if ( processvalues->fix.speed > settings::ldw::kenablespeed ) {
+				if ( processvalues->gpsspeed_ > settings::ldw::kenablespeed ) {
 					processvalues->gpsstatus_ =  3;
 				} else {
 					processvalues->gpsstatus_ =  2;
