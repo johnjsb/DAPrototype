@@ -29,6 +29,9 @@ void GpsPollingThread( ProcessValues *processvalues,
         std::cout << "No GPSD running. exiting GPS thread." << std::endl;
         return;
     }
+    
+    //Set poll rate 10hz
+    gps_rec.send("$PMTK300,200,0,0,0,0*2F");
 	
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");

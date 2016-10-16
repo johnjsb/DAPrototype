@@ -63,6 +63,18 @@
 //3rd party libraries
 #include "opencv2/opencv.hpp"
 
+void PrintHeader ()
+{
+	time_t t = time(0);
+    struct tm * now = localtime( & t );
+    std::cout << std::endl;
+    std::cout << "Program launched at: ";
+    std::cout << (now->tm_year + 1900) << '-' 
+			  << (now->tm_mon + 1) << '-'
+			  <<  now->tm_mday
+			  << std::endl << std::endl;
+}
+
 int main()
 {
 	std::cout << "Program launched, starting log file..." << std::endl;
@@ -70,6 +82,9 @@ int main()
 	std::ofstream out("/log.txt", std::ios_base::app | std::ios_base::out);
     std::streambuf *coutbuf = std::cout.rdbuf();
     std::cout.rdbuf(out.rdbuf());
+	
+	//Create log header
+	PrintHeader();
 	
     //Check XML Properties
 	if (settings::kreadsuccess < 0) {
