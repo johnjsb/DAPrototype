@@ -28,8 +28,8 @@ namespace lanedetectconstants {
 	double kellipseratioweight{1.3};
 	double kangleweight{-2.2};
 	double kcenteredweight{-1.0};
-	double kwidthweight{-2.0};
-	double klowestpointweight{-1.0};
+	double kwidthweight{-3.0};
+	double klowestpointweight{-2.0};
 	double klowestscorelimit{-DBL_MAX};
 	
 }
