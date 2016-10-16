@@ -33,7 +33,7 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 void FindPolygon( Polygon& polygon,
 				  const Contour& leftcontour,
 				  const Contour& rightcontour );
-double ScoreContourPair( const Polygon& polygon,
+float ScoreContourPair( const Polygon& polygon,
                          const int imagewidth,
 						 const int imageheight,
 						 const EvaluatedContour& leftcontour,

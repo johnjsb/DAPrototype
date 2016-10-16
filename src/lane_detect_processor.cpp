@@ -21,16 +21,16 @@ namespace lanedetectconstants {
 	uint16_t kellipseheight{21};
 	float kanglewindow{78.2f};
 	float klengthwidthratio{5.92f};
-    double kcommonanglewindow{33.3};
+    float kcommonanglewindow{33.3f};
     uint16_t kminroadwidth {250};
     uint16_t kmaxroadwidth {450};
 	uint16_t koptimumwidth {350};
-	double kellipseratioweight{1.3};
-	double kangleweight{-2.2};
-	double kcenteredweight{-1.0};
-	double kwidthweight{-3.0};
-	double klowestpointweight{-2.0};
-	double klowestscorelimit{-DBL_MAX};
+	float kellipseratioweight{1.3f};
+	float kangleweight{-2.2f};
+	float kcenteredweight{-1.0f};
+	float kwidthweight{-3.0f};
+	float klowestpointweight{-2.0f};
+	float klowestscorelimit{-FP_MAX};
 	
 }
 

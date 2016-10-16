@@ -16,17 +16,17 @@ namespace lanedetectconstants {
 	extern float klengthwidthratio;
 	
 	//Scoring variables
-    extern double kcommonanglewindow;
+    extern float kcommonanglewindow;
     extern uint16_t kminroadwidth;
     extern uint16_t kmaxroadwidth;
 	extern uint16_t koptimumwidth;
 	//weighting for best grade
-	extern double kellipseratioweight;
-	extern double kangleweight;
-	extern double kcenteredweight;
-	extern double kwidthweight;
-	extern double klowestpointweight;
-	extern double klowestscorelimit;
+	extern float kellipseratioweight;
+	extern float kangleweight;
+	extern float kcenteredweight;
+	extern float kwidthweight;
+	extern float klowestpointweight;
+	extern float klowestscorelimit;
 	
 }
 
