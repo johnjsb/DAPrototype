@@ -67,7 +67,7 @@ int main()
 {
 	std::cout << "Program launched, starting log file..." << std::endl;
 	//Quick and dirty log file
-	std::ofstream out("/log.txt");
+	std::ofstream out("/log.txt", std::ios_base::app | std::ios_base::out);
     std::streambuf *coutbuf = std::cout.rdbuf();
     std::cout.rdbuf(out.rdbuf());
 	
