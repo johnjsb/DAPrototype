@@ -40,7 +40,7 @@ void ProcessImageThread( cv::Mat *orgimage,
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
-		if ( (processvalues->gpsstatus_ > 2) && settings::ldw::kenabled ) {
+		if ( (processvalues->gpsstatus_ != 2) && settings::ldw::kenabled ) {
 			//Get image
 			capturemutex->lock();
 			cv::Mat processimage{ *orgimage };
