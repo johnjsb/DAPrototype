@@ -106,7 +106,7 @@ void ProcessImage ( cv::Mat& image,
 //Find highest scoring pair of contours
 //-----------------------------------------------------------------------------------------	
 	Polygon bestpolygon{ cv::Point(0,0), cv::Point(0,0), cv::Point(0,0), cv::Point(0,0) };
-	double maxscore{lanedetectconstants::klowestscorelimit};
+	float maxscore{lanedetectconstants::klowestscorelimit};
 	Contour leftcontour;
 	Contour rightcontour;
 	for ( EvaluatedContour &leftevaluatedontour : leftcontours ) {
@@ -118,7 +118,7 @@ void ProcessImage ( cv::Mat& image,
 			//If invalid polygon created, goto next
 			if ( newpolygon[0] == cv::Point(0,0) ) continue;
 			//If valid score
-			double score{ ScoreContourPair( newpolygon, image.cols, image.rows,
+			float score{ ScoreContourPair( newpolygon, image.cols, image.rows,
 				leftevaluatedontour, rightevaluatedcontour) };
 			//If highest score update
 			if ( score > maxscore ) {
@@ -259,9 +259,9 @@ void FindPolygon( Polygon& polygon,
 	int miny{std::max(minmaxyleft.first->y, minmaxyright.first->y)};
 	
 	//Define slopes
-	double leftslope{ static_cast<double>(leftmaxy-leftminy)/static_cast<double>(
+	float leftslope{ static_cast<float>(leftmaxy-leftminy)/static_cast<float>(
 		leftmaxx - leftminx) };
-    double rightslope{ static_cast<double>(rightmaxy-rightminy)/static_cast<double>(
+    float rightslope{ static_cast<float>(rightmaxy-rightminy)/static_cast<float>(
 		rightmaxx - rightminx) };
     cv::Point leftcenter = cv::Point((leftmaxx + leftminx)/2.0,(leftmaxy + leftminy)/2.0);
     cv::Point rightcenter = cv::Point((rightmaxx + rightminx)/2.0,(rightmaxy + rightminy)/2.0);
@@ -294,14 +294,14 @@ void FindPolygon( Polygon& polygon,
 }
 
 /*****************************************************************************************/
-double ScoreContourPair( const Polygon& polygon,
+float ScoreContourPair( const Polygon& polygon,
                          const int imagewidth,
 						 const int imageheight,
 						 const EvaluatedContour& leftcontour,
 						 const EvaluatedContour& rightcontour )
 {
 	//Filter by common angle
-	double deviationangle{ 180.0 - leftcontour.angle -
+	float deviationangle{ 180.0 - leftcontour.angle -
 		rightcontour.angle };
 	if ( abs(deviationangle) > lanedetectconstants::kcommonanglewindow ) return (-DBL_MAX);
 	//Filter by road width
@@ -309,7 +309,7 @@ double ScoreContourPair( const Polygon& polygon,
 	if ( roadwidth < lanedetectconstants::kminroadwidth ) return (-DBL_MAX);
 	if ( roadwidth > lanedetectconstants::kmaxroadwidth ) return (-DBL_MAX);
 	//Calculate score
-	double weightedscore(0.0);
+	float weightedscore(0.0);
 	weightedscore += lanedetectconstants::kellipseratioweight * (
 		leftcontour.lengthwidthratio + rightcontour.lengthwidthratio);
 	weightedscore += lanedetectconstants::kangleweight * abs(deviationangle);
