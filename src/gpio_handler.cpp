@@ -10,7 +10,7 @@
 	#include <wiringPiI2C.h>
 #endif
 
-//ToDo - Pin numbers aren't correct
+//Physical pin numbers
 #define BUZZERPIN 27
 #define POWERINPUTPIN 4
 #define POWEROUTPUTPIN 5
@@ -23,7 +23,7 @@
 #define FORWARDALARMPIN 26
 #define FORWARDWARNINGPIN 25
 #define FORWARDOKPIN 24
-#define CENTERPIN 6
+#define CENTERPIN 37
 
 void GpioHandlerThread( ProcessValues *processvalues,
 						std::atomic<bool> *exitsignal,

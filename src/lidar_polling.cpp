@@ -47,7 +47,7 @@
 		if (dacModule < 0)
 		{
 			cout << "I2C Setup Error" << endl;
-			return 0;
+			return;
 		}
 
 		int i;
@@ -152,6 +152,7 @@
 		}
 
 		std::cout << "Exiting Lidar polling thread!" << std::endl;
+		return;
 
 	}
 #endif
