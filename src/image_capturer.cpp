@@ -27,7 +27,7 @@ void CaptureImageThread( cv::Mat *capture,
 	#ifdef __arm__								//Detect if compiling for raspberry pi
 		Camera.set(CV_CAP_PROP_FRAME_WIDTH, settings::cam::kpixwidth);
 		Camera.set(CV_CAP_PROP_FRAME_HEIGHT, settings::cam::kpixheight);
-		Camera.set(CV_CAP_PROP_FORMAT, CV_32FC3);
+		Camera.set(CV_CAP_PROP_FORMAT, CV_8UC3);
 	#endif
 
     //Open
