@@ -42,17 +42,13 @@
 			settings::fcw::ksamplestoaverage );
 
 		//Setup I2C
-		wiringPiSetupGpio();
+		//wiringPiSetupGpio();
 		int dacModule = wiringPiI2CSetup(0x48);
 		if (dacModule < 0)
 		{
 			std::cout << "I2C Setup Error" << std::endl;
 			return;
 		}
-
-		int i;
-		int A[4]        = {0,       0,      0,      0};
-		int A_Reg[4]    = {0x40,    0x41,   0x42,   0x43};
 
 		//create pace setter
 		PaceSetter lidarpacer(settings::comm::kpollratelidar, "lidar polling");
@@ -67,11 +63,8 @@
 				vehiclemoving = false;
 			}
 
-			for (i=0;i<4;i++) A[i] = readInput(dacModule, A_Reg[i]);
-
-			wiringPiI2CWriteReg8(dacModule, 0x40, (A[0]+A[1]+A[2]+A[3])/4);
-
-			//ToDo - Get following distance from the register read!
+			//ToDo - Figure out register and conversion to FP!
+			followingdistance = readInput(dacModule, 0x40);
 			fcwtracker.Update( followingdistance, processvalues->gpsspeed_);
 
 			//ToDo - Fudge factor based on road angle (anticipate turn)

@@ -86,6 +86,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 
 			//Shutdown logic on power loss
 			if (!digitalRead(POWERINPUTPIN) && settings::gpio::kautoshutdown) {
+				std::cout << "Power loss detected, exiting!" << std::endl;
 				break;
 			}
 			
