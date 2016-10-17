@@ -26,14 +26,13 @@
 
     // Read distance in cm from LidarLite
     int lidar_read(int fd) {
-		int hiVal, loVal
 
 		// send "measure" command
-		hiVal = wiringPiI2CWriteReg8(fd, 0x00, 0x04);
+		int hiVal{ wiringPiI2CWriteReg8(fd, 0x00, 0x04) };
 		std::this_thread::sleep_for(std::chrono::microseconds(20000));
 
 		// Read second byte and append with first 
-		loVal = _read_byteNZ(fd, 0x10) ;        
+		int loVal{ _read_byteNZ(fd, 0x10) };        
 
 		// read first byte 
 		hiVal = _read_byte(fd, 0x0f) ;    
