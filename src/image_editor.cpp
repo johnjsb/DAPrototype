@@ -203,19 +203,19 @@ std::string GetDiagnosticString ( int ldwstatus, int fcwstatus, int gpsstatus )
 	//LDW
 	switch ( ldwstatus ) {
 		case 1:
-			diagnosticstring += "LCW left alarm, ";
+			diagnosticstring += "LDW left alarm, ";
 			break;
 		case 2:
-			diagnosticstring += "LCW left warning, ";
+			diagnosticstring += "LDW left warning, ";
 			break;
 		case 5:
-			diagnosticstring += "LCW right warning, ";
+			diagnosticstring += "LDW right warning, ";
 			break;
 		case 6:
-			diagnosticstring += "LCW right alarm, ";
+			diagnosticstring += "LDW right alarm, ";
 			break;
 		case -1:
-			diagnosticstring += "LCW lane detection failed, ";
+			diagnosticstring += "LDW lane detection failed, ";
 			break;
 	}
 	//FCW
