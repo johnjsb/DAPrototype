@@ -2,7 +2,7 @@
 cmake_minimum_required (VERSION 3.0) 
 project (DAPrototype)
 include_directories(include)
-add_compile_options(-std=c++11)
+add_compile_options(-std=c++11 -o3)
 find_package(OpenCV REQUIRED)
 if( ${CMAKE_NOT_RPI_TARGET} )
 else ()
