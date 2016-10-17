@@ -47,11 +47,11 @@ class ProcessValues
 		//5 = gps locked and speeding alarm					//Future
 		//-1 = error (sensor error)	
 		std::atomic<int> gpsstatus_;
-		std::atomic<double> gpsspeed_;
+		std::atomic<float> gpsspeed_;
 		std::atomic<double> latitude_;
 		std::atomic<double> longitude_;
-		std::atomic<double> forwarddistance_;
-		std::atomic<double> timetocollision_;
+		std::atomic<float> forwarddistance_;
+		std::atomic<float> timetocollision_;
 
     protected:
 
