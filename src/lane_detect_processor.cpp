@@ -12,6 +12,8 @@
 #include "lane_detect_constants.h"
 #include "lane_detect_processor.h"
 
+#define INVERSEPI 0.31830988618
+
 namespace lanedetectconstants {
 	
 	uint16_t ksegmentellipseheight{10};
@@ -153,7 +155,7 @@ void EvaluateSegment( const Contour& contour,
 	cv::Vec4f fitline;
 	cv::fitLine(contour, fitline, CV_DIST_L2, 0, 0.1, 0.1 );
 	//Filter by angle
-	float angle = atan2(fitline[1], fitline[0]) * (180.0f / CV_PI);
+	float angle = atan2(fitline[1], fitline[0]) * (180.0f * INVERSEPI);
 	if(angle < 0 ) angle += 180.0f;
 	if ( abs(angle - 90.0f) > lanedetectconstants::ksegmentanglewindow ) return;
 	//if ( abs(ellipse.angle - 90.0f) > lanedetectconstants::ksegmentanglewindow )
@@ -187,7 +189,7 @@ void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegme
 {
     for ( const EvaluatedContour &segcontour1 : evaluatedsegments ) {
 		for ( const EvaluatedContour &segcontour2 : evaluatedsegments ) {
-			float createdangle = (180.0f / CV_PI) * atan2(segcontour1.ellipse.center.y -
+			float createdangle = (180.0f * INVERSEPI) * atan2(segcontour1.ellipse.center.y -
 				segcontour2.ellipse.center.y, segcontour1.ellipse.center.x -
 				segcontour2.ellipse.center.x);
 			float angledifference1 = abs(segcontour1.angle -
