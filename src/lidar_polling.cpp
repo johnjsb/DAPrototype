@@ -1,5 +1,6 @@
 #include <iostream>
 #include <atomic>
+#include <thread>
 #include "lidarLite.h"
 #include "pace_setter_class.h"
 #include "process_values_class.h"
