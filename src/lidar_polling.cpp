@@ -1,7 +1,6 @@
 #include <iostream>
 #include <atomic>
 #include <thread>
-#include "lidarLite.h"
 #include "pace_setter_class.h"
 #include "process_values_class.h"
 #include "fcw_tracker_class.h"
@@ -24,7 +23,11 @@
 #ifdef __arm__									//Detect if compiling for raspberry pi
 	#include <wiringPi.h>
 	#include <wiringPiI2C.h>
-
+	
+	extern "C" {
+		#include "lidarLite.h"
+	}
+/*
     // Read distance in cm from LidarLite
     int lidar_read(int fd) {
 
@@ -39,8 +42,9 @@
 		hiVal = _read_byte(fd, 0x0f) ;    
 
 		return ( (hiVal << 8) + loVal);
-    }
 
+    }
+*/
 	void LidarPolingThread( ProcessValues *processvalues,
 							std::atomic<bool> *exitsignal )
 	{

@@ -40,6 +40,7 @@ add_executable (DAPrototype main.cpp)
 #SET( CMAKE_CXX_FLAGS "-l pthread" )
 target_link_libraries(DAPrototype
 	pthread
+	LIDAR_POLLING_LIBRARIES
 	XML_READER_LIBRARIES
 	${OpenCV_LIBS}
 	${raspicam_CV_LIBS}
@@ -50,8 +51,6 @@ target_link_libraries(DAPrototype
 	IMAGE_CAPTURER_LIBRARIES
 	IMAGE_EDITOR_LIBRARIES
 	IMAGE_PROCESSOR_LIBRARIES
-	LIDAR_LITE_LIBRARIES
-	LIDAR_POLLING_LIBRARIES
 	FCW_TRACKER_LIBRARIES
 	PACE_SETTER_LIBRARIES
 	TINYXML_LIBRARIES
@@ -62,5 +61,6 @@ target_link_libraries(DAPrototype
 	PROCESS_VALUES_LIBRARIES
 #	GPS_LIBRARIES
 	GPS_POLLING_LIBRARIES
+	LIDAR_LITE_LIBRARIES
 )
 #####################################
