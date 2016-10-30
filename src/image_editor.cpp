@@ -91,7 +91,7 @@ void ImageEditorThread( cv::Mat *orgimage,
 		//Show following distance
 		std::stringstream distancetext;
 		distancetext  << std::fixed << std::setprecision(2) << processvalues->forwarddistance_ <<
-			" m";
+			" ft";
 		putText( modifiedimage, distancetext.str(),	distancelocation,
 			CV_FONT_HERSHEY_COMPLEX, distancesize, cv::Scalar(255,255,255), 1, cv::LINE_8, false );
 			

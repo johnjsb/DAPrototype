@@ -52,7 +52,7 @@ void FcwTracker::Update( double distance, double speed )
 		(timetocollision_ < 0.0)) timetocollision_ = 100.0;
 	
 	//Calcualte following time -> Speed is in mph!
-	followingtime_ = (speed * 0.44704) / followingdistance_;
+	followingtime_ = (speed * 1.46667) / followingdistance_;
 	
 }
 
