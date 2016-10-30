@@ -5,6 +5,8 @@
 #include "fcw_tracker_class.h"
 #include "xml_reader.h"
 
+#DEFINE FEETPERCENTIMETER 0.0328084
+
 #ifndef __arm__									//Detect if not compiling for raspberry pi
 	void LidarPolingThread( ProcessValues *processvalues,
 							std::atomic<bool> *exitsignal )
@@ -21,11 +23,22 @@
 	#include <wiringPi.h>
 	#include <wiringPiI2C.h>
 
-	int readInput(int fd, int reg)
-	{
-		wiringPiI2CReadReg8(fd, reg);
-		return wiringPiI2CReadReg8(fd, reg);
-	}
+    // Read distance in cm from LidarLite
+    int lidar_read(int fd) {
+		int hiVal, loVal
+
+		// send "measure" command
+		hiVal = wiringPiI2CWriteReg8(fd, 0x00, 0x04);
+		std::this_thread::sleep_for(std::chrono::microseconds(20000));
+
+		// Read second byte and append with first 
+		loVal = _read_byteNZ(fd, 0x10) ;        
+
+		// read first byte 
+		hiVal = _read_byte(fd, 0x0f) ;    
+
+		return ( (hiVal << 8) + loVal);
+    }
 
 	void LidarPolingThread( ProcessValues *processvalues,
 							std::atomic<bool> *exitsignal )
@@ -43,7 +56,7 @@
 
 		//Setup I2C
 		//wiringPiSetupGpio();
-		int dacModule = wiringPiI2CSetup(0x48);
+		int dacModule = wiringPiI2CSetup(0x62);	//0x48?
 		if (dacModule < 0)
 		{
 			std::cout << "I2C Setup Error" << std::endl;
@@ -64,7 +77,7 @@
 			}
 
 			//ToDo - Figure out register and conversion to FP!
-			followingdistance = readInput(dacModule, 0x40);
+			followingdistance = FEETPERCENTIMETER * lidar_read(dacModule);
 			fcwtracker.Update( followingdistance, processvalues->gpsspeed_);
 
 			//ToDo - Fudge factor based on road angle (anticipate turn)
