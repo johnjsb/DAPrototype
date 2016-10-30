@@ -78,6 +78,7 @@
 
 			//ToDo - Figure out register and conversion to FP!
 			followingdistance = FEETPERCENTIMETER * lidar_read(dacModule);
+			std::cout << followingdistance << std::endl;
 			fcwtracker.Update( followingdistance, processvalues->gpsspeed_);
 
 			//ToDo - Fudge factor based on road angle (anticipate turn)
