@@ -1,31 +1,30 @@
 #ifndef LANEDETECTCONSTANTS_H
 #define LANEDETECTCONSTANTS_H
 
+#include "lane_detect_processor.h"
+
 namespace lanedetectconstants {
 	
-	extern uint16_t ksegmentellipseheight;
-	extern float ksegmentanglewindow;
-	extern float ksegmentlengthwidthratio;
-	
-	//Construct from segments filters
-	extern float ksegmentsanglewindow;
-	
-	//Final contour filters
-	extern uint16_t kellipseheight;
-	extern float kanglewindow;
-	extern float klengthwidthratio;
-	
-	//Scoring variables
-    extern float kcommonanglewindow;
+	//Polygon filtering
+	extern Polygon optimalpolygon;
+	extern uint16_t koptimumwidth;
+	extern uint16_t kroadwithtolerance;
     extern uint16_t kminroadwidth;
     extern uint16_t kmaxroadwidth;
-	extern uint16_t koptimumwidth;
-	//weighting for best grade
-	extern float kellipseratioweight;
-	extern float kangleweight;
-	extern float kcenteredweight;
-	extern float kwidthweight;
-	extern float klowestpointweight;
+	
+	//Segment filtering
+	extern uint16_t ksegmentellipseheight;
+	extern uint16_t kverticalsegmentlimit;
+	extern float ksegmentminimumangle;
+	extern float ksegmentlengthwidthratio;
+	extern float ksegmentsanglewindow;
+	
+	//Contour filtering
+	extern uint16_t kellipseheight;
+	extern float kminimumangle;
+	extern float klengthwidthratio;
+	
+	//Scoring
 	extern float klowestscorelimit;
 	
 }

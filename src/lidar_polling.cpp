@@ -5,7 +5,7 @@
 #include "fcw_tracker_class.h"
 #include "xml_reader.h"
 
-#DEFINE FEETPERCENTIMETER 0.0328084
+#define FEETPERCENTIMETER 0.0328084
 
 #ifndef __arm__									//Detect if not compiling for raspberry pi
 	void LidarPolingThread( ProcessValues *processvalues,
