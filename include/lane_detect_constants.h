@@ -4,6 +4,8 @@
 #include "lane_detect_processor.h"
 
 namespace lanedetectconstants {
+	//Image evaluation
+	extern uint16_t lowercannythreshold;
 	
 	//Polygon filtering
 	extern Polygon optimalpolygon;
