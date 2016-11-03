@@ -69,25 +69,24 @@ void ProcessImage ( cv::Mat& image,
 //Image manipulation
 //-----------------------------------------------------------------------------------------
 	//Change to grayscale
-	cv::Mat modifiedimage;
-	cv::cvtColor( image, modifiedimage, CV_BGR2GRAY );
+	cv::cvtColor( image, image, CV_BGR2GRAY );
 	
 	//Blur to reduce noise
-    cv::blur( modifiedimage, modifiedimage, cv::Size(3,3) );
+    cv::blur( image, image, cv::Size(3,3) );
 	
 //-----------------------------------------------------------------------------------------
 //Find contours
 //-----------------------------------------------------------------------------------------
 	//Auto threshold values for canny edge detection
-    //double otsuthreshval = cv::threshold( modifiedimage, modifiedimage, 0, 255,
+    //double otsuthreshval = cv::threshold( image, image, 0, 255,
 	//	CV_THRESH_BINARY | CV_THRESH_OTSU );
 	//Canny edge detection
-    cv::Canny(modifiedimage, modifiedimage, lanedetectconstants::lowercannythreshold, 3 *
+    cv::Canny(image, image, lanedetectconstants::lowercannythreshold, 3 *
 		lanedetectconstants::lowercannythreshold);
-    //cv::Canny(modifiedimage, modifiedimage, otsuthreshval * 0.5, otsuthreshval );
+    //cv::Canny(image, image, otsuthreshval * 0.5, otsuthreshval );
 	std::vector<Contour> detectedcontours;
     std::vector<cv::Vec4i> detectedhierarchy;
-    cv::findContours( modifiedimage, detectedcontours, detectedhierarchy,
+    cv::findContours( image, detectedcontours, detectedhierarchy,
 		CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
 	//std::cout << "Contours found: " << detectedcontours.size() << std::endl;
 	//Contours removed by position in function
@@ -113,6 +112,7 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------	
     std::vector<std::vector<cv::Point>> constructedcontours;
 	ConstructFromSegments( evaluatedchildsegments, constructedcontours );
+	//ConstructFromSegments( evaluatedparentsegments, constructedcontours );
 	//for (int i = 0; i < constructedcontours.size(); i++){
 	//	drawContours(image, constructedcontours, i, cv::Scalar(255,255,0), 1, 8);
  	//}
@@ -132,8 +132,8 @@ void ProcessImage ( cv::Mat& image,
 	std::vector<EvaluatedContour> leftcontours;
 	std::vector<EvaluatedContour> rightcontours;
 	SortContours( evaluatedparentsegments, image.cols, leftcontours, rightcontours );
-	//std::cout << "Left pairs: " << leftcontours.size() << std::endl;
 	//SortContours( evaluatedchildsegments, image.cols, leftcontours, rightcontours );
+	//std::cout << "Left pairs: " << leftcontours.size() << std::endl;
 	//std::cout << "Right pairs: " << rightcontours.size() << std::endl;
 	
 //-----------------------------------------------------------------------------------------
