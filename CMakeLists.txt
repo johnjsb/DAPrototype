@@ -26,6 +26,7 @@ add_library(GPS_POLLING_LIBRARIES src/gps_polling.cpp)
 add_library(IMAGE_CAPTURER_LIBRARIES src/image_capturer.cpp)
 add_library(IMAGE_EDITOR_LIBRARIES src/image_editor.cpp)
 add_library(IMAGE_PROCESSOR_LIBRARIES src/image_processor.cpp)
+add_library(LIDAR_LITE_LIBRARIES src/lidarLite.c)
 add_library(LIDAR_POLLING_LIBRARIES src/lidar_polling.cpp)
 add_library(PACE_SETTER_LIBRARIES src/pace_setter_class.cpp)
 add_library(FRAME_QUEUE_LIBRARIES src/frame_queue_class.cpp)
@@ -49,6 +50,7 @@ target_link_libraries(DAPrototype
 	IMAGE_CAPTURER_LIBRARIES
 	IMAGE_EDITOR_LIBRARIES
 	IMAGE_PROCESSOR_LIBRARIES
+	LIDAR_LITE_LIBRARIES
 	LIDAR_POLLING_LIBRARIES
 	FCW_TRACKER_LIBRARIES
 	PACE_SETTER_LIBRARIES
