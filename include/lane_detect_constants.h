@@ -27,6 +27,7 @@ namespace lanedetectconstants {
 	extern float klengthwidthratio;
 	
 	//Scoring
+	extern float kanglefromcenter;
 	extern float klowestscorelimit;
 	
 }

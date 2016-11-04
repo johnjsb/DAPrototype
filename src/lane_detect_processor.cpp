@@ -45,18 +45,19 @@ namespace lanedetectconstants {
 	//Segment filtering
 	uint16_t ksegmentellipseheight{ 10 };			//In terms of pixels, future change
 	uint16_t kverticalsegmentlimit{ static_cast<uint16_t>(optimalpolygon[2].y) };
-	float ksegmentminimumangle{ 23.1f };
-	float ksegmentlengthwidthratio{ 2.0f };
+	float ksegmentminimumangle{ 23.75f };
+	float ksegmentlengthwidthratio{ 2.3f };
 	
 	//Contour construction filter
-	float ksegmentsanglewindow{ 40.0f };
+	float ksegmentsanglewindow{ 42.0f };
 	
 	//Contour filtering
-	uint16_t kellipseheight{ 17 };					//In terms of pixels, future change
-	float kminimumangle{ 16.9f };
-	float klengthwidthratio{ 4.5f };
+	uint16_t kellipseheight{ 19 };					//In terms of pixels, future change
+	float kminimumangle{ 25.0f };
+	float klengthwidthratio{ 4.85f };
 	
 	//Scoring
+	float kanglefromcenter{ 35.0f };
 	float klowestscorelimit{ 15.0f };
 
 }
@@ -157,6 +158,10 @@ void ProcessImage ( cv::Mat& image,
 	//Find best score
 	for ( EvaluatedContour &leftevaluatedontour : leftcontours ) {
 		for ( EvaluatedContour &rightevaluatedcontour : rightcontours ) {
+			//Check sum angle
+			if ((fabs(180.0f - leftevaluatedontour.angle + rightevaluatedcontour.angle) * 0.5f) >
+				lanedetectconstants::kanglefromcenter);
+			
 			Polygon newpolygon{ cv::Point(0,0), cv::Point(0,0), cv::Point(0,0),
 				cv::Point(0,0) };
 			FindPolygon( newpolygon, leftevaluatedontour.contour,
@@ -531,4 +536,3 @@ float FastArcTan2( const float y,
 	//return
 	return angle;
 }
-  
