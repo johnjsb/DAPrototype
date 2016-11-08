@@ -59,9 +59,10 @@ void GpsPollingThread( ProcessValues *processvalues,
 		std::cout << "Time set failure!" << '\n';
 	}
 	    
-    //Set poll rate 5hz
-    gps_rec.send("$PMTK300,200,0,0,0,0*2F\r\n");
-	//gps_rec.send(PMTK_API_SET_FIX_CTL_5HZ);
+    //Update every 200 ms
+	gps_rec.send("$PMTK220,200*2C\r\n");
+	//Measure every 200 ms
+	gps_rec.send("$PMTK300,200,0,0,0,0*2F\r\n");
 	
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
@@ -72,13 +73,13 @@ void GpsPollingThread( ProcessValues *processvalues,
 
 		if (!gps_rec.waiting(5000000)) {
 			processvalues->gpsstatus_ = -1;
-			std::cout << "GPS timeout." << std::cout;
+			std::cout << "GPS timeout." << '\n';
 			continue;
 		}
 
 		if ((newdata = gps_rec.read()) == NULL) {
 			processvalues->gpsstatus_ = -1;
-			std::cout << "GPS read error!" << std::cout;
+			std::cout << "GPS read error!" << '\n';
 			continue;
 		} else {
 			if ( newdata->fix.mode > 1) {
