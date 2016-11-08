@@ -1,6 +1,7 @@
 #include <iostream>
 #include <atomic>
 #include <deque>
+#include <sys/time.h>
 #include "pace_setter_class.h"
 #include "process_values_class.h"
 #include "xml_reader.h"
@@ -32,6 +33,34 @@ void GpsPollingThread( ProcessValues *processvalues,
     
     //Set poll rate 10hz
     gps_rec.send("$PMTK300,200,0,0,0,0*2F");
+
+	//Get first data to set system time
+	struct gps_data_t* firstdata;
+	
+	//Loop until first GPS lock to set system time
+	while ((firstdata = gps_rec.read()) == NULL) {
+		if (*exitsignal) {
+			return;
+		}	  
+	}
+	
+	//After good read, set date/time
+	if (gps_rec.read()) != NULL) {
+		
+	}
+	
+	//Convert gps_data_t* member 'time' to timeval
+	timeval tv;
+	double wholeseconds, decimalseconds;
+	decimalseconds = modf(firstdata->time, &wholeseconds);
+	tv.sec = static_cast<int32_t>(wholeseconds);
+	tv.usec = static_cast<int32_t>(decimalseconds * 1000000.0);
+
+	//Create timezone
+	timezone tz{ timezone(300, DST_USA) };
+
+	//Set system time
+	settimeofday(&tv, &tz);
 	
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
