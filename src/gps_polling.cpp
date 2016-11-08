@@ -22,10 +22,12 @@ void GpsPollingThread( ProcessValues *processvalues,
 #ifdef __arm__									//Detect if compiling for raspberry pi
 	//Create thread variables
 	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
+	/*
 	std::deque<double> latitudevalues;
 	std::deque<double> longitudevalues;
 	std::deque<double> speedvalues;
-
+	*/
+	
     if (gps_rec.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
         std::cout << "No GPSD running. exiting GPS thread." << std::endl;
         return;
@@ -44,15 +46,10 @@ void GpsPollingThread( ProcessValues *processvalues,
 		}	  
 	}
 	
-	//After good read, set date/time
-	if (gps_rec.read()) != NULL) {
-		
-	}
-	
 	//Convert gps_data_t* member 'time' to timeval
 	timeval tv;
 	double wholeseconds, decimalseconds;
-	decimalseconds = modf(firstdata->time, &wholeseconds);
+	decimalseconds = modf(firstdata->fix.time, &wholeseconds);
 	tv.sec = static_cast<int32_t>(wholeseconds);
 	tv.usec = static_cast<int32_t>(decimalseconds * 1000000.0);
 
@@ -83,12 +80,14 @@ void GpsPollingThread( ProcessValues *processvalues,
 			if ( newdata->fix.mode > 1) {
 				
 				//Write values
+				processvalues->latitude_ = newdata->fix.latitude;
+				processvalues->longitude_ = newdata->fix.longitude;
+				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * newdata->fix.speed;
+				/*
 				processvalues->latitude_ = Average(newdata->fix.latitude,
 					latitudevalues, settings::gps::ksamplestoaverage);
 				processvalues->longitude_ = Average(newdata->fix.longitude,
 					longitudevalues, settings::gps::ksamplestoaverage);
-				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * newdata->fix.speed;
-				/*
 				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * Average(newdata->fix.speed,
 					speedvalues, settings::gps::ksamplestoaverage);
 				*/
