@@ -18,7 +18,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 					   std::atomic<bool> *exitsignal )
 {
 
-	std::cout << "GPS polling thread starting!" << std::endl;
+	std::cout << "GPS polling thread starting!" << 'n';
 #ifdef __arm__									//Detect if compiling for raspberry pi
 	//Create thread variables
 	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
@@ -29,7 +29,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 	*/
 	
     if (gps_rec.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
-        std::cout << "No GPSD running. exiting GPS thread." << std::endl;
+        std::cout << "No GPSD running. exiting GPS thread." << 'n';
         return;
     }
     
@@ -100,7 +100,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 				
 			} else {
 				processvalues->gpsstatus_ = 1;
-				//std::cout << "No GPS fix." << std::endl;
+				//std::cout << "No GPS fix." << 'n';
 			}
 		}
 		
@@ -109,10 +109,10 @@ void GpsPollingThread( ProcessValues *processvalues,
 		gpspacer.SetPace();
 	}
 #else
-	std::cout << "Hardware doesn't support GPS!" << std::endl;
+	std::cout << "Hardware doesn't support GPS!" << 'n';
 #endif
 	
-	std::cout << "Exiting GPS polling thread!" << std::endl;
+	std::cout << "Exiting GPS polling thread!" << 'n';
 	return;
 
 }

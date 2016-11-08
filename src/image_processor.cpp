@@ -16,12 +16,12 @@ void ProcessImageThread( cv::Mat *orgimage,
                          std::atomic<bool> *exitsignal )
 {
 
-	std::cout << "Image processor thread starting!" << std::endl;
+	std::cout << "Image processor thread starting!" << 'n';
 	
 	//Check if LDW is enabled
 	if ( !settings::ldw::kenabled ) {
 		std::cout << "LDW disabled, exiting image processor thread!" <<
-			std::endl;
+			'n';
 		return;
 	}
 	
@@ -107,6 +107,6 @@ void ProcessImageThread( cv::Mat *orgimage,
 		processorpacer.SetPace();
 	}
 	
-	std::cout << "Exiting image processor thread!" << std::endl;
+	std::cout << "Exiting image processor thread!" << 'n';
 
 }

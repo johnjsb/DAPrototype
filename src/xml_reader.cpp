@@ -58,7 +58,7 @@ using namespace std;
 
 int ReadXmlSettings()
 {
-    std::cout << "Reading XML..." << std::endl;
+    std::cout << "Reading XML..." << 'n';
 	XMLDocument doc;
 	doc.LoadFile( "/RPiDashcamSettings.xml");
 	if ( doc.ErrorID() != 0 ) {

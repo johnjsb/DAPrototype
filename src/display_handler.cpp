@@ -14,11 +14,11 @@ void DisplayUpdateThread( cv::Mat *image,
 	                      std::atomic<bool> *exitsignal )
 {
 
-	std::cout << "Display handler thread starting!" << std::endl;
+	std::cout << "Display handler thread starting!" << 'n';
 
 	//Check xml settings 
 	if ( !settings::disp::kenabled ) {
-		std::cout << "Display disabled, exiting thread!" << std::endl;
+		std::cout << "Display disabled, exiting thread!" << 'n';
 		return;
 	}
 	
@@ -39,11 +39,11 @@ void DisplayUpdateThread( cv::Mat *image,
 	#ifdef __arm__								//Detect if compiling for raspberry pi
 		//This checks if the raspberry pi is running headless (for better performance)
 		if (!gtk_init_check(NULL, NULL)){
-			std::cout << "Display unavailable, continuing without..." << std::endl;
+			std::cout << "Display unavailable, continuing without..." << 'n';
 			return;
 		}
 	#endif
-	std::cout << "Attempting to open display..." << std::endl;
+	std::cout << "Attempting to open display..." << 'n';
 	displaymutex->lock();
 	imagetemp = *image;
 	displaymutex->unlock();
@@ -64,7 +64,7 @@ void DisplayUpdateThread( cv::Mat *image,
 	#endif
 	cv::imshow("Output", borderedimage);
 	cv::waitKey(1);
-	std::cout << "Display opened!" << std::endl;
+	std::cout << "Display opened!" << 'n';
 
 	//create pace setter
 	PaceSetter displaypacer(settings::disp::kupdatefps, "display handler");
@@ -87,6 +87,6 @@ void DisplayUpdateThread( cv::Mat *image,
 		displaypacer.SetPace();
 	}
 	
-	std::cout << "Exiting display handler thread!" << std::endl;
+	std::cout << "Exiting display handler thread!" << 'n';
 
 }

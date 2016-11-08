@@ -13,9 +13,9 @@
 							std::atomic<bool> *exitsignal )
 	{
 
-		std::cout << "Lidar polling thread starting!" << std::endl;
+		std::cout << "Lidar polling thread starting!" << 'n';
 		processvalues->fcwstatus_ = 0;
-		std::cout << "Lidar not operational, exiting thread!" << std::endl;
+		std::cout << "Lidar not operational, exiting thread!" << 'n';
 		return;
 	}
 #endif
@@ -49,7 +49,7 @@
 							std::atomic<bool> *exitsignal )
 	{
 
-		std::cout << "Lidar polling thread starting!" << std::endl;
+		std::cout << "Lidar polling thread starting!" << 'n';
 
 		//Create thread variables
 		double followingdistance{0.0};
@@ -64,7 +64,7 @@
 		int dacModule = wiringPiI2CSetup(0x62);	//0x48?
 		if (dacModule < 0)
 		{
-			std::cout << "I2C Setup Error" << std::endl;
+			std::cout << "I2C Setup Error" << 'n';
 			return;
 		}
 
@@ -160,7 +160,7 @@
 			lidarpacer.SetPace();
 		}
 
-		std::cout << "Exiting Lidar polling thread!" << std::endl;
+		std::cout << "Exiting Lidar polling thread!" << 'n';
 		return;
 
 	}

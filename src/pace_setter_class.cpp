@@ -22,7 +22,7 @@ void PaceSetter::SetPace()
 		if ( missedcount_%30 == 0) {
 			std::cout << "Thread " << threadname_ << " is not meeting pace!";
 			std::cout << " Only performing at: " << (1000000/(targetusec_ - sleeptime_)) <<
-				" fps!" << std::endl;			
+				" fps!" << 'n';			
 		}
 	}
 }
