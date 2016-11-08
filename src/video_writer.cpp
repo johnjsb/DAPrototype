@@ -21,7 +21,7 @@ void VideoWriterThread ( cv::Mat *orgimage,
                          std::atomic<bool> *exitsignal )
 {
 
-	std::cout << "Video writer thread starting!" << 'n';
+	std::cout << "Video writer thread starting!" << '\n';
 
 	//Check image is initialized
 	if ( settings::cam::krecordorgimage ) {
@@ -110,7 +110,7 @@ void VideoWriterThread ( cv::Mat *orgimage,
     queue.Cancel();
 	t_storagethread.join();
 	
-	std::cout << "Exiting video writer thread!" << 'n';
+	std::cout << "Exiting video writer thread!" << '\n';
 
 }
 

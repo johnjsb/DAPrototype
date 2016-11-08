@@ -89,7 +89,7 @@ void ProcessImage ( cv::Mat& image,
     std::vector<cv::Vec4i> detectedhierarchy;
     cv::findContours( image, detectedcontours, detectedhierarchy,
 		CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
-	//std::cout << "Contours found: " << detectedcontours.size() << 'n';
+	//std::cout << "Contours found: " << detectedcontours.size() << '\n';
 	//Contours removed by position in function
 
 	//ToDo - There's way more I could be doing:
@@ -118,7 +118,7 @@ void ProcessImage ( cv::Mat& image,
 	//	drawContours(image, constructedcontours, i, cv::Scalar(255,255,0), 1, 8);
  	//}
 	//ConstructFromSegments( evaluatedparentsegments, constructedcontours );
-	//std::cout << "Contours constructed: " << constructedcontours.size() << 'n';
+	//std::cout << "Contours constructed: " << constructedcontours.size() << '\n';
 
 //-----------------------------------------------------------------------------------------
 //Evaluate constructed segments
@@ -134,8 +134,8 @@ void ProcessImage ( cv::Mat& image,
 	std::vector<EvaluatedContour> rightcontours;
 	SortContours( evaluatedparentsegments, image.cols, leftcontours, rightcontours );
 	//SortContours( evaluatedchildsegments, image.cols, leftcontours, rightcontours );
-	//std::cout << "Left pairs: " << leftcontours.size() << 'n';
-	//std::cout << "Right pairs: " << rightcontours.size() << 'n';
+	//std::cout << "Left pairs: " << leftcontours.size() << '\n';
+	//std::cout << "Right pairs: " << rightcontours.size() << '\n';
 	
 //-----------------------------------------------------------------------------------------
 //Find highest scoring pair of contours
@@ -259,7 +259,7 @@ void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegme
 			float angledifference3( fabs(createdangle -	segcontour2.angle) );
 			if ( angledifference3 > lanedetectconstants::ksegmentsanglewindow ) continue;
 			//std::cout << createdangle << "," << angledifference1 << "," <<
-			//	angledifference2 << "," << angledifference3 << 'n';
+			//	angledifference2 << "," << angledifference3 << '\n';
 			Contour newcontour{ segcontour1.contour };
 			newcontour.insert( newcontour.end(), segcontour2.contour.begin(),
 				segcontour2.contour.end() );

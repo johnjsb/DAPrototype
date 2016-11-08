@@ -67,17 +67,17 @@ void PrintHeader ()
 {
 	time_t t = time(0);
     struct tm * now = localtime( & t );
-    std::cout << std::endl;
+    std::cout << '\n';
     std::cout << "Program launched at: ";
     std::cout << (now->tm_year + 1900) << '-' 
 			  << (now->tm_mon + 1) << '-'
 			  <<  now->tm_mday
-			  << std::endl << std::endl;
+			  << '\n' << '\n';
 }
 
 int main()
 {
-	std::cout << "Program launched, starting log file..." << std::endl;
+	std::cout << "Program launched, starting log file..." << '\n';
 	//Quick and dirty log file
 	std::ofstream out("/log.txt", std::ios_base::app | std::ios_base::out);
     std::streambuf *coutbuf = std::cout.rdbuf();
@@ -88,9 +88,9 @@ int main()
 	
     //Check XML Properties
 	if (settings::kreadsuccess < 0) {
-        std::cout << "XML reading failed, using defaults." << std::endl;
+        std::cout << "XML reading failed, using defaults." << '\n';
     } else {
-        std::cout << "XML reading successful!" << std::endl;
+        std::cout << "XML reading successful!" << '\n';
     }
 
 	//Create shared resources
@@ -168,7 +168,7 @@ int main()
 	shutdownsignal = true;
 	t_gpiohandler.join();
     std::cout.rdbuf(coutbuf);
-	std::cout << "Program exited gracefully!"  << std::endl;
+	std::cout << "Program exited gracefully!"  << '\n';
 
     return 0;
 }

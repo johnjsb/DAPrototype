@@ -20,7 +20,7 @@ void ImageEditorThread( cv::Mat *orgimage,
 						std::atomic<bool> *exitsignal )
 {
 
-	std::cout << "Image editor thread starting!" << 'n';
+	std::cout << "Image editor thread starting!" << '\n';
 		
 	//Check image is initialized
 	while ( orgimage->empty() ) {
@@ -125,7 +125,7 @@ void ImageEditorThread( cv::Mat *orgimage,
 		editorpacer.SetPace();
 	}
 	
-	std::cout << "Exiting image editor thread!" << 'n';
+	std::cout << "Exiting image editor thread!" << '\n';
 
 }
 /*****************************************************************************************/

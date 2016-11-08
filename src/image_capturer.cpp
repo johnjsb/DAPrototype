@@ -14,7 +14,7 @@ void CaptureImageThread( cv::Mat *capture,
                          std::mutex *capturemutex,
                          std::atomic<bool> *exitsignal )
 {
-	std::cout << "Image capturer thread starting!" << 'n';
+	std::cout << "Image capturer thread starting!" << '\n';
 
     //Create camera
 	#ifdef __arm__								//Detect if compiling for raspberry pi
@@ -37,10 +37,10 @@ void CaptureImageThread( cv::Mat *capture,
 		if (!stream1.isOpened())                    //For Laptop
 	#endif
 	{
-		std::cerr<<"Error opening the camera"<<'n';
+		std::cerr<<"Error opening the camera"<<'\n';
 		exit(-1);
 	}
-	std::cout << "Camera opened succesfully!" << 'n';
+	std::cout << "Camera opened succesfully!" << '\n';
 
 	//create pace setter
 	PaceSetter camerapacer(std::max(std::max(settings::disp::kupdatefps,
@@ -71,6 +71,6 @@ void CaptureImageThread( cv::Mat *capture,
 		camerapacer.SetPace();
 	}
 
-	std::cout << "Exiting image capturer thread!" << 'n';
+	std::cout << "Exiting image capturer thread!" << '\n';
 
 }

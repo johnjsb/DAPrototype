@@ -30,11 +30,11 @@ void GpioHandlerThread( ProcessValues *processvalues,
 						std::atomic<bool> *shutdownsignal )
 {
 
-	std::cout << "GPIO handler thread starting!" << 'n';
+	std::cout << "GPIO handler thread starting!" << '\n';
 	
 	//Check if enabled
 	if ( !settings::gpio::kenabled ) {
-		std::cout << "GPIO disabled, exiting!" << 'n';
+		std::cout << "GPIO disabled, exiting!" << '\n';
 		return;
 	}
 
@@ -86,7 +86,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 
 			//Shutdown logic on power loss
 			if (!digitalRead(POWERINPUTPIN) && settings::gpio::kautoshutdown) {
-				std::cout << "Power loss detected, exiting!" << 'n';
+				std::cout << "Power loss detected, exiting!" << '\n';
 				break;
 			}
 			
@@ -231,6 +231,6 @@ void GpioHandlerThread( ProcessValues *processvalues,
 
 //	system ("sudo shutdown -h now");				//Shutdown RPi
 	#endif
-	std::cout << "Exiting GPIO handler thread!" << 'n';
+	std::cout << "Exiting GPIO handler thread!" << '\n';
 
 }
