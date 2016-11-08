@@ -33,9 +33,10 @@ void GpsPollingThread( ProcessValues *processvalues,
         return;
     }
     
-    //Set poll rate 10hz
-    gps_rec.send("$PMTK300,200,0,0,0,0*2F");
-
+    //Set poll rate 5hz
+    //gps_rec.send("$PMTK300,200,0,0,0,0*2F\r\n");
+	gps_rec.send(PMTK_API_SET_FIX_CTL_5HZ);
+	
 	//Get first data to set system time
 	struct gps_data_t* firstdata;
 	
