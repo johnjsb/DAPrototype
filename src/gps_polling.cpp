@@ -34,8 +34,8 @@ void GpsPollingThread( ProcessValues *processvalues,
     }
     
     //Set poll rate 5hz
-    //gps_rec.send("$PMTK300,200,0,0,0,0*2F\r\n");
-	gps_rec.send(PMTK_API_SET_FIX_CTL_5HZ);
+    gps_rec.send("$PMTK300,200,0,0,0,0*2F\r\n");
+	//gps_rec.send(PMTK_API_SET_FIX_CTL_5HZ);
 	
 	//Get first data to set system time
 	struct gps_data_t* firstdata;
@@ -51,14 +51,19 @@ void GpsPollingThread( ProcessValues *processvalues,
 	timeval tv;
 	double wholeseconds, decimalseconds;
 	decimalseconds = modf(firstdata->fix.time, &wholeseconds);
-	tv.sec = static_cast<int32_t>(wholeseconds);
-	tv.usec = static_cast<int32_t>(decimalseconds * 1000000.0);
+	tv.tv_sec = static_cast<int32_t>(wholeseconds);
+	tv.tv_usec = static_cast<int32_t>(decimalseconds * 1000000.0);
 
 	//Create timezone
-	timezone tz{ timezone(300, DST_USA) };
+	//timezone tz{ timezone(300, DST_USA) };
 
 	//Set system time
-	settimeofday(&tv, &tz);
+	//settimeofday(&tv, &tz);
+	if ( settimeofday(&tv, NULL) == 0) {
+		std::cout << "Time set succesfull!" << '\n';
+	} else {
+		std::cout << "Time set failure!" << '\n';
+	}
 	
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
