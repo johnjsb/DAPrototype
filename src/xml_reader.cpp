@@ -9,7 +9,7 @@ static bool g_gendebugscreen{false};
 static bool g_gendebugterminal{false};
 //CAM
 static bool g_camrecordorgimage{false};
-static std::string g_camfilepath{""};
+static std::string g_camfilepath{"/"};
 static std::string g_camorgfilename{"original.avi"};
 static std::string g_cammodfilename{"modified.avi"};
 static int g_campixwidth{640};
@@ -19,9 +19,9 @@ static bool g_camshowloc{true};
 static bool g_camshadelanes{true};
 static int g_camrecfps{15};
 static int g_camfilestokeep{20};
-static int g_camminperfile{1};
+static int g_camminperfile{15};
 //DISP
-static bool g_dispenabled{false};
+static bool g_dispenabled{true};
 static int g_disppixwidth{800};
 static int g_disppixheight{480};
 static int g_dispupdatefps{10};
