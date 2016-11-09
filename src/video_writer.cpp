@@ -50,9 +50,7 @@ void VideoWriterThread ( cv::Mat *orgimage,
 	}
 				
 	//Shift files
-	if (fileShift(filepath, settings::cam::kfilestokeep) < 0) {
-		std::cout << "File shift failure!" << '\n';
-	}
+	fileShift(filepath, settings::cam::kfilestokeep);
 	
     FrameQueue queue;
 	StorageWorker storage{ queue,
@@ -70,7 +68,6 @@ void VideoWriterThread ( cv::Mat *orgimage,
 	std::chrono::high_resolution_clock::time_point startime(
 		std::chrono::high_resolution_clock::now());
 	int32_t filelengthseconds{60 * settings::cam::kminperfile};
-	std::cout << "File length: " << filelengthseconds << '\n';
 	//Create pace setter
 	PaceSetter videopacer(settings::cam::krecfps, "video writer");
 
@@ -91,7 +88,7 @@ void VideoWriterThread ( cv::Mat *orgimage,
 		//New file changeover
 		if (static_cast<long>(std::chrono::duration_cast<std::chrono::seconds>(
 			std::chrono::high_resolution_clock::now() - startime).count()) > filelengthseconds) {
-			std::cout << "File time length reached, creating new file ..." << '\n';
+
 			//Stop thread
 			queue.Stop();
 			
@@ -101,9 +98,7 @@ void VideoWriterThread ( cv::Mat *orgimage,
 			}
 			
 			//Shift files
-			if (fileShift(filepath, settings::cam::kfilestokeep) < 0) {
-				std::cout << "File shift failure!" << '\n';
-			}
+			fileShift(filepath, settings::cam::kfilestokeep) < 0);
 			
 			//Restart thread
 			queue.Restart();
