@@ -53,7 +53,7 @@ void FcwTracker::Update( double distance, double speed )
 	
 	//Check for NaN or invalid result
 	if ((timetocollision_ != timetocollision_) ||
-		(timetocollision_ < 0.0)) timetocollision_ = 100.0;
+		(timetocollision_ < 0.0) || (timetocollision_ > 60.0)) timetocollision_ = 0.0;
 	
 	//Calcualte following time -> Speed is in mph!
 	followingtime_ = (speed * MPHTOFPSCONVERSION) / followingdistance_;
