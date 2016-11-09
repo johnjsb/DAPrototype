@@ -37,14 +37,14 @@
 		//Create thread variables
 		double followingdistance{0.0};
 		bool vehiclemoving{false};
-		int pullaheaddelay{ settings::comm::kpollratelidar/2 };	//500ms
+		int pullaheaddelay{ settings::comm::kpollratelidar / 2 };	//500ms
 		int pullaheadcount{ 0 };
 		FcwTracker fcwtracker( settings::fcw::kdistanceoffset,
 			settings::fcw::ksamplestoaverage );
 
 		//Setup I2C
 		//wiringPiSetupGpio();
-		int dacModule = wiringPiI2CSetup(0x62);	//0x48?
+		int dacModule = wiringPiI2CSetup(0x62);
 		if (dacModule < 0)
 		{
 			std::cout << "I2C Setup Error" << '\n';
@@ -97,18 +97,18 @@
 			if (readerror) {
 				processvalues->fcwstatus_ = -1;
 				processvalues->fcwpwmvalue_ = 0;
-			} else ( (1000*fcwtracker.timetocollision_) < settings::fcw::kmscollisionwarning ) {
+			} else if ( (1000*fcwtracker.timetocollision_) < settings::fcw::kmscollisionwarning ) {
 				processvalues->fcwstatus_ = 1;
 				processvalues->fcwpwmvalue_ = 1023 + static_cast<int>((1024.0*(1000*
 					fcwtracker.timetocollision_ - settings::fcw::kmscollisionalarm)) /
 					(settings::fcw::kmscollisionalarm - settings::fcw::kmscollisionwarning));
 			} else if ( vehiclemoving && (1000*fcwtracker.followingtime_) <
-				settings::fcw::kmsfollowdistwarning ){
+				settings::fcw::kmsfollowdistwarning ) {
 				processvalues->fcwstatus_ = 2;
 				processvalues->fcwpwmvalue_ = 1023 + static_cast<int>((1024.0*(1000*
 					fcwtracker.followingtime_ - settings::fcw::kmsfollowdistalarm)) /
 					(settings::fcw::kmsfollowdistalarm - settings::fcw::kmsfollowdistwarning));
-			} else if ( (1000*fcwtracker.timetocollision_) < settings::fcw::kmscollisionalarm ){
+			} else if ( (1000*fcwtracker.timetocollision_) < settings::fcw::kmscollisionalarm ) {
 				processvalues->fcwstatus_ = 3;
 				processvalues->fcwpwmvalue_ = 1023;
 			} else if ( vehiclemoving && (1000*fcwtracker.followingtime_) <
