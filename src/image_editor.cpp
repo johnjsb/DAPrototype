@@ -83,15 +83,23 @@ void ImageEditorThread( cv::Mat *orgimage,
 			
 		//Show following time
 		std::stringstream timetext;
-		timetext  << std::fixed << std::setprecision(2) << processvalues->timetocollision_ <<
-			" s";
+		if (processvalues->fcwstatus_ > 0) {
+			timetext  << std::fixed << std::setprecision(2) <<
+				processvalues->timetocollision_ << " s";
+		} else {
+			timetext  << "-.-- s";
+		}
 		putText( modifiedimage, timetext.str(),	followingtimelocation,
 			CV_FONT_HERSHEY_COMPLEX, followingtimesize, cv::Scalar(255,255,255), 1, cv::LINE_8,	false );
 		
 		//Show following distance
 		std::stringstream distancetext;
-		distancetext  << std::fixed << std::setprecision(2) << processvalues->forwarddistance_ <<
-			" ft";
+		if (processvalues->fcwstatus_ > 0) {
+			distancetext  << std::fixed << std::setprecision(2) <<
+				processvalues->forwarddistance_ << " ft";
+		} else {
+			distancetext  << "-.-- ft";
+		}
 		putText( modifiedimage, distancetext.str(),	distancelocation,
 			CV_FONT_HERSHEY_COMPLEX, distancesize, cv::Scalar(255,255,255), 1, cv::LINE_8, false );
 			

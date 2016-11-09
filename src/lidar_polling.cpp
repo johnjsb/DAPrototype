@@ -27,24 +27,7 @@
 	extern "C" {
 		#include "lidarLite.h"
 	}
-/*
-    // Read distance in cm from LidarLite
-    int lidar_read(int fd) {
 
-		// send "measure" command
-		int hiVal{ wiringPiI2CWriteReg8(fd, 0x00, 0x04) };
-		std::this_thread::sleep_for(std::chrono::microseconds(20000));
-
-		// Read second byte and append with first 
-		int loVal{ _read_byteNZ(fd, 0x10) };        
-
-		// read first byte 
-		hiVal = _read_byte(fd, 0x0f) ;    
-
-		return ( (hiVal << 8) + loVal);
-
-    }
-*/
 	void LidarPolingThread( ProcessValues *processvalues,
 							std::atomic<bool> *exitsignal )
 	{
@@ -73,6 +56,20 @@
 
 		//Loop indefinitely
 		while( !(*exitsignal) ) {
+
+			//Read FCW distance
+			int fcwresult{ -1 };
+			bool readerror{ true };
+			fcwresult = lidar_read(dacModule);
+			if ( fcwresult > 0 ) {
+				followingdistance = FEETPERCENTIMETER * fcwresult;
+				readerror = false;
+			} else {
+				readerror = true;
+			}
+			
+			fcwtracker.Update( followingdistance, processvalues->gpsspeed_);
+			
 			//Check if vehicle is moving
 			if ( processvalues->gpsspeed_ > 1.0 ) {
 				vehiclemoving = true;
@@ -80,12 +77,6 @@
 			} else {
 				vehiclemoving = false;
 			}
-
-			//ToDo - Figure out register and conversion to FP!
-			followingdistance = FEETPERCENTIMETER * lidar_read(dacModule);
-			fcwtracker.Update( followingdistance, processvalues->gpsspeed_);
-
-			//ToDo - Fudge factor based on road angle (anticipate turn)
 
 			//Update everything
 			processvalues->forwarddistance_ = fcwtracker.followingdistance_;
@@ -103,7 +94,10 @@
 			//4 = following too close alarm
 			//5 = driver ahead takeoff notification				//Future
 			//-1 = error (sensor error)
-			if ( (1000*fcwtracker.timetocollision_) < settings::fcw::kmscollisionwarning ) {
+			if (readerror) {
+				processvalues->fcwstatus_ = -1;
+				processvalues->fcwpwmvalue_ = 0;
+			} else ( (1000*fcwtracker.timetocollision_) < settings::fcw::kmscollisionwarning ) {
 				processvalues->fcwstatus_ = 1;
 				processvalues->fcwpwmvalue_ = 1023 + static_cast<int>((1024.0*(1000*
 					fcwtracker.timetocollision_ - settings::fcw::kmscollisionalarm)) /
@@ -121,9 +115,6 @@
 				settings::fcw::kmsfollowdistalarm ){
 				processvalues->fcwstatus_ = 4;
 				processvalues->fcwpwmvalue_ = 1023;
-			} else if ( false ){	//ToDo - Comm check & takeoff notice
-				processvalues->fcwstatus_ = -1;
-				processvalues->fcwpwmvalue_ = 0;
 			} else {
 				processvalues->fcwstatus_ = 0;
 				processvalues->fcwpwmvalue_ = 0;
