@@ -68,14 +68,21 @@ void GpsPollingThread( ProcessValues *processvalues,
 	if (gps_send(firstdata,"$PMTK220,200*2C\r\n")==-1) {
 		std::cout << "GPS update rate set to 5hz" << '\n';
 	} else {
-		std::cout << "GPS update rate setting failed" << '\n';
+		std::cout << "GPS update rate setting failed!" << '\n';
 	}
 	
 	//Measure every 200 ms
 	if (gps_send(firstdata,"$PMTK300,200,0,0,0,0*2F\r\n")==-1) {
 		std::cout << "GPS measure rate set to 5hz" << '\n';
 	} else {
-		std::cout << "GPS measure rate setting failed" << '\n';
+		std::cout << "GPS measure rate setting failed!" << '\n';
+	}
+	
+	//Set speed threshold @ 2.0 m/s, needed??
+	if (gps_send(firstdata,"$PMTK397,2.0*3F\r\n")==-1) {
+		std::cout << "GPS speed threshold set to 2.0 m/s" << '\n';
+	} else {
+		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
 	
 	//create pace setter
