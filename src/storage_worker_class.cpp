@@ -35,6 +35,8 @@ void StorageWorker::Run()
 			}
 		} else {
 			writer.release();
+			queue_.ReleaseFile();
+			std::cout << "Storage worker file released" << '\n';
 			while ( queue_.CheckPaused() ) {}
 			writer.open(file_name_, fourcc_, fps_, frame_size_, is_color_);
 		}

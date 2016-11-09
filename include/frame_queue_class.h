@@ -17,6 +17,8 @@ class FrameQueue
 		void Restart();
 		bool CheckCanceled();
 		bool CheckPaused();
+		bool CheckReleased();
+		void ReleaseFile();
 		FrameQueue& operator= (const FrameQueue &q);
 		virtual ~FrameQueue();
 
@@ -27,6 +29,7 @@ class FrameQueue
 		std::mutex mutex_;
 		bool canceled_;
 		bool paused_;
+		bool released_;
 };
 
 #endif // FRAMEQUEUE_H

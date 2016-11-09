@@ -26,7 +26,7 @@ void FrameQueue::Stop()
 void FrameQueue::Restart()
 {
     mutex_.lock();
-    paused_ = false;
+    paused_ = released_ = false;
     mutex_.unlock();
 }
 
@@ -44,6 +44,22 @@ bool FrameQueue::CheckPaused()
     bool pausedstatus{paused_};
     mutex_.unlock();
 	return pausedstatus;
+}
+
+bool FrameQueue::CheckReleased()
+{
+    mutex_.lock();
+    bool releasedstatus{released_};
+    mutex_.unlock();
+	return releasedstatus;
+}
+
+void FrameQueue::ReleaseFile()
+{
+    mutex_.lock();
+    released_ = true;
+    mutex_.unlock();
+	return;
 }
 
 void FrameQueue::Push(cv::Mat const& image)
