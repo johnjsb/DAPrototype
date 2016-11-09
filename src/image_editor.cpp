@@ -43,7 +43,8 @@ void ImageEditorThread( cv::Mat *orgimage,
 	float speedsize{ 0.75f * heightscalefactor };
 	cv::Point latlonglocation{ cv::Point(10 * widthscalefactor, 470 * heightscalefactor) };
 	float latlongsize{ 0.5f * heightscalefactor };
-	cv::Point followingtimelocation{ cv::Point(10 * widthscalefactor, 455 * heightscalefactor) };
+	cv::Point followingtimelocation{ cv::Point(10 * widthscalefactor, 455 *
+		heightscalefactor) };
 	float followingtimesize{ 0.5f * heightscalefactor };
 	cv::Point distancelocation{ cv::Point(100 * widthscalefactor, 455 * heightscalefactor) };
 	float distancesize{ 0.5f * heightscalefactor };
@@ -77,9 +78,9 @@ void ImageEditorThread( cv::Mat *orgimage,
 				speedsize, cv::Scalar(0,255,0), 1, cv::LINE_8, false );
 		
 		//Show latitude and longitude
-		putText( modifiedimage, ConvertLatLong(processvalues->latitude_, processvalues->longitude_),
-			latlonglocation, CV_FONT_HERSHEY_COMPLEX, latlongsize, cv::Scalar(255,0,255), 1,
-			cv::LINE_8,	false );
+		putText( modifiedimage, ConvertLatLong(processvalues->latitude_,
+			processvalues->longitude_),	latlonglocation, CV_FONT_HERSHEY_COMPLEX,
+			latlongsize, cv::Scalar(255,0,255), 1, cv::LINE_8, false );
 			
 		//Show following time
 		std::stringstream timetext;
@@ -90,7 +91,8 @@ void ImageEditorThread( cv::Mat *orgimage,
 			timetext  << "-.-- s";
 		}
 		putText( modifiedimage, timetext.str(),	followingtimelocation,
-			CV_FONT_HERSHEY_COMPLEX, followingtimesize, cv::Scalar(255,255,255), 1, cv::LINE_8,	false );
+			CV_FONT_HERSHEY_COMPLEX, followingtimesize, cv::Scalar(255,255,255), 1,
+			cv::LINE_8,	false );
 		
 		//Show following distance
 		std::stringstream distancetext;
@@ -101,7 +103,8 @@ void ImageEditorThread( cv::Mat *orgimage,
 			distancetext  << "-.-- ft";
 		}
 		putText( modifiedimage, distancetext.str(),	distancelocation,
-			CV_FONT_HERSHEY_COMPLEX, distancesize, cv::Scalar(255,255,255), 1, cv::LINE_8, false );
+			CV_FONT_HERSHEY_COMPLEX, distancesize, cv::Scalar(255,255,255), 1,
+			cv::LINE_8, false );
 			
 		//Show diagnostic message
 		std::string diagnosticmessage{ GetDiagnosticString(processvalues->ldwstatus_,

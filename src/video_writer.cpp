@@ -98,7 +98,7 @@ void VideoWriterThread ( cv::Mat *orgimage,
 			}
 			
 			//Shift files
-			fileShift(filepath, settings::cam::kfilestokeep) < 0);
+			fileShift(filepath, settings::cam::kfilestokeep);
 			
 			//Restart thread
 			queue.Restart();
