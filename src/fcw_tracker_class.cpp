@@ -5,6 +5,8 @@
 #include <deque>
 #include <sys/time.h>
 
+#define MPHTOFPSCONVERSION 1.46667
+
 FcwTracker::FcwTracker( double distanceoffset, int samplestoaverage ) :
 	kdistanceoffset_{ distanceoffset },
 	ksamplestoaverage_{ samplestoaverage }
@@ -25,12 +27,14 @@ void FcwTracker::Update( double distance, double speed )
 		std::chrono::high_resolution_clock::now() - lastsampletime_).count();
     lastsampletime_ = std::chrono::high_resolution_clock::now();
 	
-	//Calculate speed
+	//Check distance is valid
+	if (distance < kdistanceoffset_) distance = kdistanceoffset_;
+	//Calculate speed relative to object ahead
 	distances_.push_back(distance - kdistanceoffset_);
-	velocities_.push_back((1000000.0 * (distances_[1] - distances_[0]))/sampletime_);
-	
-	//Calculate acceleration
-	accelerations_.push_back((1000000.0 * (velocities_[1] - velocities_[0]))/sampletime_);
+	//Calculate velocity relative to object ahead
+	velocities_.push_back((1000000.0 * (distances_[0] - distances_[1])) / sampletime_);
+	//Calculate acceleration relative to object ahead
+	accelerations_.push_back((1000000.0 * (velocities_[0] - velocities_[1])) / sampletime_);
 	
 	//Limit queues
 	if (distances_.size() > ksamplestoaverage_) distances_.pop_front();
@@ -44,15 +48,15 @@ void FcwTracker::Update( double distance, double speed )
 	
 	//Calculate time to impact with kinematic equation
 		//t = (-v - sqrt(v^2 -2*a*d))/a
-	timetocollision_ = (-velocity_ - sqrt (velocity_*velocity_ -
-		2*acceleration_*followingdistance_))/acceleration_;		
+	timetocollision_ = (-velocity_ - sqrt (velocity_ * velocity_ -
+		2 * acceleration_ * followingdistance_)) / acceleration_;		
 	
 	//Check for NaN or invalid result
 	if ((timetocollision_ != timetocollision_) ||
 		(timetocollision_ < 0.0)) timetocollision_ = 100.0;
 	
 	//Calcualte following time -> Speed is in mph!
-	followingtime_ = (speed * 1.46667) / followingdistance_;
+	followingtime_ = (speed * MPHTOFPSCONVERSION) / followingdistance_;
 	
 }
 
