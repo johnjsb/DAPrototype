@@ -60,9 +60,23 @@ void GpsPollingThread( ProcessValues *processvalues,
 	}
 	    
     //Update every 200 ms
-	gps_rec.send("$PMTK220,200*2C\r\n");
+	//gps_rec.send("$PMTK220,200*2C\r\n");
 	//Measure every 200 ms
-	gps_rec.send("$PMTK300,200,0,0,0,0*2F\r\n");
+	//gps_rec.send("$PMTK300,200,0,0,0,0*2F\r\n");
+	
+	//Update every 200 ms
+	if (gps_send(firstdata,"$PMTK220,200*2C\r\n")==-1) {
+		std::cout << "GPS update rate set to 5hz" << '\n';
+	} else {
+		std::cout << "GPS update rate setting failed" << '\n';
+	}
+	
+	//Measure every 200 ms
+	if (gps_send(firstdata,"$PMTK300,200,0,0,0,0*2F\r\n")==-1) {
+		std::cout << "GPS measure rate set to 5hz" << '\n';
+	} else {
+		std::cout << "GPS measure rate setting failed" << '\n';
+	}
 	
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
