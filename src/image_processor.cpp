@@ -59,8 +59,8 @@ void ProcessImageThread( cv::Mat *orgimage,
 				double deviationper = 100.0 * deviationpix /
 					static_cast<double>(newpolygon[1].x - newpolygon[0].x);
 					//static_cast<double>(settings::cam::kpixwidth);			
-				if ( 0.0 < deviationper && deviationper < settings::ldw::kperoffsetwarning
-					) {
+				if ( (0.0 < deviationper) && (deviationper <
+					settings::ldw::kperoffsetwarning) ) {
 					processvalues->ldwstatus_ = 2;
 					processvalues->ldwpwmvalue_ = 1023 + static_cast<int>((1024.0*(deviationper -
 						settings::ldw::kperoffsetwarning)) /

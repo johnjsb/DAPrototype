@@ -103,13 +103,11 @@ void GpsPollingThread( ProcessValues *processvalues,
 		if (!gps_rec.waiting(1500000)) {
 			processvalues->gpsstatus_ = -1;
 			std::cout << "GPS timeout." << '\n';
-			continue;
 		}
 
 		if ((newdata = gps_rec.read()) == NULL) {
 			processvalues->gpsstatus_ = -1;
 			std::cout << "GPS read error!" << '\n';
-			continue;
 		} else {
 			if ( newdata->fix.mode > 1) {
 				//Write values
