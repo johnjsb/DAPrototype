@@ -39,7 +39,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 	
 	//Loop until first GPS lock to set system time
 	while (((firstdata = gps_rec.read()) == NULL) ||
-		(firstdata->fix.mode < 1)) {
+		(firstdata->fix.mode <= 1)) {
 		if (*exitsignal) {
 			return;
 		}	  
@@ -100,12 +100,10 @@ void GpsPollingThread( ProcessValues *processvalues,
 	while( !(*exitsignal) ) {
 		struct gps_data_t* newdata;
 
-		if (!gps_rec.waiting(1500000)) {
+		if (!gps_rec.waiting(2000000)) {
 			processvalues->gpsstatus_ = -1;
 			std::cout << "GPS timeout." << '\n';
-		}
-
-		if ((newdata = gps_rec.read()) == NULL) {
+		} else if ((newdata = gps_rec.read()) == NULL) {
 			processvalues->gpsstatus_ = -1;
 			std::cout << "GPS read error!" << '\n';
 		} else {
