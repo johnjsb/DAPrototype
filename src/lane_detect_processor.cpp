@@ -49,7 +49,7 @@ namespace lanedetectconstants {
 	float ksegmentlengthwidthratio{ 2.4f };
 	
 	//Contour construction filter
-	float ksegmentsanglewindow{ 41.0f };
+	float ksegmentsanglewindow{ 37.0f };
 	
 	//Contour filtering
 	uint16_t kellipseheight{ 25 };					//In terms of pixels, future change
