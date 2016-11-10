@@ -64,8 +64,6 @@
 			if ( fcwresult > 0 ) {
 				followingdistance = FEETPERCENTIMETER * fcwresult;
 				readerror = false;
-			} else {
-				readerror = true;
 			}
 			
 			fcwtracker.Update( followingdistance, processvalues->gpsspeed_);
@@ -87,13 +85,13 @@
 			}
 
 			//FCW Status
+			//-1 = error (sensor error)
 			//0 = inactive (disabled by xml or zero speed)
 			//1 = fcw warning
 			//2 = following too close warning
 			//3 = fcw alarm
 			//4 = following too close alarm
-			//5 = driver ahead takeoff notification				//Future
-			//-1 = error (sensor error)
+			//5 = driver ahead takeoff notification
 			if (readerror) {
 				processvalues->fcwstatus_ = -1;
 				processvalues->fcwpwmvalue_ = 0;
