@@ -155,8 +155,8 @@ void ProcessImage ( cv::Mat& image,
 	for ( EvaluatedContour &leftevaluatedontour : leftcontours ) {
 		for ( EvaluatedContour &rightevaluatedcontour : rightcontours ) {
 			//Check sum angle
-			if ( (fabs(180.0f - leftevaluatedontour.angle + rightevaluatedcontour.angle) *
-					   0.5f) > lanedetectconstants::kanglefromcenter ) return;
+			if ( (fabs(180.0f - leftevaluatedontour.angle - rightevaluatedcontour.angle) *
+					   0.5f) > lanedetectconstants::kanglefromcenter ) continue;
 			
 			Polygon newpolygon{ cv::Point(0,0),
 								cv::Point(0,0),
