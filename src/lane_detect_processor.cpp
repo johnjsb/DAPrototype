@@ -34,10 +34,12 @@ namespace lanedetectconstants {
 	uint16_t lowercannythreshold{ 40 };
 	
 	//Polygon filtering
-	Polygon optimalpolygon{ cv::Point(100,400), cv::Point(540,400),
-		cv::Point(340,250), cv::Point(300,250) };	//In terms of pixels, future change
+	Polygon optimalpolygon{ cv::Point(100,400),
+							cv::Point(540,400),
+							cv::Point(340,250),
+							cv::Point(300,250) };
 	uint16_t koptimumwidth{ static_cast<uint16_t>(optimalpolygon[1].x -
-		optimalpolygon[0].x) };
+												  optimalpolygon[0].x) };
 	uint16_t kroadwithtolerance{ 100 };
     uint16_t kminroadwidth{ static_cast<uint16_t>(koptimumwidth - kroadwithtolerance) };
     uint16_t kmaxroadwidth{ static_cast<uint16_t>(koptimumwidth + kroadwithtolerance) };
@@ -57,8 +59,8 @@ namespace lanedetectconstants {
 	float klengthwidthratio{ 5.55f };
 	
 	//Scoring
-	float kanglefromcenter{ 35.0f };
-	float klowestscorelimit{ 15.0f };
+	float kanglefromcenter{ 30.0f };
+	float klowestscorelimit{ 10.0f };
 
 }
 
@@ -80,20 +82,16 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------
 	//Auto threshold values for canny edge detection
     //double otsuthreshval = cv::threshold( image, image, 0, 255,
-	//	CV_THRESH_BINARY | CV_THRESH_OTSU );
+	//										CV_THRESH_BINARY | CV_THRESH_OTSU );
 	//Canny edge detection
-    cv::Canny(image, image, lanedetectconstants::lowercannythreshold, 3 *
-		lanedetectconstants::lowercannythreshold);
-    //cv::Canny(image, image, otsuthreshval * 0.5, otsuthreshval );
+    //cv::Canny( image, image, otsuthreshval * 0.5, otsuthreshval );
+    cv::Canny( image, image,
+			   lanedetectconstants::lowercannythreshold,
+			   3 * lanedetectconstants::lowercannythreshold );
 	std::vector<Contour> detectedcontours;
     std::vector<cv::Vec4i> detectedhierarchy;
     cv::findContours( image, detectedcontours, detectedhierarchy,
-		CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
-	//std::cout << "Contours found: " << detectedcontours.size() << '\n';
-	//Contours removed by position in function
-
-	//ToDo - There's way more I could be doing:
-		//Dilate? Grow?
+					  CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
 		
 //-----------------------------------------------------------------------------------------
 //Evaluate contours
@@ -113,12 +111,6 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------	
     std::vector<std::vector<cv::Point>> constructedcontours;
 	ConstructFromSegments( evaluatedchildsegments, constructedcontours );
-	//ConstructFromSegments( evaluatedparentsegments, constructedcontours );
-	//for (int i = 0; i < constructedcontours.size(); i++){
-	//	drawContours(image, constructedcontours, i, cv::Scalar(255,255,0), 1, 8);
- 	//}
-	//ConstructFromSegments( evaluatedparentsegments, constructedcontours );
-	//std::cout << "Contours constructed: " << constructedcontours.size() << '\n';
 
 //-----------------------------------------------------------------------------------------
 //Evaluate constructed segments
@@ -133,25 +125,29 @@ void ProcessImage ( cv::Mat& image,
 	std::vector<EvaluatedContour> leftcontours;
 	std::vector<EvaluatedContour> rightcontours;
 	SortContours( evaluatedparentsegments, image.cols, leftcontours, rightcontours );
-	//SortContours( evaluatedchildsegments, image.cols, leftcontours, rightcontours );
-	//std::cout << "Left pairs: " << leftcontours.size() << '\n';
-	//std::cout << "Right pairs: " << rightcontours.size() << '\n';
+	SortContours( evaluatedchildsegments, image.cols, leftcontours, rightcontours );
 	
 //-----------------------------------------------------------------------------------------
 //Find highest scoring pair of contours
 //-----------------------------------------------------------------------------------------	
-	Polygon bestpolygon{ cv::Point(0,0), cv::Point(0,0), cv::Point(0,0), cv::Point(0,0) };
-	float maxscore{lanedetectconstants::klowestscorelimit};
+	Polygon bestpolygon{ cv::Point(0,0),
+						 cv::Point(0,0),
+						 cv::Point(0,0),
+						 cv::Point(0,0) };
+	float maxscore{ lanedetectconstants::klowestscorelimit };
 	Contour leftcontour;
 	Contour rightcontour;
 	
 	//Create optimal polygon mat
-	cv::Mat optimalmat{ cv::Mat(POLYGONSCALING * image.rows, POLYGONSCALING * image.cols, CV_8UC1,
-		cv::Scalar(0)) };
+	cv::Mat optimalmat{ cv::Mat(POLYGONSCALING * image.rows,
+						POLYGONSCALING * image.cols,
+						CV_8UC1,
+						cv::Scalar(0)) };
 	cv::Point cvpointarray[4];
 	for  (int i =0; i < 4; i++ ) {
-		cvpointarray[i] = cv::Point(POLYGONSCALING * lanedetectconstants::optimalpolygon[i].x,
-			POLYGONSCALING * lanedetectconstants::optimalpolygon[i].y);
+		cvpointarray[i] = cv::Point(POLYGONSCALING *
+						  lanedetectconstants::optimalpolygon[i].x,
+						  POLYGONSCALING * lanedetectconstants::optimalpolygon[i].y);
 	}
 	cv::fillConvexPoly( optimalmat, cvpointarray, 4,  cv::Scalar(1) );
 	
@@ -159,13 +155,16 @@ void ProcessImage ( cv::Mat& image,
 	for ( EvaluatedContour &leftevaluatedontour : leftcontours ) {
 		for ( EvaluatedContour &rightevaluatedcontour : rightcontours ) {
 			//Check sum angle
-			if ((fabs(180.0f - leftevaluatedontour.angle + rightevaluatedcontour.angle) * 0.5f) >
-				lanedetectconstants::kanglefromcenter);
+			if ( (fabs(180.0f - leftevaluatedontour.angle + rightevaluatedcontour.angle) *
+					   0.5f) > lanedetectconstants::kanglefromcenter ) return;
 			
-			Polygon newpolygon{ cv::Point(0,0), cv::Point(0,0), cv::Point(0,0),
-				cv::Point(0,0) };
-			FindPolygon( newpolygon, leftevaluatedontour.contour,
-				rightevaluatedcontour.contour );
+			Polygon newpolygon{ cv::Point(0,0),
+								cv::Point(0,0),
+								cv::Point(0,0),
+								cv::Point(0,0) };
+			FindPolygon( newpolygon,
+						 leftevaluatedontour.contour,
+						 rightevaluatedcontour.contour );
 				
 			//If invalid polygon created, goto next
 			if ( newpolygon[0] == cv::Point(0,0) ) continue;
@@ -191,7 +190,9 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------
 //Return results
 //-----------------------------------------------------------------------------------------	
-	std::copy(std::begin(bestpolygon), std::end(bestpolygon), std::begin(polygon));
+	std::copy( std::begin(bestpolygon),
+			   std::end(bestpolygon),
+			   std::begin(polygon) );
 	return;
 }
 
@@ -199,9 +200,7 @@ void ProcessImage ( cv::Mat& image,
 void EvaluateSegment( const Contour& contour,
                       const int imageheight,
 					  std::vector<EvaluatedContour>& evaluatedsegments )
-{
-	//Performance note: Evaluating ellipse vs fitline first seems about the same
-	
+{	
 	//Filter by size, only to prevent exception when creating ellipse or fitline
 	if ( contour.size() < 5 ) return;
 		
@@ -240,9 +239,11 @@ void EvaluateSegment( const Contour& contour,
 		if ( angle > (180.0f - lanedetectconstants::ksegmentminimumangle) ) return;
 	}
 
-	evaluatedsegments.push_back( EvaluatedContour{contour, ellipse, lengthwidthratio,
-		angle} );
-	//	angle, fitline} );
+	evaluatedsegments.push_back( EvaluatedContour{contour,
+												  ellipse,
+												  lengthwidthratio,
+												  angle} );
+	//											    angle, fitline} );
 	return;
 }
 
@@ -258,22 +259,23 @@ void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegme
 			float angledifference1( fabs(segcontour1.angle -	segcontour2.angle) );
 			if ( angledifference1 > lanedetectconstants::ksegmentsanglewindow ) continue;
 			float createdangle { FastArcTan2((segcontour1.ellipse.center.y -
-				segcontour2.ellipse.center.y), (segcontour1.ellipse.center.x -
-				segcontour2.ellipse.center.x)) };
-			if (createdangle < 90.0f) {
+											  segcontour2.ellipse.center.y),
+											 (segcontour1.ellipse.center.x -
+											  segcontour2.ellipse.center.x)) };
+			if ( createdangle < 90.0f ) {
 				if ( createdangle < lanedetectconstants::ksegmentminimumangle ) return;
 			} else {
-				if ( createdangle > (180.0f - lanedetectconstants::ksegmentminimumangle) ) return;
+				if ( createdangle > (180.0f -
+					 lanedetectconstants::ksegmentminimumangle) ) return;
 			}
 			float angledifference2( fabs(createdangle -	segcontour1.angle) );
 			if ( angledifference2 > lanedetectconstants::ksegmentsanglewindow ) continue;
 			float angledifference3( fabs(createdangle -	segcontour2.angle) );
 			if ( angledifference3 > lanedetectconstants::ksegmentsanglewindow ) continue;
-			//std::cout << createdangle << "," << angledifference1 << "," <<
-			//	angledifference2 << "," << angledifference3 << '\n';
 			Contour newcontour{ segcontour1.contour };
-			newcontour.insert( newcontour.end(), segcontour2.contour.begin(),
-				segcontour2.contour.end() );
+			newcontour.insert( newcontour.end(),
+							   segcontour2.contour.begin(),
+							   segcontour2.contour.end() );
 			constructedcontours.push_back( newcontour );
 		}
     }	
@@ -298,7 +300,9 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 		//Push into either left or right evaluated contour set
 		if ( evaluatedcontour.ellipse.center.x < (imagewidth * 0.5f) ) {
 			//Filter by angle
-			if ( evaluatedcontour.angle > (180.0f - lanedetectconstants::kminimumangle) ) return;
+			if ( evaluatedcontour.angle > (180.0f - lanedetectconstants::kminimumangle) ) {
+				return;
+			}
 			if ( evaluatedcontour.angle < 75.0f ) return;
 			leftcontours.push_back( evaluatedcontour );
 		} else {
@@ -318,17 +322,27 @@ void FindPolygon( Polygon& polygon,
 				  bool useoptimaly )
 {
 	//Get point extremes
-	auto minmaxyleft = std::minmax_element(leftcontour.begin(), leftcontour.end(),
-		[]( const cv::Point& lhs, const cv::Point& rhs ) { return lhs.y < rhs.y; });
-	auto minmaxyright = std::minmax_element(rightcontour.begin(), rightcontour.end(),
-		[]( const cv::Point& lhs, const cv::Point& rhs ) { return lhs.y < rhs.y; });
-	int leftmaxx{minmaxyleft.second->x}, leftminx{minmaxyleft.first->x},
-		leftmaxy{minmaxyleft.second->y}, leftminy{minmaxyleft.first->y};
-	int rightmaxx{minmaxyright.second->x}, rightminx{minmaxyright.first->x},
-		rightmaxy{minmaxyright.second->y}, rightminy{minmaxyright.first->y};
-	int	maxyoptimal{lanedetectconstants::optimalpolygon[0].y};
-	int maxyactual{std::max(minmaxyleft.second->y, minmaxyright.second->y)};
-	int miny{std::max(minmaxyleft.first->y, minmaxyright.first->y)};
+	auto minmaxyleft = std::minmax_element( leftcontour.begin(),
+											leftcontour.end(),
+											[]( const cv::Point& lhs,
+												const cv::Point& rhs )
+												{ return lhs.y < rhs.y; } );
+	auto minmaxyright = std::minmax_element( rightcontour.begin(),
+											 rightcontour.end(),
+											 []( const cv::Point& lhs,
+												 const cv::Point& rhs )
+												 { return lhs.y < rhs.y; } );
+	int leftmaxx{ minmaxyleft.second->x },
+		leftminx{ minmaxyleft.first->x },
+		leftmaxy{ minmaxyleft.second->y },
+		leftminy{ minmaxyleft.first->y },
+		rightmaxx{ minmaxyright.second->x },
+		rightminx{ minmaxyright.first->x },
+		rightmaxy{ minmaxyright.second->y },
+		rightminy{ minmaxyright.first->y };
+	int	maxyoptimal{ lanedetectconstants::optimalpolygon[0].y };
+	int maxyactual{ std::max(minmaxyleft.second->y, minmaxyright.second->y) };
+	int miny{ std::max(minmaxyleft.first->y, minmaxyright.first->y) };
 	int maxy;	
 	if ( useoptimaly ) {
 		maxy = maxyoptimal;
@@ -337,13 +351,14 @@ void FindPolygon( Polygon& polygon,
 	}
 	
 	//Define slopes
-	float leftslope, rightslope;
+	float leftslope;
 	if ((leftmaxx - leftminx) == 0) {
 		leftslope = FLT_MAX;
 	} else {
 		leftslope = static_cast<float>(leftmaxy-leftminy) / static_cast<float>(
 			leftmaxx - leftminx);
 	}
+	float rightslope;
 	if ((rightmaxx - rightminx) == 0) {
 		rightslope = FLT_MAX;
 	} else {
@@ -352,26 +367,26 @@ void FindPolygon( Polygon& polygon,
 	}
 
 	//Calculate center points
-    cv::Point leftcenter{ cv::Point((leftmaxx + leftminx) *
-		0.5f,(leftmaxy + leftminy) * 0.5f) };
-    cv::Point rightcenter{ cv::Point((rightmaxx + rightminx) *
-		0.5f,(rightmaxy + rightminy) * 0.5f) };
+    cv::Point leftcenter{ cv::Point((leftmaxx + leftminx) * 0.5f,
+									(leftmaxy + leftminy) * 0.5f) };
+    cv::Point rightcenter{ cv::Point((rightmaxx + rightminx) * 0.5f,
+									 (rightmaxy + rightminy) * 0.5f) };
 	
 	//Calculate optimal bottom points
-	cv::Point bottomleftoptimal{ cv::Point(leftcenter.x +
-		(maxyoptimal - leftcenter.y)/leftslope, maxyoptimal) };
-	cv::Point bottomrightoptimal{ cv::Point(rightcenter.x +
-		(maxyoptimal - rightcenter.y)/rightslope, maxyoptimal) };
+	cv::Point bottomleftoptimal{ cv::Point(leftcenter.x +(maxyoptimal - leftcenter.y)/leftslope,
+										   maxyoptimal) };
+	cv::Point bottomrightoptimal{ cv::Point(rightcenter.x +	(maxyoptimal - rightcenter.y)/rightslope,
+											maxyoptimal) };
 	
 	//Perform filtering based on width of polygon with optimal maxy
 	int roadwidth{ bottomrightoptimal.x - bottomleftoptimal.x };
 	if ( roadwidth < lanedetectconstants::kminroadwidth ) return;
 	if ( roadwidth > lanedetectconstants::kmaxroadwidth ) return;
 	
-	cv::Point topright = cv::Point(rightcenter.x -
-		(rightcenter.y - miny)/rightslope, miny);
-	cv::Point topleft = cv::Point(leftcenter.x -
-		(leftcenter.y - miny)/leftslope, miny);
+	cv::Point topright{ cv::Point(rightcenter.x - (rightcenter.y - miny)/rightslope,
+								  miny) };
+	cv::Point topleft{ cv::Point(leftcenter.x - (leftcenter.y - miny)/leftslope,
+								 miny) };
 		
 	//Check validity of shape
 	if ((((leftslope < 0.0f) && (rightslope > 0.0f)) ||
@@ -401,13 +416,16 @@ float PercentMatch( const Polygon& polygon,
 					const cv::Mat& optimalmat )
 {
 	//Create blank mat
-	cv::Mat polygonmat{ cv::Mat(optimalmat.rows, optimalmat.cols, CV_8UC1, cv::Scalar(0)) };
+	cv::Mat polygonmat{ cv::Mat(optimalmat.rows,
+								optimalmat.cols,
+								CV_8UC1,
+								cv::Scalar(0)) };
 	
 	//Draw polygon
 	cv::Point cvpointarray[4];
 	for  (int i =0; i < 4; i++ ) {
-		cvpointarray[i] = cv::Point(POLYGONSCALING * polygon[i].x, POLYGONSCALING *
-			polygon[i].y);
+		cvpointarray[i] = cv::Point(POLYGONSCALING * polygon[i].x,
+									POLYGONSCALING * polygon[i].y);
 	}
 	cv::fillConvexPoly( polygonmat, cvpointarray, 4,  cv::Scalar(2) );
 
@@ -417,9 +435,9 @@ float PercentMatch( const Polygon& polygon,
 	//Evaluate result
 	uint16_t excessarea{ 0 };
 	uint16_t overlaparea{ 0 };
-	for (int i = 0; i < optimalmat.rows; i++) {
+	for ( int i = 0; i < optimalmat.rows; i++ ) {
 		uchar* p { polygonmat.ptr<uchar>(i) };
-		for (int j = 0; j < optimalmat.cols; j++) {
+		for ( int j = 0; j < optimalmat.cols; j++ ) {
 			switch ( p[j] )
 			{
 				case 1:
@@ -449,19 +467,23 @@ void AveragePolygon ( Polygon& polygon,
 	if ( pastpolygons.size() > samplestokeep ) {
 		pastpolygons.pop_front();
 	}
+
 	//Sum nonzero
-	Polygon averagepolygon { cv::Point(0,0), cv::Point(0,0), cv::Point(0,0),
-		cv::Point(0,0) };
+	Polygon averagepolygon { cv::Point(0,0),
+							 cv::Point(0,0),
+							 cv::Point(0,0),
+							 cv::Point(0,0) };
 	int nonzerocount{0};
 	for ( Polygon &ipolygon : pastpolygons ) {
 		if ( ipolygon[0] == cv::Point(0,0) ) continue;
 		nonzerocount++;
-		for (int i = 0; i < ipolygon.size(); i++) {
+		for ( int i = 0; i < ipolygon.size(); i++ ) {
 			averagepolygon[i].x += ipolygon[i].x;
 			averagepolygon[i].y += ipolygon[i].y;
 		}
 	}	
 	if ( nonzerocount == 0 ) return;
+
 	//Average nonzero
 	for ( int i = 0; i < polygon.size(); i++ ) {
 		averagepolygon[i].x /= nonzerocount;
@@ -470,29 +492,37 @@ void AveragePolygon ( Polygon& polygon,
 	
 	//if not enough nonzero polygons, return
 	if ( nonzerocount < samplestoaverage ) {
-		std::copy(std::begin(averagepolygon), std::end(averagepolygon),
-			std::begin(polygon));
+		std::copy( std::begin(averagepolygon),
+				   std::end(averagepolygon),
+				   std::begin(polygon) );
 		return;
 	}
+
 	//Find differences
 	std::vector<PolygonDifferences> polygondifferences;
 	for ( Polygon &ipolygon : pastpolygons ) {
 		float differencefromaverage{0.0f};
-		for (int i = 0; i < ipolygon.size(); i++) {
+		for ( int i = 0; i < ipolygon.size(); i++ ) {
 			differencefromaverage += fabs(averagepolygon[i].x - ipolygon[i].x);
 			differencefromaverage += fabs(averagepolygon[i].y - ipolygon[i].y);
 		}
 		polygondifferences.push_back( PolygonDifferences { ipolygon,
-			differencefromaverage } );
+														   differencefromaverage } );
 	}
+
 	//Sort
-	sort(polygondifferences.begin(), polygondifferences.end(), [](
-		const PolygonDifferences& a, const PolygonDifferences& b ) {
-		return a.differencefromaverage < b.differencefromaverage; });
+	sort( polygondifferences.begin(),
+		  polygondifferences.end(),
+		  [](const PolygonDifferences& a,
+			 const PolygonDifferences& b )
+			 { return a.differencefromaverage < b.differencefromaverage; } );
+
 	//Sum closest values
-	averagepolygon = { cv::Point(0,0), cv::Point(0,0), cv::Point(0,0),
-		cv::Point(0,0) };
-	for (int i = 0; i < samplestoaverage; i++) {
+	averagepolygon = { cv::Point(0,0),
+					   cv::Point(0,0),
+					   cv::Point(0,0),
+					   cv::Point(0,0) };
+	for ( int i = 0; i < samplestoaverage; i++ ) {
 		for (int j = 0; j < 4; j++) {
 			averagepolygon[j].x += polygondifferences[i].polygon[j].x;
 			averagepolygon[j].y += polygondifferences[i].polygon[j].y;
@@ -503,8 +533,9 @@ void AveragePolygon ( Polygon& polygon,
 		averagepolygon[i].x /= samplestoaverage;
 		averagepolygon[i].y /= samplestoaverage;
 	}
-	std::copy(std::begin(averagepolygon), std::end(averagepolygon),
-		std::begin(polygon));
+	std::copy( std::begin(averagepolygon),
+			   std::end(averagepolygon),
+			   std::begin(polygon));
 	return;
 }
 
@@ -534,11 +565,10 @@ float FastArcTan2( const float y,
 	//Calculate
 	float a( std::min(fabs(x),fabs(y)) / std::max(fabs(x),fabs(y)) );
 	float s{ a * a };
-	float angle( (((-0.0464964749 * s + 0.15931422) * s - 0.327622764) * s
-		* a + a) );
-	if (fabs(y) > fabs(x)) angle = M_PI_2 - angle;
-	if (x < 0) angle = M_PI - angle;
-	if (y < 0) angle *= -1.0;
+	float angle( (((-0.0464964749 * s + 0.15931422) * s - 0.327622764) * s * a + a) );
+	if ( fabs(y) > fabs(x) ) angle = M_PI_2 - angle;
+	if ( x < 0 ) angle = M_PI - angle;
+	if ( y < 0 ) angle *= -1.0;
 	
 	//Convert from radians
 	angle *= DEGREESPERRADIAN;
