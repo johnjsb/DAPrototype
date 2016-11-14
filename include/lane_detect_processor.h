@@ -36,15 +36,12 @@ void FindPolygon( Polygon& polygon,
 				  bool useoptimaly = false );
 float PercentMatch( const Polygon& polygon,
 					const cv::Mat& optimalmat );
-int32_t ScorePolygonByPoint( const Polygon& polygon,
-							 const Polygon& optimalpolygon );
 void AveragePolygon( Polygon& polygon,
 					 std::deque<Polygon>& pastpolygons,
 					 int samplestoaverage,
 					 int samplestokeep );
 void ProcessImage( cv::Mat& image,
 				   Polygon& polygon );
-uint32_t FastSquareRoot( int32_t x );
 float FastArcTan2( const float y,
 				   const float x );
 
