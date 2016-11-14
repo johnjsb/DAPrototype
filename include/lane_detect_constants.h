@@ -5,7 +5,7 @@
 
 namespace lanedetectconstants {
 	//Image evaluation
-	extern uint16_t lowercannythreshold;
+	extern float kotsuscalefactor;
 	
 	//Polygon filtering
 	extern Polygon optimalpolygon;

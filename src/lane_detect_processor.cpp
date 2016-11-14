@@ -31,7 +31,7 @@
 
 namespace lanedetectconstants {
 	//Image evaluation
-	uint16_t lowercannythreshold{ 40 };
+	float kotsuscalefactor{ 0.25f };
 	
 	//Polygon filtering
 	Polygon optimalpolygon{ cv::Point(100,400),
@@ -51,7 +51,7 @@ namespace lanedetectconstants {
 	float ksegmentlengthwidthratio{ 2.4f };
 	
 	//Contour construction filter
-	float ksegmentsanglewindow{ 37.0f };
+	float ksegmentsanglewindow{ 34.0f };
 	
 	//Contour filtering
 	uint16_t kellipseheight{ 25 };					//In terms of pixels, future change
@@ -81,13 +81,11 @@ void ProcessImage ( cv::Mat& image,
 //Find contours
 //-----------------------------------------------------------------------------------------
 	//Auto threshold values for canny edge detection
-    //double otsuthreshval = cv::threshold( image, image, 0, 255,
-	//										CV_THRESH_BINARY | CV_THRESH_OTSU );
+	cv::Scalar averageintensity = cv::mean( image );
+	float lowerthreshold{ lanedetectconstants::kotsuscalefactor *
+						  averageintensity.val[0] };
 	//Canny edge detection
-    //cv::Canny( image, image, otsuthreshval * 0.5, otsuthreshval );
-    cv::Canny( image, image,
-			   lanedetectconstants::lowercannythreshold,
-			   3 * lanedetectconstants::lowercannythreshold );
+    cv::Canny( image, image, lowerthreshold, 3 * lowerthreshold );
 	std::vector<Contour> detectedcontours;
     std::vector<cv::Vec4i> detectedhierarchy;
     cv::findContours( image, detectedcontours, detectedhierarchy,
