@@ -20,8 +20,7 @@ void ProcessImageThread( cv::Mat *orgimage,
 	
 	//Check if LDW is enabled
 	if ( !settings::ldw::kenabled ) {
-		std::cout << "LDW disabled, exiting image processor thread!" <<
-			'\n';
+		std::cout << "LDW disabled, exiting image processor thread!" << '\n';
 		return;
 	}
 	
@@ -37,7 +36,7 @@ void ProcessImageThread( cv::Mat *orgimage,
 	
 	//create pace setter
 	PaceSetter processorpacer(settings::ldw::kupdatefps, "image processor");
-	
+
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
 		if ( (processvalues->gpsstatus_ != 2) && settings::ldw::kenabled ) {
@@ -49,55 +48,38 @@ void ProcessImageThread( cv::Mat *orgimage,
 			//Get lanes
 			Polygon newpolygon;
 			ProcessImage( processimage, newpolygon );
-			AveragePolygon( newpolygon, pastpolygons, settings::ldw::ksamplestoaverage,
-				settings::ldw::ksamplestokeep );	
+			AveragePolygon( newpolygon,
+						    pastpolygons,
+						    settings::ldw::ksamplestoaverage,
+						    settings::ldw::ksamplestokeep );	
 
 			//Evaluate LDW
 			if ( newpolygon[0] != cv::Point(0,0) ) {
-				double deviationpix = 0.5*( newpolygon[0].x +
-					newpolygon[1].x - settings::cam::kpixwidth );
+				double deviationpix = 0.5 * ( newpolygon[0].x + 
+											  newpolygon[1].x - 
+											  settings::cam::kpixwidth );
 				double deviationper = 100.0 * deviationpix /
-					static_cast<double>(newpolygon[1].x - newpolygon[0].x);
-					//static_cast<double>(settings::cam::kpixwidth);			
-				if ( (0.0 < deviationper) && (deviationper <
-					settings::ldw::kperoffsetwarning) ) {
-					processvalues->ldwstatus_ = 2;
-					processvalues->ldwpwmvalue_ = 1023 + static_cast<int>((1024.0*(deviationper -
-						settings::ldw::kperoffsetwarning)) /
-						(settings::ldw::kperoffsetwarning));
-				} else if ( settings::ldw::kperoffsetwarning < deviationper &&
-					deviationper < settings::ldw::kperoffsetalarm ) {
-					processvalues->ldwstatus_ = 4;
-					processvalues->ldwpwmvalue_ = 1023 + static_cast<int>((1024.0*(deviationper -
-						settings::ldw::kperoffsetwarning)) /
-						(settings::ldw::kperoffsetwarning));
-				} else if ( settings::ldw::kperoffsetalarm < deviationper ) {
-					processvalues->ldwstatus_ = 6;
-					processvalues->ldwpwmvalue_ = 1023;
-				} else if ( 0.0 > deviationper && deviationper >
-					(-1.0 * settings::ldw::kperoffsetwarning) ) {
+									  static_cast<double>(newpolygon[1].x -
+														  newpolygon[0].x);	
+				if ( settings::ldw::kperoffsetalarm < deviationper ) {
 					processvalues->ldwstatus_ = 1;
-					processvalues->ldwpwmvalue_ = 1023 - static_cast<int>((1024.0*(deviationper +
-						settings::ldw::kperoffsetwarning)) /
-						(settings::ldw::kperoffsetwarning));
-				} else if ( (-1.0 * settings::ldw::kperoffsetwarning) > deviationper &&
-					deviationper > (-1.0 * settings::ldw::kperoffsetalarm) ) {
+				} else if ( (settings::ldw::kperoffsetwarning < deviationper) &&
+							(deviationper < settings::ldw::kperoffsetalarm) ) {
+					processvalues->ldwstatus_ = 2;
+				} else if ( (0.0 < deviationper) &&
+						    (deviationper < settings::ldw::kperoffsetwarning) ) {
 					processvalues->ldwstatus_ = 3;
-					processvalues->ldwpwmvalue_ = 1023 - static_cast<int>((1024.0*(deviationper +
-						settings::ldw::kperoffsetalarm)) /
-						(settings::ldw::kperoffsetalarm - settings::ldw::kperoffsetwarning));
-				} else if ( (-1.0 * settings::ldw::kperoffsetalarm) > deviationper ) {
+				} else if ( (0.0 > deviationper) &&
+							(deviationper > -settings::ldw::kperoffsetwarning) ) {
+					processvalues->ldwstatus_ = 4;
+				} else if ( (-settings::ldw::kperoffsetwarning > deviationper) &&
+							(deviationper > -settings::ldw::kperoffsetalarm) ) {
 					processvalues->ldwstatus_ = 5;
-					processvalues->ldwpwmvalue_ = 1023;
+				} else if ( -settings::ldw::kperoffsetalarm > deviationper ) {
+					processvalues->ldwstatus_ = 6;
 				}
 			} else {
 				processvalues->ldwstatus_ = -1;
-				processvalues->ldwpwmvalue_ = 0;
-			}
-			if (processvalues->ldwpwmvalue_ < 0) {
-				processvalues->ldwpwmvalue_ = 0;
-			} else if (processvalues->ldwpwmvalue_ > 1023) {
-				processvalues->ldwpwmvalue_ = 1023;
 			}
 			//Write new data
 			processvalues->SetPolygon(newpolygon);
