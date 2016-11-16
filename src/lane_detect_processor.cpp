@@ -31,7 +31,7 @@
 
 namespace lanedetectconstants {
 	//Image evaluation
-	float kotsuscalefactor{ 0.25f };
+	float kotsuscalefactor{ 0.2 };
 	
 	//Polygon filtering
 	Polygon optimalpolygon{ cv::Point(100,400),

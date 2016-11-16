@@ -22,19 +22,24 @@ void VideoWriterThread ( cv::Mat *orgimage,
 {
 
 	std::cout << "Video writer thread starting!" << '\n';
-
+	
+	//Create pace setter
+	PaceSetter videopacer(settings::cam::krecfps, "video writer");
+	
 	//Check image is initialized
 	if ( settings::cam::krecordorgimage ) {
 		while ( orgimage->empty() ) {
 			if (*exitsignal) {
 				return;
-			}	  
+			}
+			videopacer.SetPace();			
 		}		
 	} else {
 		while ( modimage->empty() ) {
 			if (*exitsignal) {
 				return;
-			}	  
+			}
+			videopacer.SetPace();
 		}		
 	}
 
@@ -68,8 +73,6 @@ void VideoWriterThread ( cv::Mat *orgimage,
 	std::chrono::high_resolution_clock::time_point startime(
 		std::chrono::high_resolution_clock::now());
 	int32_t filelengthseconds{60 * settings::cam::kminperfile};
-	//Create pace setter
-	PaceSetter videopacer(settings::cam::krecfps, "video writer");
 
 	//Loop
 	while( !(*exitsignal) ) {

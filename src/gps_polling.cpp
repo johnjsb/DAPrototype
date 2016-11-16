@@ -22,27 +22,26 @@ void GpsPollingThread( ProcessValues *processvalues,
 #ifdef __arm__									//Detect if compiling for raspberry pi
 	//Create thread variables
 	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
-	/*
-	std::deque<double> latitudevalues;
-	std::deque<double> longitudevalues;
-	std::deque<double> speedvalues;
-	*/
 	
     if (gps_rec.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
         std::cout << "No GPSD running. exiting GPS thread." << '\n';
         return;
     }
+		
+	//create pace setter
+	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
 
 	//Get first data to set system time
-	struct gps_data_t* firstdata;
+	struct gps_data_t* firstdata{ gps_rec.read() };
 	processvalues->gpsstatus_ = 1;
 	
 	//Loop until first GPS lock to set system time
-	while (((firstdata = gps_rec.read()) == NULL) ||
-		(firstdata->fix.mode <= 1)) {
+	while ( ((firstdata = gps_rec.read()) == NULL) ||
+		    (firstdata->fix.mode <= 1) ) {
 		if (*exitsignal) {
 			return;
-		}	  
+		}
+		gpspacer.SetPace();
 	}
 	
 	//Convert gps_data_t* member 'time' to timeval
@@ -59,11 +58,6 @@ void GpsPollingThread( ProcessValues *processvalues,
 	} else {
 		std::cout << "Time set failure!" << '\n';
 	}
-	    
-    //Update every 200 ms
-	//gps_rec.send("$PMTK220,200*2C\r\n");
-	//Measure every 200 ms
-	//gps_rec.send("$PMTK300,200,0,0,0,0*2F\r\n");
 	
 	//Set baud rate 115200
 	if (gps_send(firstdata,"$PMTK251,115200*1F\r\n") >= 0) {
@@ -86,15 +80,12 @@ void GpsPollingThread( ProcessValues *processvalues,
 		std::cout << "GPS measure rate setting failed!" << '\n';
 	}
 	
-	//Set speed threshold @ 2.0 m/s, needed??
+	//Set speed threshold @ 2.0 m/s
 	if (gps_send(firstdata,"$PMTK397,2.0*3F\r\n") >= 0) {
 		std::cout << "GPS speed threshold set to 2.0 m/s" << '\n';
 	} else {
 		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
-	
-	//create pace setter
-	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
@@ -112,14 +103,6 @@ void GpsPollingThread( ProcessValues *processvalues,
 				processvalues->latitude_ = newdata->fix.latitude;
 				processvalues->longitude_ = newdata->fix.longitude;
 				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * newdata->fix.speed;
-				/*
-				processvalues->latitude_ = Average(newdata->fix.latitude,
-					latitudevalues, settings::gps::ksamplestoaverage);
-				processvalues->longitude_ = Average(newdata->fix.longitude,
-					longitudevalues, settings::gps::ksamplestoaverage);
-				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * Average(newdata->fix.speed,
-					speedvalues, settings::gps::ksamplestoaverage);
-				*/
 				if ( processvalues->gpsspeed_ > settings::ldw::kenablespeed ) {
 					processvalues->gpsstatus_ =  3;
 				} else {
@@ -128,11 +111,8 @@ void GpsPollingThread( ProcessValues *processvalues,
 				
 			} else {
 				processvalues->gpsstatus_ = 1;
-				//std::cout << "No GPS fix." << '\n';
 			}
 		}
-		
-		//ToDo - Future implementation of speeding notification
 
 		gpspacer.SetPace();
 	}

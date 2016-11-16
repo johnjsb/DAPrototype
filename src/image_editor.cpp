@@ -21,12 +21,17 @@ void ImageEditorThread( cv::Mat *orgimage,
 {
 
 	std::cout << "Image editor thread starting!" << '\n';
+
+	//create pace setter
+	PaceSetter editorpacer(std::max(settings::disp::kupdatefps,
+		settings::cam::krecfps), "image editor");
 		
 	//Check image is initialized
 	while ( orgimage->empty() ) {
 		if (*exitsignal) {
 			return;
-		}	  
+		}
+		editorpacer.SetPace();
 	}
 	
 	//Thread variables
@@ -50,11 +55,6 @@ void ImageEditorThread( cv::Mat *orgimage,
 	float distancesize{ 0.5f * heightscalefactor };
 	cv::Point diagnosticlocation{ cv::Point(10 * widthscalefactor, 20 * heightscalefactor) };
 	float diagnosticsize{ 0.5f * heightscalefactor };
-	
-
-	//create pace setter
-	PaceSetter editorpacer(std::max(settings::disp::kupdatefps,
-		settings::cam::krecfps), "image editor");
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {

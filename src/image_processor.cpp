@@ -24,18 +24,19 @@ void ProcessImageThread( cv::Mat *orgimage,
 		return;
 	}
 	
+	//create pace setter
+	PaceSetter processorpacer(settings::ldw::kupdatefps, "image processor");
+	
 	//Check image is initialized
 	while ( orgimage->empty() ) {
 		if (*exitsignal) {
 			return;
-		}	  
+		}
+		processorpacer.SetPace();		
 	}
 
 	//Create thread variables
 	std::deque<Polygon> pastpolygons;
-	
-	//create pace setter
-	PaceSetter processorpacer(settings::ldw::kupdatefps, "image processor");
 
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
