@@ -48,15 +48,15 @@ namespace lanedetectconstants {
 	uint16_t ksegmentellipseheight{ 10 };			//In terms of pixels, future change
 	uint16_t kverticalsegmentlimit{ static_cast<uint16_t>(optimalpolygon[2].y) };
 	float ksegmentminimumangle{ 26.0f };
-	float ksegmentlengthwidthratio{ 2.4f };
+	float ksegmentlengthwidthratio{ 2.6f };
 	
 	//Contour construction filter
 	float ksegmentsanglewindow{ 34.0f };
 	
 	//Contour filtering
-	uint16_t kellipseheight{ 25 };					//In terms of pixels, future change
+	uint16_t kellipseheight{ 20 };					//In terms of pixels, future change
 	float kminimumangle{ 25.0f };
-	float klengthwidthratio{ 5.55f };
+	float klengthwidthratio{ 3.5f };
 	
 	//Scoring
 	float kanglefromcenter{ 30.0f };
@@ -88,7 +88,9 @@ void ProcessImage ( cv::Mat& image,
     cv::Canny( image, image, lowerthreshold, 3 * lowerthreshold );
 	std::vector<Contour> detectedcontours;
     std::vector<cv::Vec4i> detectedhierarchy;
-    cv::findContours( image, detectedcontours, detectedhierarchy,
+    cv::findContours( image,
+					  detectedcontours
+					  detectedhierarchy,
 					  CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
 		
 //-----------------------------------------------------------------------------------------
