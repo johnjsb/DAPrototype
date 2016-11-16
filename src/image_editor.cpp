@@ -23,8 +23,9 @@ void ImageEditorThread( cv::Mat *orgimage,
 	std::cout << "Image editor thread starting!" << '\n';
 
 	//create pace setter
-	PaceSetter editorpacer(std::max(settings::disp::kupdatefps,
-		settings::cam::krecfps), "image editor");
+	PaceSetter editorpacer( std::max(settings::disp::kupdatefps,
+									 settings::cam::krecfps),
+							"image editor");
 		
 	//Check image is initialized
 	while ( orgimage->empty() ) {
@@ -35,25 +36,30 @@ void ImageEditorThread( cv::Mat *orgimage,
 	}
 	
 	//Thread variables
-    time_t now{time(0)};
+    time_t now{ time(0) };
 	std::string timetext{ asctime(localtime(&now)) };
 	timetext.pop_back();
 	capturemutex->lock();
-	float widthscalefactor{ orgimage->cols / 640.0f};
-	float heightscalefactor{ orgimage->rows / 480.0f};
+	float widthscalefactor{ orgimage->cols / 640.0f };
+	float heightscalefactor{ orgimage->rows / 480.0f };
 	capturemutex->unlock();
-	cv::Point datetimelocation{ cv::Point(395 * widthscalefactor,470 * heightscalefactor) };
+	cv::Point datetimelocation{ cv::Point(395 * widthscalefactor,
+										  470 * heightscalefactor) };
 	float datetimesize{ 0.5f * heightscalefactor };
-	cv::Point speedlocation{ cv::Point(515 * widthscalefactor,30 * heightscalefactor) };
+	cv::Point speedlocation{ cv::Point(515 * widthscalefactor,
+									   30 * heightscalefactor) };
 	float speedsize{ 0.75f * heightscalefactor };
-	cv::Point latlonglocation{ cv::Point(10 * widthscalefactor, 470 * heightscalefactor) };
+	cv::Point latlonglocation{ cv::Point(10 * widthscalefactor,
+										 470 * heightscalefactor) };
 	float latlongsize{ 0.5f * heightscalefactor };
-	cv::Point followingtimelocation{ cv::Point(10 * widthscalefactor, 455 *
-		heightscalefactor) };
+	cv::Point followingtimelocation{ cv::Point(10 * widthscalefactor,
+											   455 * heightscalefactor) };
 	float followingtimesize{ 0.5f * heightscalefactor };
-	cv::Point distancelocation{ cv::Point(100 * widthscalefactor, 455 * heightscalefactor) };
+	cv::Point distancelocation{ cv::Point(100 * widthscalefactor,
+										  455 * heightscalefactor) };
 	float distancesize{ 0.5f * heightscalefactor };
-	cv::Point diagnosticlocation{ cv::Point(10 * widthscalefactor, 20 * heightscalefactor) };
+	cv::Point diagnosticlocation{ cv::Point(10 * widthscalefactor,
+											20 * heightscalefactor) };
 	float diagnosticsize{ 0.5f * heightscalefactor };
 	
 	//Loop indefinitely
@@ -69,50 +75,90 @@ void ImageEditorThread( cv::Mat *orgimage,
 		//Resize (if necesssary)
 		
 		//Show time
-		putText( modifiedimage, timetext, datetimelocation, CV_FONT_HERSHEY_COMPLEX,
-				datetimesize, cv::Scalar(255,255,0), 1, cv::LINE_8, false );
+		putText( modifiedimage,
+				 timetext,
+				 datetimelocation,
+				 CV_FONT_HERSHEY_COMPLEX,
+				 datetimesize,
+				 cv::Scalar(255,255,0),
+				 1,
+				 cv::LINE_8,
+				 false );
 		//Show speed
 		std::stringstream speedtext;
-		speedtext << std::fixed << std::setprecision(1) << processvalues->gpsspeed_ << " mph";
-		putText( modifiedimage, speedtext.str(), speedlocation, CV_FONT_HERSHEY_COMPLEX,
-				speedsize, cv::Scalar(0,255,0), 1, cv::LINE_8, false );
+		speedtext << std::fixed <<
+					 std::setprecision(1) << processvalues->gpsspeed_ << " mph";
+		putText( modifiedimage,
+				 speedtext.str(),
+				 speedlocation,
+				 CV_FONT_HERSHEY_COMPLEX,
+				 speedsize,
+				 cv::Scalar(0,255,0),
+				 1,
+				 cv::LINE_8,
+				 false );
 		
 		//Show latitude and longitude
-		putText( modifiedimage, ConvertLatLong(processvalues->latitude_,
-			processvalues->longitude_),	latlonglocation, CV_FONT_HERSHEY_COMPLEX,
-			latlongsize, cv::Scalar(255,0,255), 1, cv::LINE_8, false );
+		putText( modifiedimage,
+				 ConvertLatLong(processvalues->latitude_, processvalues->longitude_),
+				 latlonglocation,
+				 CV_FONT_HERSHEY_COMPLEX,
+				 latlongsize,
+				 cv::Scalar(255,0,255),
+				 1,
+				 cv::LINE_8,
+				 false );
 			
 		//Show following time
 		std::stringstream timetext;
 		if (processvalues->fcwstatus_ > 0) {
-			timetext  << std::fixed << std::setprecision(2) <<
-				processvalues->timetocollision_ << " s";
+			timetext  << std::fixed <<
+						 std::setprecision(2) << processvalues->timetocollision_ << " s";
 		} else {
 			timetext  << "-.-- s";
 		}
-		putText( modifiedimage, timetext.str(),	followingtimelocation,
-			CV_FONT_HERSHEY_COMPLEX, followingtimesize, cv::Scalar(255,255,255), 1,
-			cv::LINE_8,	false );
+		putText( modifiedimage,
+				 timetext.str(),
+				 followingtimelocation,
+				 CV_FONT_HERSHEY_COMPLEX,
+				 followingtimesize,
+				 cv::Scalar(255,255,255),
+				 1,
+				 cv::LINE_8,
+				 false );
 		
 		//Show following distance
 		std::stringstream distancetext;
-		if (processvalues->fcwstatus_ > 0) {
-			distancetext  << std::fixed << std::setprecision(2) <<
-				processvalues->forwarddistance_ << " ft";
+		if ( processvalues->fcwstatus_ > 0 ) {
+			distancetext  << std::fixed <<
+							 std::setprecision(2) << processvalues->forwarddistance_ << " ft";
 		} else {
 			distancetext  << "-.-- ft";
 		}
-		putText( modifiedimage, distancetext.str(),	distancelocation,
-			CV_FONT_HERSHEY_COMPLEX, distancesize, cv::Scalar(255,255,255), 1,
-			cv::LINE_8, false );
+		putText( modifiedimage,
+				 distancetext.str(),
+				 distancelocation,
+				 CV_FONT_HERSHEY_COMPLEX,
+				 distancesize,
+				 cv::Scalar(255,255,255),
+				 1,
+				 cv::LINE_8,
+				 false );
 			
 		//Show diagnostic message
 		std::string diagnosticmessage{ GetDiagnosticString(processvalues->ldwstatus_,
-			processvalues->fcwstatus_, processvalues-> gpsstatus_) };
+														   processvalues->fcwstatus_,
+														   processvalues-> gpsstatus_) };
 		if ( diagnosticmessage.length() != 0 ) {
-			putText( modifiedimage, diagnosticmessage, diagnosticlocation,
-				CV_FONT_HERSHEY_COMPLEX, diagnosticsize, cv::Scalar(0,0,255), 1, cv::LINE_8,
-				false );
+			putText( modifiedimage,
+					 diagnosticmessage,
+					 diagnosticlocation,
+					 CV_FONT_HERSHEY_COMPLEX,
+					 diagnosticsize,
+					 cv::Scalar(0,0,255),
+					 1,
+					 cv::LINE_8,
+					 false );
 		}
 		
 				
@@ -120,10 +166,12 @@ void ImageEditorThread( cv::Mat *orgimage,
 		Polygon newpolygon = processvalues->GetPolygon();
 		cv::Point cvpointarray[4];
 		std::copy( newpolygon.begin(), newpolygon.end(), cvpointarray );
-		if ( (newpolygon[0] != cv::Point(0,0)) && settings::cam::kshadelanes &&
-			(processvalues->ldwstatus_ > 0) ) {
-			cv::Mat polygonimage{ modifiedimage.size(), modifiedimage.type(),
-				cv::Scalar(0) };
+		if ( (newpolygon[0] != cv::Point(0,0)) &&
+			 settings::cam::kshadelanes &&
+			 (processvalues->ldwstatus_ > 0) ) {
+			cv::Mat polygonimage{ modifiedimage.size(),
+								  modifiedimage.type(),
+								  cv::Scalar(0) };
 			cv::fillConvexPoly( polygonimage, cvpointarray, 4,  cv::Scalar(0,255,0) );
 			OverlayImage( &polygonimage, &modifiedimage, 0.5 );
 		}

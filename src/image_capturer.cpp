@@ -18,49 +18,52 @@ void CaptureImageThread( cv::Mat *capture,
 
     //Create camera
 	#ifdef __arm__								//Detect if compiling for raspberry pi
-		raspicam::RaspiCam_Cv Camera;             	//For Raspberry Pi
+	raspicam::RaspiCam_Cv Camera;             	//For Raspberry Pi
 	#else
-		cv::VideoCapture stream1(0);                //For Laptop
+	cv::VideoCapture stream1( 0 );                //For Laptop
 	#endif
 
 	//Set properties
 	#ifdef __arm__								//Detect if compiling for raspberry pi
-		Camera.set(CV_CAP_PROP_FRAME_WIDTH, settings::cam::kpixwidth);
-		Camera.set(CV_CAP_PROP_FRAME_HEIGHT, settings::cam::kpixheight);
-		Camera.set(CV_CAP_PROP_FORMAT, CV_8UC3);
+	Camera.set( CV_CAP_PROP_FRAME_WIDTH, settings::cam::kpixwidth );
+	Camera.set( CV_CAP_PROP_FRAME_HEIGHT, settings::cam::kpixheight );
+	Camera.set( CV_CAP_PROP_FORMAT, CV_8UC3 );
 	#endif
 
     //Open
 	#ifdef __arm__								//Detect if compiling for raspberry pi
-		if (!Camera.open())                       	//For Raspberry Pi
+	if ( !Camera.open() ) {                    	//For Raspberry Pi
 	#else
-		if (!stream1.isOpened())                    //For Laptop
+	if ( !stream1.isOpened() ) {                //For Laptop
 	#endif
-	{
 		std::cerr<<"Error opening the camera"<<'\n';
 		exit(-1);
 	}
 	std::cout << "Camera opened succesfully!" << '\n';
 
 	//create pace setter
-	PaceSetter camerapacer(std::max(std::max(settings::disp::kupdatefps,
-		settings::cam::krecfps), settings::ldw::kupdatefps), "Image capturer");
+	PaceSetter camerapacer( std::max(std::max(settings::disp::kupdatefps,
+											  settings::cam::krecfps),
+									 settings::ldw::kupdatefps),
+							"Image capturer");
 
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
 		cv::Mat newimage;
 		#ifdef __arm__							//Detect if compiling for raspberry pi
-			(Camera.grab());                       	//For Raspberry Pi
-			(Camera.retrieve(newimage));           	//For Raspberry Pi
-			cv::flip(newimage, newimage, -1);
+		(Camera.grab());                       	//For Raspberry Pi
+		(Camera.retrieve(newimage));           	//For Raspberry Pi
+		cv::flip(newimage, newimage, -1);
 		#else
-			stream1.read(newimage);                 //For Laptop
+		stream1.read(newimage);                 //For Laptop
 		#endif
 		//resize image
 		#ifndef __arm__
-		if (newimage.rows != settings::cam::kpixheight) {
-			cv::resize(newimage, newimage, cv::Size(settings::cam::kpixwidth,
-				settings::cam::kpixheight));
+		if ( newimage.rows != settings::cam::kpixheight ) {
+			cv::resize( newimage,
+						newimage,
+						cv::Size(settings::cam::kpixwidth,
+								 settings::cam::kpixheight) );
 		}
 		#endif
 		

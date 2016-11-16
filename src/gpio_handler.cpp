@@ -39,12 +39,12 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	}
 
 	//Create thread variables
-	bool warning{false};
-	bool alarm{false};
-	int buzzerinterval{ settings::comm::kpollrategpio/2 };	//500ms
-	int blinkinterval{ settings::comm::kpollrategpio/2 };	//500ms
-	int buzzercount{0};
-	int blinkercount{0};
+	bool warning{ false };
+	bool alarm{ false };
+	int buzzerinterval{  settings::comm::kpollrategpio / 2  };	//500ms
+	int blinkinterval{  settings::comm::kpollrategpio / 2  };	//500ms
+	int buzzercount{ 0 };
+	int blinkercount{ 0 };
 	#ifdef __arm__									//Detect if compiling for raspberry pi
 	wiringPiSetupGpio();
 	pinMode(POWERINPUTPIN, INPUT); 
@@ -62,7 +62,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	pinMode(FORWARDOKPIN, PWM_OUTPUT);
 	pinMode(CENTERPIN, OUTPUT);
 	#endif
-	int inputfailcount{0};
+	int inputfailcount{ 0 };
 	
 	//create pace setter
 	PaceSetter gpiopacer(settings::comm::kpollrategpio, "GPIO handler");
@@ -70,22 +70,24 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	//Loop indefinitely
 	for(;;) {
 		//Check for Warnings
-		if ( (processvalues->ldwstatus_ > 2) || (processvalues->fcwstatus_ > 0) ||
-			(processvalues->gpsstatus_ > 3) ) {
+		if ( (processvalues->ldwstatus_ > 2) ||
+			 (processvalues->fcwstatus_ > 0) ||
+			 (processvalues->gpsstatus_ > 3) ) {
 			warning = true;
 		} else {
 			warning = alarm = false;
 		}
 		//Check for Alarms
-		if ( (processvalues->ldwstatus_ > 4) || (processvalues->fcwstatus_ > 2) ||
-			(processvalues->gpsstatus_ > 4) ) {
+		if ( (processvalues->ldwstatus_ > 4) ||
+			 (processvalues->fcwstatus_ > 2) ||
+			 (processvalues->gpsstatus_ > 4) ) {
 			alarm = true;
 		}
 				
 		#ifdef __arm__							//Detect if compiling for raspberry pi
 
 			//Shutdown logic on power loss
-			if (!digitalRead(POWERINPUTPIN) && settings::gpio::kautoshutdown) {
+			if ( !digitalRead(POWERINPUTPIN) && settings::gpio::kautoshutdown ) {
 				std::cout << "Power loss detected, exiting!" << '\n';
 				break;
 			}
@@ -107,7 +109,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 			}
 			
 			//Set PWM for LDW LED's
-			switch (processvalues->ldwstatus_){
+			switch ( processvalues->ldwstatus_ ){
 				case 1:
 						pwmWrite (LEFTALARMPIN, 0);
 					pwmWrite (LEFTWARNINGPIN, 0);
@@ -201,11 +203,13 @@ void GpioHandlerThread( ProcessValues *processvalues,
 			}
 			
 			//Set center LED
-			if ( (processvalues->ldwstatus_ >= 0) && (processvalues->fcwstatus_ >= 0) &&
-				(processvalues->gpsstatus_ > 1) ) {
+			if ( (processvalues->ldwstatus_ >= 0) &&
+				 (processvalues->fcwstatus_ >= 0) &&
+				 (processvalues->gpsstatus_ > 1) ) {
 					digitalWrite(CENTERPIN, 1);
-			} else if ( (processvalues->ldwstatus_ >= 0) && (processvalues->fcwstatus_ >= 0) &&
-				(processvalues->gpsstatus_ == 0) ) {
+			} else if ( (processvalues->ldwstatus_ >= 0) &&
+						(processvalues->fcwstatus_ >= 0) &&
+						(processvalues->gpsstatus_ == 0) ) {
 				blinkercount++;
 				if ( blinkercount % blinkinterval != 0) continue;
 					if (digitalRead(CENTERPIN)) {

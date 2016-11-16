@@ -27,11 +27,11 @@
 	#define M_1_PI 0.31830988618
 #endif
 #define DEGREESPERRADIAN 57.2957795131
-#define POLYGONSCALING 0.1
+#define POLYGONSCALING 0.05
 
 namespace lanedetectconstants {
 	//Image evaluation
-	float kotsuscalefactor{ 0.2 };
+	float kotsuscalefactor{ 0.2f };
 	
 	//Polygon filtering
 	Polygon optimalpolygon{ cv::Point(100,400),
@@ -89,9 +89,10 @@ void ProcessImage ( cv::Mat& image,
 	std::vector<Contour> detectedcontours;
     std::vector<cv::Vec4i> detectedhierarchy;
     cv::findContours( image,
-					  detectedcontours
+					  detectedcontours,
 					  detectedhierarchy,
-					  CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE );
+					  CV_RETR_CCOMP,
+					  CV_CHAIN_APPROX_SIMPLE );
 		
 //-----------------------------------------------------------------------------------------
 //Evaluate contours
@@ -146,8 +147,8 @@ void ProcessImage ( cv::Mat& image,
 	cv::Point cvpointarray[4];
 	for  (int i =0; i < 4; i++ ) {
 		cvpointarray[i] = cv::Point(POLYGONSCALING *
-						  lanedetectconstants::optimalpolygon[i].x,
-						  POLYGONSCALING * lanedetectconstants::optimalpolygon[i].y);
+									lanedetectconstants::optimalpolygon[i].x,
+									POLYGONSCALING * lanedetectconstants::optimalpolygon[i].y);
 	}
 	cv::fillConvexPoly( optimalmat, cvpointarray, 4,  cv::Scalar(1) );
 	
