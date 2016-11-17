@@ -21,7 +21,9 @@ void GpsPollingThread( ProcessValues *processvalues,
 	std::cout << "GPS polling thread starting!" << '\n';
 #ifdef __arm__									//Detect if compiling for raspberry pi
 	//Create thread variables
-	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
+	struct gps_data_t* firstdata;
+	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT, firstdata);
+	processvalues->gpsstatus_ = 1;
 	
     if (gps_rec.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
         std::cout << "No GPSD running. exiting GPS thread." << '\n';
@@ -30,10 +32,6 @@ void GpsPollingThread( ProcessValues *processvalues,
 		
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
-
-	//Get first data to set system time
-	struct gps_data_t* firstdata{ gps_rec.read() };
-	processvalues->gpsstatus_ = 1;
 	
 	//Loop until first GPS lock to set system time
 	while ( ((firstdata = gps_rec.read()) == NULL) ||
