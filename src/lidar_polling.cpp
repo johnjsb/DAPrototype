@@ -35,10 +35,11 @@ void LidarPolingThread( ProcessValues *processvalues,
 	std::cout << "Lidar polling thread starting!" << '\n';
 
 	//Create thread variables
-	double followingdistance{ 0.0 };
 	bool vehiclemoving{ false };
 	int pullaheaddelay{ settings::comm::kpollratelidar / 2 };	//500ms
+	int timeoutdelay{ settings::comm::kpollratelidar / 2 };	//500ms
 	int pullaheadcount{ 0 };
+	int timeoutcount{ 0 };
 	FcwTracker fcwtracker( settings::fcw::kdistanceoffset,
 						   settings::fcw::ksamplestoaverage );
 
@@ -62,11 +63,16 @@ void LidarPolingThread( ProcessValues *processvalues,
 		bool readerror{ true };
 		fcwresult = lidar_read(dacModule);
 		if ( fcwresult > 0 ) {
-			followingdistance = FEETPERCENTIMETER * fcwresult;
+			fcwtracker.Update( FEETPERCENTIMETER * fcwresult,
+							   processvalues->gpsspeed_ );
+			timeoutcount = 0;
 			readerror = false;
+		} else {
+			timeoutcount++;
+			if ( timeoutcount <= timeoutdelay ) {
+				readerror = false;
+			}
 		}
-		
-		fcwtracker.Update( followingdistance, processvalues->gpsspeed_ );
 		
 		//Check if vehicle is moving
 		if ( processvalues->gpsspeed_ > 1.0 ) {
