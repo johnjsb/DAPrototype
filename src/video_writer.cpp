@@ -70,9 +70,9 @@ void VideoWriterThread ( cv::Mat *orgimage,
     std::thread t_storagethread(&StorageWorker::Run, &storage);
 	
 	//Create thread variables
-	std::chrono::high_resolution_clock::time_point startime(
-		std::chrono::high_resolution_clock::now());
-	int32_t filelengthseconds{60 * settings::cam::kminperfile};
+	std::chrono::high_resolution_clock::time_point startime{
+		std::chrono::high_resolution_clock::now() };
+	int32_t filelengthseconds{ 60 * settings::cam::kminperfile };
 
 	//Loop
 	while( !(*exitsignal) ) {
