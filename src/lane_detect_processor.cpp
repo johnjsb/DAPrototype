@@ -26,12 +26,12 @@
 #ifndef M_1_PI
 	#define M_1_PI 0.31830988618
 #endif
-#define DEGREESPERRADIAN 57.2957795131
-#define POLYGONSCALING 0.05
+#define DEGREESPERRADIAN 57.2957795131f
+#define POLYGONSCALING 0.1f
 
 namespace lanedetectconstants {
 	//Image evaluation
-	float kotsuscalefactor{ 0.2f };
+	float kotsuscalefactor{ 0.218f };
 	
 	//Polygon filtering
 	Polygon optimalpolygon{ cv::Point(100,400),
@@ -47,7 +47,7 @@ namespace lanedetectconstants {
 	//Segment filtering
 	uint16_t ksegmentellipseheight{ 10 };			//In terms of pixels, future change
 	uint16_t kverticalsegmentlimit{ static_cast<uint16_t>(optimalpolygon[2].y) };
-	float ksegmentminimumangle{ 26.0f };
+	float ksegmentminimumangle{ 20.0f };
 	float ksegmentlengthwidthratio{ 2.6f };
 	
 	//Contour construction filter
@@ -56,11 +56,11 @@ namespace lanedetectconstants {
 	//Contour filtering
 	uint16_t kellipseheight{ 20 };					//In terms of pixels, future change
 	float kminimumangle{ 25.0f };
-	float klengthwidthratio{ 3.5f };
+	float klengthwidthratio{ 4.0f };
 	
 	//Scoring
 	float kanglefromcenter{ 30.0f };
-	float klowestscorelimit{ 10.0f };
+	float klowestscorelimit{ 28.0f };
 
 }
 
@@ -148,7 +148,8 @@ void ProcessImage ( cv::Mat& image,
 	for  (int i =0; i < 4; i++ ) {
 		cvpointarray[i] = cv::Point(POLYGONSCALING *
 									lanedetectconstants::optimalpolygon[i].x,
-									POLYGONSCALING * lanedetectconstants::optimalpolygon[i].y);
+									POLYGONSCALING *
+									lanedetectconstants::optimalpolygon[i].y);
 	}
 	cv::fillConvexPoly( optimalmat, cvpointarray, 4,  cv::Scalar(1) );
 	
@@ -436,11 +437,11 @@ float PercentMatch( const Polygon& polygon,
 	polygonmat += optimalmat;
 	
 	//Evaluate result
-	uint16_t excessarea{ 0 };
-	uint16_t overlaparea{ 0 };
-	for ( int i = 0; i < optimalmat.rows; i++ ) {
+	uint32_t excessarea{ 0 };
+	uint32_t overlaparea{ 0 };
+	for ( int i = 0; i < polygonmat.rows; i++ ) {
 		uchar* p { polygonmat.ptr<uchar>(i) };
-		for ( int j = 0; j < optimalmat.cols; j++ ) {
+		for ( int j = 0; j < polygonmat.cols; j++ ) {
 			switch ( p[j] )
 			{
 				case 1:
@@ -455,7 +456,6 @@ float PercentMatch( const Polygon& polygon,
 			}
 		}
 	}
-
 	return (100.0f * overlaparea) / (overlaparea + excessarea);
 }
 
