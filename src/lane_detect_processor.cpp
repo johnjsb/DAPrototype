@@ -15,16 +15,16 @@
 
 //Preprocessor literals
 #ifndef M_PI
-    #define M_PI 3.14159265359
+    #define M_PI 3.14159265359f
 #endif
 #ifndef M_PI_2
-    #define M_PI_2 1.57079632679
+    #define M_PI_2 1.57079632679f
 #endif
 #ifndef M_PI_4
-    #define M_PI_4 0.78539816339
+    #define M_PI_4 0.78539816339f
 #endif
 #ifndef M_1_PI
-	#define M_1_PI 0.31830988618
+	#define M_1_PI 0.31830988618f
 #endif
 #define DEGREESPERRADIAN 57.2957795131f
 #define POLYGONSCALING 0.1f
