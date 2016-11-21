@@ -34,8 +34,15 @@ void DisplayUpdateThread( cv::Mat *image,
 	}
 
 	//Create thread variables
-	int resizedwidth{ (image->cols*settings::disp::kpixheight) / image->rows };
-	int borderthickness{ (settings::disp::kpixwidth - resizedwidth) / 2 };
+	int sideborderthickness{ (settings::disp::kpixwidth - image->cols) / 2 };
+	int topborderthickness{ (settings::disp::kpixheight - image->rows) / 2 };
+	
+	//Check image sizing to prevent exception
+	if ( (sideborderthickness < 0) || (topborderthickness < 0) ) {
+		std::cout << "Captured image too large for display, esiting!" << '\n';
+		return;
+	}
+	
 	cv::Mat imagetemp{ image->rows, image->cols, image->type(), cv::Scalar(0) };
 	
 	//Initialize display with first image
@@ -64,25 +71,15 @@ void DisplayUpdateThread( cv::Mat *image,
 		
 		//Get latest image
 		displaymutex->lock();
-		imagetemp = *image;
-		displaymutex->unlock();
-		
-		//Resize if necessary
-		if ( imagetemp.rows != settings::disp::kpixheight ) {
-			cv::resize( imagetemp,
-						imagetemp,
-						cv::Size(resizedwidth, settings::disp::kpixheight) );
-		}
-		
-		//Format
-		cv::copyMakeBorder( imagetemp,
+		cv::copyMakeBorder( *image,
 							imagetemp,
-							0,
-							0,
-							borderthickness,
-							borderthickness,
+							topborderthickness,
+							topborderthickness,
+							sideborderthickness,
+							sideborderthickness,
 							cv::BORDER_CONSTANT,
 							cv::Scalar(0) );
+		displaymutex->unlock();
 
 		#ifdef __arm__
 		//OpenGL implementation
