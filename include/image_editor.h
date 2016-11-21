@@ -14,8 +14,7 @@ void ImageEditorThread( cv::Mat *orgimage,
 						std::atomic<bool> *exitsignal );
 
 void OverlayImage( cv::Mat* overlay,
-			       cv::Mat* src,
-			       double transparency );
+			       cv::Mat* src );
 			   
 std::string ConvertLatLong ( double latitude, 
 	                         double longitude );

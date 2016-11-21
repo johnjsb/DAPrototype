@@ -170,10 +170,10 @@ void ImageEditorThread( cv::Mat *orgimage,
 			 settings::cam::kshadelanes &&
 			 (processvalues->ldwstatus_ > 0) ) {
 			cv::Mat polygonimage{ modifiedimage.size(),
-								  modifiedimage.type(),
+								  CV_8UC1,
 								  cv::Scalar(0) };
-			cv::fillConvexPoly( polygonimage, cvpointarray, 4,  cv::Scalar(0,255,0) );
-			OverlayImage( &polygonimage, &modifiedimage, 0.5 );
+			cv::fillConvexPoly( polygonimage, cvpointarray, 4,  cv::Scalar(1) );
+			OverlayImage( &polygonimage, &modifiedimage );
 		}
 		
 		//Write display image
@@ -189,20 +189,14 @@ void ImageEditorThread( cv::Mat *orgimage,
 }
 /*****************************************************************************************/
 void OverlayImage( cv::Mat* overlay,
-                   cv::Mat* src,
-                   double transparency )
+                   cv::Mat* src )
 {
     for (int i = 0; i < src->cols; i++) {
         for (int j = 0; j < src->rows; j++) {
-            cv::Vec3b &intensity = src->at<cv::Vec3b>(j, i);
-            cv::Vec3b &intensityoverlay = overlay->at<cv::Vec3b>(j, i);
-            for(int k = 0; k < src->channels(); k++) {
-                uchar col = intensityoverlay.val[k];
-                if (col != 0){
-                    intensity.val[k] = (intensity.val[k]*(1-transparency) +
-						(transparency*col));
-                }
-            }
+			if ( overlay->at<uchar>(j, i) != 0 ) {
+				cv::Vec3b &intensity = src->at<cv::Vec3b>(j, i);
+				intensity.val[1] = (intensity.val[1] + 255) * 0.5f;
+			}
         }
     }
 }
