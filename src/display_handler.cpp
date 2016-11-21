@@ -6,7 +6,8 @@
 #include "xml_reader.h"
 
 #ifdef __arm__									//Detect if compiling for raspberry pi
-	#include <gtk/gtk.h>
+	#include <gtk/gtk.h>	
+	#include "opencv2/core/opengl.hpp"
 #endif
 
 void DisplayUpdateThread( cv::Mat *image,
@@ -21,52 +22,40 @@ void DisplayUpdateThread( cv::Mat *image,
 		return;
 	}
 	
+	//create pace setter
+	PaceSetter displaypacer( settings::disp::kupdatefps, "display handler" );
+	
 	//Check image is initialized
 	while ( image->empty() ) {
 		if ( *exitsignal ) {
 			return;
-		}	  
+		}
+		displaypacer.SetPace();
 	}
 
 	//Create thread variables
-	int resizedwidth{ ((image->cols*settings::disp::kpixheight)/image->rows) };
-	int borderthickness{ (settings::disp::kpixwidth - resizedwidth)/2 };
-	cv::Mat imagetemp{ cv::Mat(image->rows, image->cols, image->type(), cv::Scalar(0)) };
-	cv::Mat borderedimage{ cv::Mat(settings::disp::kpixheight,
-		                   settings::disp::kpixwidth, image->type(), cv::Scalar(0)) };
-
+	int resizedwidth{ (image->cols*settings::disp::kpixheight) / image->rows };
+	int borderthickness{ (settings::disp::kpixwidth - resizedwidth) / 2 };
+	cv::Mat imagetemp{ image->rows, image->cols, image->type(), cv::Scalar(0) };
+	
 	//Initialize display with first image
 	#ifdef __arm__								//Detect if compiling for raspberry pi
-	//This checks if the raspberry pi is running headless (for better performance)
+	//Check if running headless
 	if ( !gtk_init_check(NULL, NULL) ){
 		std::cout << "Display unavailable, continuing without..." << '\n';
 		return;
 	}
 	#endif
 	std::cout << "Attempting to open display..." << '\n';
-	displaymutex->lock();
-	imagetemp = *image;
-	displaymutex->unlock();
-	if ( imagetemp.rows < borderedimage.rows ) {
-		cv::resize( imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows) );
-	} else if ( imagetemp.rows > borderedimage.rows ) {
-		cv::resize( imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows) );
-	}
-	imagetemp.copyTo( borderedimage.rowRange(0, imagetemp.rows).colRange(borderthickness,
-					  settings::disp::kpixwidth - borderthickness) );
 	#ifdef __arm__								//Detect if compiling for raspberry pi
-	//cv::namedWindow( "Output", cv::WINDOW_OPENGL );	//Performance worse?
-	cv::namedWindow( "Output", CV_WINDOW_NORMAL );
+	cv::namedWindow( "Output", cv::WINDOW_OPENGL );
 	cv::setWindowProperty( "Output", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN );
+	cv::ogl::Buffer buffer;
 	#else
 	cv::namedWindow( "Output", CV_WINDOW_NORMAL );
 	#endif
-	cv::imshow( "Output", borderedimage );
-	cv::waitKey( 1 );
 	std::cout << "Display opened!" << '\n';
 
-	//create pace setter
-	PaceSetter displaypacer( settings::disp::kupdatefps, "display handler" );
 	
 	//Loop
 	while( !(*exitsignal) ) {
@@ -76,20 +65,31 @@ void DisplayUpdateThread( cv::Mat *image,
 		displaymutex->unlock();
 		
 		//Resize if necessary
-		if ( imagetemp.rows < borderedimage.rows ) {
-			cv::resize( imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows) );
-		} else if ( imagetemp.rows > borderedimage.rows ) {
-			cv::resize( imagetemp,imagetemp,cv::Size(resizedwidth, borderedimage.rows) );
+		if ( imagetemp.rows != settings::disp::kpixheight ) {
+			cv::resize( imagetemp,
+						imagetemp,
+						cv::Size(resizedwidth, settings::disp::kpixheight) );
 		}
 		
 		//Format
-		imagetemp.copyTo( borderedimage.rowRange(0, imagetemp.rows).colRange(
-			              borderthickness, settings::disp::kpixwidth - borderthickness) );
-		
-		//Display
-		cv::imshow( "Output", borderedimage );
-		cv::waitKey( 1 );
+		cv::copyMakeBorder( imagetemp,
+							imagetemp,
+							0,
+							0,
+							borderthickness,
+							borderthickness,
+							cv::BORDER_CONSTANT,
+							cv::Scalar(0) );
 
+		#ifdef __arm__
+		//OpenGL implementation
+		buffer.copyFrom(imagetemp, cv::ogl::Buffer::ARRAY_BUFFER, true);
+		cv::imshow( "Output", buffer );
+		#else
+		//Display
+		cv::imshow( "Output", imagetemp );
+		#endif
+		cv::waitKey( 1 );
 		//Set pace
 		displaypacer.SetPace();
 	}
