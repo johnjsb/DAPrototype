@@ -58,7 +58,10 @@ void DisplayUpdateThread( cv::Mat *image,
 
 	
 	//Loop
-	while( !(*exitsignal) ) {
+	while( !(*exitsignal || (cv::waitKey(1) == 27)) ) {
+		//Set pace - at beginning due to waitkey
+		displaypacer.SetPace();
+		
 		//Get latest image
 		displaymutex->lock();
 		imagetemp = *image;
@@ -89,10 +92,10 @@ void DisplayUpdateThread( cv::Mat *image,
 		//Display
 		cv::imshow( "Output", imagetemp );
 		#endif
-		cv::waitKey( 1 );
-		//Set pace
-		displaypacer.SetPace();
 	}
+	
+	//In case of escape returned from waitkey, initiate exit
+	*exitsignal = true;
 	
 	std::cout << "Exiting display handler thread!" << '\n';
 
