@@ -22,12 +22,13 @@
 #include "fcw_tracker_class.h"
 
 //Preprocessor
-#define MPHTOFPSCONVERSION 1.46667
+#define MPHTOFPSCONVERSION 1.46667f
 
 /*****************************************************************************************/
-FcwTracker::FcwTracker( double distanceoffset, int samplestoaverage ) :
-	kdistanceoffset_{ distanceoffset },
-	ksamplestoaverage_{ samplestoaverage }
+FcwTracker::FcwTracker( double distanceoffset,
+						int samplestoaverage ) :
+						kdistanceoffset_{ distanceoffset },
+						ksamplestoaverage_{ samplestoaverage }
 {
 	//Fill with some data to prevent exceptions
 	distances_.push_back( 0.0 );
