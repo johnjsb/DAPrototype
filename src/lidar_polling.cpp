@@ -55,7 +55,7 @@ void LidarPolingThread( ProcessValues *processvalues,
 	//Create thread variables
 	bool vehiclemoving{ false };
 	int pullaheaddelay{ settings::comm::kpollratelidar / 2 };	//500ms
-	int timeoutdelay{ settings::comm::kpollratelidar / 2 };	//500ms
+	int timeoutdelay{ settings::comm::kpollratelidar / 2 };		//500ms
 	int pullaheadcount{ 0 };
 	int timeoutcount{ 0 };
 	FcwTracker fcwtracker( settings::fcw::kdistanceoffset,
