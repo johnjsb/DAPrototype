@@ -47,6 +47,8 @@ void FindPolygon( Polygon& polygon,
                   const Contour& leftcontour,
 				  const Contour& rightcontour,
 				  bool useoptimaly = false );
+float Score( const Polygon& polygon ,
+			 const int imagewidth );
 float PercentMatch( const Polygon& polygon,
 					const cv::Mat& optimalmat );
 void AveragePolygon( Polygon& polygon,

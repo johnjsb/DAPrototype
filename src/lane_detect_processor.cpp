@@ -94,7 +94,7 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------
 //Find contours
 //-----------------------------------------------------------------------------------------
-	//Auto threshold values for canny edge detection
+	//Auto threshold values for canny edge detection - should use stddev instead?
 	double minintensity, maxintensity;
 	cv::minMaxLoc(image, &minintensity, &maxintensity);
 	float lowerthreshold{ lanedetectconstants::kcontrastscalefactor *
@@ -188,10 +188,7 @@ void ProcessImage ( cv::Mat& image,
 			
 			//Score
 			//float score{ PercentMatch(newpolygon, optimalmat) };
-			float score{ Score(newpolygon,
-							   image.cols,
-							   leftevaluatedcontour,
-							   rightevaluatedcontour) };
+			float score{ Score(newpolygon, image.cols) };
 			
 			//If highest score update
 			if ( score > maxscore ) {
@@ -437,9 +434,7 @@ void FindPolygon( Polygon& polygon,
 
 /*****************************************************************************************/
 float Score( const Polygon& polygon ,
-			 const int imagewidth,
-			 const EvaluatedContour& leftcontour,
-			 const EvaluatedContour& rightcontour )
+			 const int imagewidth )
 {
 	
 	float heightwidthratio{ static_cast<float>(polygon[0].y - polygon[3].y) /
