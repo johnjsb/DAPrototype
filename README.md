@@ -436,67 +436,28 @@
 
   
   <div id="readme" class="readme blob instapaper_body">
-    <article class="markdown-body entry-content" itemprop="text"><h1><a id="user-content-product-name" class="anchor" href="#product-name" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Product Name</h1>
+    <article class="markdown-body entry-content" itemprop="text"><h1><a id="user-content-product-name" class="anchor" href="#product-name" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Raspberry Pi based Driver Assist</h1>
 
 <blockquote>
-<p>This project is an attempt to create a standalone, windshield mounted driver assist
-      unit with the following functionality:<br><blockquote>- LDW (Lane Departure Warning)<br>- FCW (Forward Collision Warning)<br>- Driver pull-ahead warning<br>- Dashcam functionality (with GPS & timestamp overlay)</blockquote></p>
+<p>Standalone driver assist unit based on Raspberry Pi hardware</p>
 </blockquote>
 
 <p><a href="https://npmjs.org/package/datadog-metrics"><img src="https://camo.githubusercontent.com/5f764b15a5a631771a214a086b0da2799b1c8327/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f762f64617461646f672d6d6574726963732e7376673f7374796c653d666c61742d737175617265" alt="NPM Version" data-canonical-src="https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square" style="max-width:100%;"></a>
 <a href="https://travis-ci.org/nategreco/node-datadog-metrics"><img src="https://camo.githubusercontent.com/e14fac8021872d240bf8baf6c136a5ae3c84b589/68747470733a2f2f696d672e736869656c64732e696f2f7472617669732f6462616465722f6e6f64652d64617461646f672d6d6574726963732f6d61737465722e7376673f7374796c653d666c61742d737175617265" alt="Build Status" data-canonical-src="https://img.shields.io/travis/nategreco/node-datadog-metrics/master.svg?style=flat-square" style="max-width:100%;"></a>
 <a href="https://npmjs.org/package/datadog-metrics"><img src="https://camo.githubusercontent.com/6b23c710537e328ef22ba09b126775f6cb8bf730/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f646d2f64617461646f672d6d6574726963732e7376673f7374796c653d666c61742d737175617265" alt="Downloads Stats" data-canonical-src="https://img.shields.io/npm/dm/datadog-metrics.svg?style=flat-square" style="max-width:100%;"></a></p>
 
-<p>One to two paragraph statement about your product and what it does.</p>
+<p>This project is an attempt to create a standalone, windshield mounted driver assist
+      unit with the following functionality:<br><blockquote>- LDW (Lane Departure Warning)<br>- FCW (Forward Collision Warning)<br>- Driver pull-ahead warning<br>- Dashcam functionality (with GPS & timestamp overlay)</blockquote></p>
 
 <p><a href="/nategreco/DAPrototype/blob/master/header.png" target="_blank"><img src="/nategreco/DAPrototype/raw/master/header.png" alt="" style="max-width:100%;"></a></p>
 
 <h2><a id="user-content-installation" class="anchor" href="#installation" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Installation</h2>
 
-<p>OS X &amp; Linux:</p>
+<p>Linux (Raspian Jessie):</p>
 
-<div class="highlight highlight-source-shell"><pre>npm install my-crazy-module --save</pre></div>
-
-<p>Windows:</p>
-
-<div class="highlight highlight-source-shell"><pre>edit autoexec.bat</pre></div>
-
-<h2><a id="user-content-usage-example" class="anchor" href="#usage-example" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage example</h2>
-
-<p>A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.</p>
-
-<h2><a id="user-content-development-setup" class="anchor" href="#development-setup" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Development setup</h2>
-
-<p>Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.</p>
-
-<div class="highlight highlight-source-shell"><pre>make install
-npm <span class="pl-c1">test</span></pre></div>
 
 <h2><a id="user-content-release-history" class="anchor" href="#release-history" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Release History</h2>
 
-<ul>
-<li>0.2.1
-
-<ul>
-<li>CHANGE: Update docs (module code remains unchanged)</li>
-</ul></li>
-<li>0.2.0
-
-<ul>
-<li>CHANGE: Remove <code>setDefaultXYZ()</code></li>
-<li>ADD: Add <code>init()</code></li>
-</ul></li>
-<li>0.1.1
-
-<ul>
-<li>FIX: Crash when calling <code>baz()</code> (Thanks @GenerousContributorName!)</li>
-</ul></li>
-<li>0.1.0
-
-<ul>
-<li>The first proper release</li>
-<li>CHANGE: Rename <code>foo()</code> to <code>bar()</code></li>
-</ul></li>
 <li>0.0.1
 
 <ul>
@@ -506,9 +467,9 @@ npm <span class="pl-c1">test</span></pre></div>
 
 <h2><a id="user-content-meta" class="anchor" href="#meta" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Meta</h2>
 
-<p>Your Name – <a href="https://twitter.com/nategreco_org">@YourTwitter</a> – <a href="mailto:YourEmail@example.com">YourEmail@example.com</a></p>
+<p>Nathan Greco – <a href="https://www.linkedin.com/in/nathan-greco-8050b210">LinkedIn</a> – <a href="mailto:nathan.greco@gmail.com">Nathan.Greco@gmail.com/a></p>
 
-<p>Distributed under the XYZ license. See <code>LICENSE</code> for more information.</p>
+<p>Distributed under the GNU GPL 3.0 license. See <code>LICENSE</code> for more information.</p>
 
 <p><a href="https://github.com/nategreco/">https://github.com/yourname/github-link</a></p>
 </article>
