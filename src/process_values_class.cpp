@@ -1,3 +1,16 @@
+/******************************************************************************************
+  Date:    12.08.2016
+  Author:  Nathan Greco (Nathan.Greco@gmail.com)
+
+  Project:
+      DAPrototype: Driver Assist Prototype
+	  http://github.com/NateGreco/DAPrototype.git
+
+  License:
+	  This software is licensed under GNU GPL v3.0
+	  
+******************************************************************************************/
+
 #include "process_values_class.h"
 #include <atomic>
 #include <mutex>

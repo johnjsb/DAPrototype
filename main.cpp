@@ -19,15 +19,16 @@
 	  - RPi (v2.1) 8MP camera
 	  - LidarLite (v3) LIDAR rangefinder
       - Adafruit Ultimate GPS
+      - HDMI screen (800x480)
 	  - Custom built HAT w/ power loss GPIO and capacitors to delay power off
 
   Target Software platform:
       Debian disto (DietPi) running LDXE, with below libraries installed
 
   3rd Party Libraries:
-      OpenCV 3.1.0		-> Compiled with OpenGL support, www.opencv.org
-      Raspicam 0.1.3	-> http://www.uco.es/investiga/grupos/ava/node/40
-	  WiringPi 2.29		-> http://wiringpi.com/
+      - OpenCV 3.1.0		-> http://www.opencv.org *Compiled with OpenGL support
+      - Raspicam 0.1.3		-> http://www.uco.es/investiga/grupos/ava/node/40
+	  - WiringPi 2.29		-> http://wiringpi.com/
 	  
   License:
 	  This software is licensed under GNU GPL v3.0
