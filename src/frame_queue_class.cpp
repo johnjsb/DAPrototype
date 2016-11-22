@@ -23,9 +23,9 @@
 #include "frame_queue_class.h"
 
 /*****************************************************************************************/
-FrameQueue::FrameQueue()
-    : canceled_(false)
+FrameQueue::FrameQueue() : canceled_(false)
 {
+	
 }
 
 void FrameQueue::Cancel()
@@ -91,8 +91,8 @@ void FrameQueue::Push(cv::Mat const& image)
 cv::Mat FrameQueue::Pop()
 {
 	cv::Mat image;
-    while (queue_.empty()) {
-        if (canceled_ || paused_) {
+    while ( queue_.empty() ) {
+        if ( canceled_ || paused_ ) {
             return image;
         }
     }

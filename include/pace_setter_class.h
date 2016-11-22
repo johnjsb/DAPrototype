@@ -23,7 +23,8 @@
 class PaceSetter
 {
     public:
-        PaceSetter( int fps, std::string threadname );
+        PaceSetter( int fps,
+					std::string threadname );
         void SetPace();
         virtual ~PaceSetter();
 

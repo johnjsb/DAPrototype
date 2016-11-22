@@ -23,21 +23,22 @@
 #include "storage_worker_class.h"
 
 /*****************************************************************************************/
-StorageWorker::StorageWorker(FrameQueue& queue
-    , int32_t id
-    , std::string const& file_name
-    , int32_t fourcc
-    , double fps
-    , cv::Size frame_size
-    , bool is_color)
-    : queue_(queue)
-    , id_(id)
-    , file_name_(file_name)
-    , fourcc_(fourcc)
-    , fps_(fps)
-    , frame_size_(frame_size)
-    , is_color_(is_color)
+StorageWorker::StorageWorker( FrameQueue& queue,
+							  int32_t id,
+							  std::string const& file_name,
+							  int32_t fourcc,
+							  double fps,
+							  cv::Size frame_size,
+							  bool is_color) :
+							  queue_(queue),
+							  id_(id),
+							  file_name_(file_name),
+							  fourcc_(fourcc),
+							  fps_(fps),
+							  frame_size_(frame_size),
+							  is_color_(is_color)
 {
+	
 }
 
 void StorageWorker::Run()
@@ -46,10 +47,10 @@ void StorageWorker::Run()
 	
 	//queue_.Reset();
 	
-	while (!queue_.CheckCanceled()) {
+	while ( !queue_.CheckCanceled() ) {
 		if ( !queue_.CheckPaused() ) {
 			cv::Mat image(queue_.Pop());
-			if (!image.empty()) {
+			if ( !image.empty() ) {
 				writer.write(image);
 			}
 		} else {

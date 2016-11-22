@@ -26,8 +26,8 @@
 class FrameQueue
 {
 	public:
-		struct cancelled {};
 		FrameQueue();
+		struct cancelled {};
 		void Push( cv::Mat const& image );
 		cv::Mat Pop();
 		void Cancel();
