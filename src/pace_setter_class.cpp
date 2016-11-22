@@ -15,6 +15,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <string>
 #include <sys/time.h>
 
 //Project libraries
