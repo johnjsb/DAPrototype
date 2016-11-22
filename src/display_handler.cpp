@@ -20,7 +20,7 @@
 
 #ifdef __arm__									//Detect if compiling for raspberry pi
 	#include <gtk/gtk.h>	
-	#include "opencv2/core/opengl.hpp"
+	//#include "opencv2/core/opengl.hpp"
 #endif
 
 void DisplayUpdateThread( cv::Mat *image,
@@ -68,11 +68,12 @@ void DisplayUpdateThread( cv::Mat *image,
 	#endif
 	std::cout << "Attempting to open display..." << '\n';
 	#ifdef __arm__								//Detect if compiling for raspberry pi
-	cv::namedWindow( "Output", cv::WINDOW_OPENGL );
+	//cv::namedWindow( "Output", cv::WINDOW_OPENGL );
+	cv::namedWindow( "Output", cv::WINDOW_NORMAL );
 	cv::setWindowProperty( "Output", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN );
-	cv::ogl::Buffer buffer;
+	//cv::ogl::Buffer buffer;
 	#else
-	cv::namedWindow( "Output", CV_WINDOW_NORMAL );
+	cv::namedWindow( "Output", cv::WINDOW_NORMAL );
 	#endif
 	std::cout << "Display opened!" << '\n';
 
@@ -93,8 +94,9 @@ void DisplayUpdateThread( cv::Mat *image,
 
 		#ifdef __arm__
 		//OpenGL implementation
-		buffer.copyFrom(imagetemp, cv::ogl::Buffer::ARRAY_BUFFER, true);
-		cv::imshow( "Output", buffer );
+		//buffer.copyFrom(imagetemp, cv::ogl::Buffer::ARRAY_BUFFER, true);
+		//cv::imshow( "Output", buffer );
+		cv::imshow( "Output", imagetemp );
 		cv::waitKey( 1 );
 		#else
 		//Display
