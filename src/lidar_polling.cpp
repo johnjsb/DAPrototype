@@ -137,12 +137,12 @@ void LidarPolingThread( ProcessValues *processvalues,
 
 		//Check for driver pullahead
 		if ( !vehiclemoving &&
-			(fcwtracker.acceleration_ > 0.1) &&
-			(processvalues->fcwstatus_ = 0) &&
-			(pullaheadcount > pullaheaddelay) ) {
+			 (fcwtracker.acceleration_ > 0.1) &&
+			 (processvalues->fcwstatus_ = 0) &&
+			 (pullaheadcount > pullaheaddelay) ) {
 			processvalues->fcwstatus_ = 5;
-		} else if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) && (
-			processvalues->fcwstatus_ = 0) ) {
+		} else if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) &&
+					(processvalues->fcwstatus_ = 0) ) {
 			pullaheadcount++;
 		} else {
 			pullaheadcount = 0;
