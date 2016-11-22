@@ -118,56 +118,22 @@ void LidarPolingThread( ProcessValues *processvalues,
 		//5 = driver ahead takeoff notification
 		if (readerror) {
 			processvalues->fcwstatus_ = -1;
-			processvalues->fcwpwmvalue_ = 0;
 		} else if ( (1000*fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionwarning ) {
 			processvalues->fcwstatus_ = 1;
-			processvalues->fcwpwmvalue_ = 1023 + static_cast<int>((1024.0*(1000*
-				fcwtracker.timetocollision_ - settings::fcw::kmscollisionalarm)) /
-				(settings::fcw::kmscollisionalarm - settings::fcw::kmscollisionwarning));
 		} else if ( vehiclemoving &&
 					(1000 * fcwtracker.followingtime_) <
 					settings::fcw::kmsfollowdistwarning ) {
 			processvalues->fcwstatus_ = 2;
-			processvalues->fcwpwmvalue_ = 1023 + static_cast<int>((1024.0*(1000*
-				fcwtracker.followingtime_ - settings::fcw::kmsfollowdistalarm)) /
-				(settings::fcw::kmsfollowdistalarm - settings::fcw::kmsfollowdistwarning));
 		} else if ( (1000*fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionalarm ) {
 			processvalues->fcwstatus_ = 3;
-			processvalues->fcwpwmvalue_ = 1023;
 		} else if ( vehiclemoving &&
 					(1000*fcwtracker.followingtime_) <
-					settings::fcw::kmsfollowdistalarm ){
+					settings::fcw::kmsfollowdistalarm ) {
 			processvalues->fcwstatus_ = 4;
-			processvalues->fcwpwmvalue_ = 1023;
 		} else {
 			processvalues->fcwstatus_ = 0;
-			processvalues->fcwpwmvalue_ = 0;
-		}
-		if ( processvalues->fcwpwmvalue_ < 0 ) {
-			processvalues->fcwpwmvalue_ = 0;
-		} else if ( processvalues->fcwpwmvalue_ > 1023 ) {
-			processvalues->fcwpwmvalue_ = 1023;
-		}
-		if ( !vehiclemoving ||
-			 (fcwtracker.timetocollision_ <
-			 fcwtracker.followingtime_) &&
-			 (processvalues->fcwstatus_ == 0) ) {
-			processvalues->fcwpwmvalue_ = 1023 +
-										  static_cast<int>((1024.0 * (1000 *
-															fcwtracker.timetocollision_ - 
-															settings::fcw::kmscollisionwarning)) /
-															(settings::fcw::kmscollisionwarning));
-		} else if ( vehiclemoving &&
-					(fcwtracker.timetocollision_ >
-					 fcwtracker.followingtime_) &&
-					(processvalues->fcwstatus_ == 0) ) {
-			processvalues->fcwpwmvalue_ = 1023 + 
-										  static_cast<int>((1024.0 * (1000 *
-															fcwtracker.followingtime_ -
-															settings::fcw::kmsfollowdistwarning)) /
-															(settings::fcw::kmsfollowdistwarning));			
 		}
 
 		//Check for driver pullahead
