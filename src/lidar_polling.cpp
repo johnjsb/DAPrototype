@@ -117,18 +117,18 @@ void LidarPolingThread( ProcessValues *processvalues,
 		//5 = driver ahead takeoff notification
 		if ( readerror ) {
 			processvalues->fcwstatus_ = -1;
-		} else if ( (1000*fcwtracker.timetocollision_) <
+		} else if ( (1000 * fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionwarning ) {
 			processvalues->fcwstatus_ = 1;
 		} else if ( vehiclemoving &&
 					(1000 * fcwtracker.followingtime_) <
 					settings::fcw::kmsfollowdistwarning ) {
 			processvalues->fcwstatus_ = 2;
-		} else if ( (1000*fcwtracker.timetocollision_) <
+		} else if ( (1000 * fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionalarm ) {
 			processvalues->fcwstatus_ = 3;
 		} else if ( vehiclemoving &&
-					(1000*fcwtracker.followingtime_) <
+					(1000 * fcwtracker.followingtime_) <
 					settings::fcw::kmsfollowdistalarm ) {
 			processvalues->fcwstatus_ = 4;
 		} else {
