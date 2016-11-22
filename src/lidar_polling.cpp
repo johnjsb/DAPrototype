@@ -23,7 +23,7 @@
 #include "xml_reader.h"
 
 //Preprocessor
-#define FEETPERCENTIMETER 0.0328084
+#define FEETPERCENTIMETER 0.0328084f
 
 /*****************************************************************************************/
 #ifndef __arm__									//Detect if not compiling for raspberry pi
@@ -62,8 +62,7 @@ void LidarPolingThread( ProcessValues *processvalues,
 						   settings::fcw::ksamplestoaverage );
 
 	//Setup I2C
-	//wiringPiSetupGpio();
-	int dacModule = wiringPiI2CSetup(0x62);
+	int dacModule { wiringPiI2CSetup(0x62) };
 	if (dacModule < 0)
 	{
 		std::cout << "I2C Setup Error" << '\n';
