@@ -11,12 +11,18 @@
 	  
 ******************************************************************************************/
 
+//Standard libraries
 #include <condition_variable>
 #include <mutex>
-#include <queue>
+#include <queue
+
+//3rd party libraries
 #include "opencv2/opencv.hpp"
+
+//Project libraries
 #include "storage_worker_class.h"
 
+/*****************************************************************************************/
 StorageWorker::StorageWorker(FrameQueue& queue
     , int32_t id
     , std::string const& file_name

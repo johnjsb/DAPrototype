@@ -10,18 +10,23 @@
 	  This software is licensed under GNU GPL v3.0
 	  
 ******************************************************************************************/
-
+//Standard libraries
 #include <iostream>
 #include <atomic>
-#include <stdlib.h>			//For auto shutdown
+#include <stdlib.h>								//For auto shutdown
+
+//3rd party libraries
+#ifdef __arm__									//Detect if compiling for raspberry pi
+	#include <wiringPi.h>						//For Raspberry Pi
+	#include <wiringPiI2C.h>
+#endif
+
+//Project libraries
 #include "pace_setter_class.h"
 #include "process_values_class.h"
 #include "xml_reader.h"
 
-#ifdef __arm__									//Detect if compiling for raspberry pi
-	#include <wiringPi.h>							//For Raspberry Pi
-	#include <wiringPiI2C.h>
-#endif
+//Preprocessor
 
 //Physical pin numbers
 #define BUZZERPIN 27
@@ -38,6 +43,7 @@
 #define FORWARDOKPIN 24
 #define CENTERPIN 37
 
+/*****************************************************************************************/
 void GpioHandlerThread( ProcessValues *processvalues,
 						std::atomic<bool> *exitsignal,
 						std::atomic<bool> *shutdownsignal )

@@ -11,18 +11,25 @@
 	  
 ******************************************************************************************/
 
+//Standard libraries
 #include <iostream>
 #include <mutex>
 #include <atomic>
-#include "opencv2/opencv.hpp"
-#include "pace_setter_class.h"
-#include "xml_reader.h"
-
 #ifdef __arm__									//Detect if compiling for raspberry pi
 	#include <gtk/gtk.h>	
+#endif
+
+//3rd party libraries
+#include "opencv2/opencv.hpp"
+#ifdef __arm__									//Detect if compiling for raspberry pi
 	//#include "opencv2/core/opengl.hpp"
 #endif
 
+//Project libraries
+#include "pace_setter_class.h"
+#include "xml_reader.h"
+
+/*****************************************************************************************/
 void DisplayUpdateThread( cv::Mat *image,
                           std::mutex *displaymutex,
 	                      std::atomic<bool> *exitsignal )

@@ -11,12 +11,17 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef LIDAR_POLLING_H_INCLUDED
 #define LIDAR_POLLING_H_INCLUDED
 
+//Standard libraries
 #include <atomic>
+
+//Project libraries
 #include "process_values_class.h"
 
+/*****************************************************************************************/
 void LidarPolingThread( ProcessValues *processvalues,
 						std::atomic<bool> *exitsignal );
 

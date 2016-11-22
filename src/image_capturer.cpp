@@ -11,18 +11,23 @@
 	  
 ******************************************************************************************/
 
+//Standard libraries
 #include <iostream>
 #include <algorithm> 
 #include <mutex>
-#include <atomic>
-#include "pace_setter_class.h"
-#include "xml_reader.h"
-#include "opencv2/opencv.hpp"
+#include <atomic
 
+//3rd party libraries
+#include "opencv2/opencv.hpp"
 #ifdef __arm__									//Detect if compiling for raspberry pi
-	#include "raspicam/raspicam_cv.h"             	//For Raspberry Pi
+	#include "raspicam/raspicam_cv.h"           //For Raspberry Pi
 #endif
 
+//Project libraries
+#include "pace_setter_class.h"
+#include "xml_reader.h"
+
+/*****************************************************************************************/
 void CaptureImageThread( cv::Mat *capture,
                          std::mutex *capturemutex,
                          std::atomic<bool> *exitsignal )

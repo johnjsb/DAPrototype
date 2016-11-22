@@ -11,12 +11,17 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef GPS_POLLING_H_INCLUDED
 #define GPS_POLLING_H_INCLUDED
 
+//Standard libraries
 #include <atomic>
+
+//Project libraries
 #include "process_values_class.h"
 
+/*****************************************************************************************/
 void GpsPollingThread( ProcessValues *processvalues,
 					   std::atomic<bool> *exitsignal);
 

@@ -11,13 +11,18 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef FRAMEQUEUE_H
 #define FRAMEQUEUE_H
 
+//Standard libraries
 #include <mutex>
 #include <queue>
+
+//3rd party libraries
 #include "opencv2/opencv.hpp"
 
+/*****************************************************************************************/
 class FrameQueue
 {
 	public:

@@ -11,12 +11,16 @@
 	  
 ******************************************************************************************/
 
-#include "pace_setter_class.h"
+//Standard libraries
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <sys/time.h>
 
+//Project libraries
+#include "pace_setter_class.h"
+
+/*****************************************************************************************/
 PaceSetter::PaceSetter( int fps, std::string threadname ) : threadname_{ threadname },
 	missedcount_{0}
 {

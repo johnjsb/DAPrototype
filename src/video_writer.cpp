@@ -11,6 +11,7 @@
 	  
 ******************************************************************************************/
 
+//Standard libraries
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -19,12 +20,16 @@
 #include <atomic>
 #include <queue>
 #include <chrono>
+
+//3rd party libraries
+#include "opencv2/opencv.hpp"
+
+//Project libraries
 #include "video_writer.h"
 #include "frame_queue_class.h"
 #include "storage_worker_class.h"
 #include "pace_setter_class.h"
 #include "xml_reader.h"
-#include "opencv2/opencv.hpp"
 
 /*****************************************************************************************/
 void VideoWriterThread ( cv::Mat *orgimage,

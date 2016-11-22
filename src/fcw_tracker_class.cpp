@@ -11,15 +11,20 @@
 	  
 ******************************************************************************************/
 
-#include "fcw_tracker_class.h"
+//Standard libraries
 #include <iostream>
 #include <math.h> 
 #include <chrono>
 #include <deque>
 #include <sys/time.h>
 
+//Project libraries
+#include "fcw_tracker_class.h"
+
+//Preprocessor
 #define MPHTOFPSCONVERSION 1.46667
 
+/*****************************************************************************************/
 FcwTracker::FcwTracker( double distanceoffset, int samplestoaverage ) :
 	kdistanceoffset_{ distanceoffset },
 	ksamplestoaverage_{ samplestoaverage }

@@ -11,12 +11,15 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef FCWTRACKER_H
 #define FCWTRACKER_H
 
+//Standard libraries
 #include <chrono>
 #include <deque>
 
+/*****************************************************************************************/
 class FcwTracker
 {
     public:

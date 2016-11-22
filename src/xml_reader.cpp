@@ -11,11 +11,17 @@
 	  
 ******************************************************************************************/
 
+//Standard libraries
 #include <iostream>
 #include <string>
+
+//3rd party libraries
 #include "tinyxml2.h"
+
+//Project libraries
 #include "xml_reader.h"
 
+/*****************************************************************************************/
 //GEN
 static bool g_genenbuzzer{ true };
 static bool g_gendebugscreen{ false };

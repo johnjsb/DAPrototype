@@ -11,22 +11,27 @@
 	  
 ******************************************************************************************/
 
+//Standard libraries
 #include <iostream>
 #include <atomic>
 #include <deque>
 #include <sys/time.h>
+
+//3rd party libraries
+#ifdef __arm__									//Detect if compiling for raspberry pi
+	#include <libgpsmm.h>
+#endif
+
+//Project libraries
 #include "pace_setter_class.h"
 #include "process_values_class.h"
 #include "xml_reader.h"
 #include "gps_polling.h"
 
-#ifdef __arm__									//Detect if compiling for raspberry pi
-	#include <libgpsmm.h>
-	#include "gps.h"
-#endif
-
+//Preprocessor
 #define MPSTOMPHCONVERSION 2.237
 
+/*****************************************************************************************/
 void GpsPollingThread( ProcessValues *processvalues,
 					   std::atomic<bool> *exitsignal )
 {

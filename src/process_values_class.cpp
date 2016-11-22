@@ -11,12 +11,18 @@
 	  
 ******************************************************************************************/
 
-#include "process_values_class.h"
+//Standard libraries
 #include <atomic>
 #include <mutex>
-#include "lane_detect_processor.h"
+
+//3rd party libraries
 #include "opencv2/opencv.hpp"
 
+//Project libraries
+#include "lane_detect_processor.h"
+#include "process_values_class.h"
+
+/*****************************************************************************************/
 ProcessValues::ProcessValues() :
 	ldwstatus_{0},
 	fcwstatus_{0},

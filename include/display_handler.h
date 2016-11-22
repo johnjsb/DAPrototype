@@ -11,13 +11,18 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef DISPLAY_HANDLER_H_INCLUDED
 #define DISPLAY_HANDLER_H_INCLUDED
 
+//Standard libraries
 #include <mutex>
 #include <atomic>
+
+//3rd party libraries
 #include "opencv2/opencv.hpp"
 
+/*****************************************************************************************/
 void DisplayUpdateThread( cv::Mat *image,
 						  std::mutex *displaymutex,
 						  std::atomic<bool> *exitsignal);

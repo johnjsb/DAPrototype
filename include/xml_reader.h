@@ -13,11 +13,14 @@
 
 #pragma once
 
+//Header guard
 #ifndef XML_READER_H_INCLUDED
 #define XML_READER_H_INCLUDED
 
+//Standard libraries
 #include <string>
 
+/*****************************************************************************************/
 int ReadXmlSettings();
 
 namespace settings{

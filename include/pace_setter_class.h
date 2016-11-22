@@ -11,12 +11,15 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef PACESETTER_H
 #define PACESETTER_H
 
+//Standard libraries
 #include <chrono>
 #include <string>
 
+/*****************************************************************************************/
 class PaceSetter
 {
     public:

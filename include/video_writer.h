@@ -11,13 +11,18 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef VIDEO_WRITER_H_INCLUDED
 #define VIDEO_WRITER_H_INCLUDED
 
+//Standard libraries
 #include <mutex>
 #include <atomic>
+
+//3rd party libraries
 #include "opencv2/opencv.hpp"
 
+/*****************************************************************************************/
 void VideoWriterThread ( cv::Mat *orgimage,
                          std::mutex *capturemutex,
                          cv::Mat *modimage,

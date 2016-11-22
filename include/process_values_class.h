@@ -11,14 +11,21 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef PROCESSVALUES_H
 #define PROCESSVALUES_H
 
+//Standard libraries
 #include <atomic>
 #include <mutex>
+
+//Project libraries
 #include "lane_detect_processor.h"
+
+//3rd party libraries
 #include "opencv2/opencv.hpp"
 
+/*****************************************************************************************/
 class ProcessValues
 {
     public:

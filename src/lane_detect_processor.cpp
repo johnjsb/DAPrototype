@@ -11,7 +11,7 @@
 	  
 ******************************************************************************************/
 
-//standard libraries
+//Standard libraries
 #include <iostream>
 #include <ctime>
 #include <sys/time.h>
@@ -22,11 +22,11 @@
 //3rd party libraries
 #include "opencv2/core/core.hpp"
 
-//project libraries
+//Project libraries
 #include "lane_detect_constants.h"
 #include "lane_detect_processor.h"
 
-//Preprocessor literals
+//Preprocessor
 #ifndef M_PI
     #define M_PI 3.14159265359f
 #endif
@@ -42,6 +42,7 @@
 #define DEGREESPERRADIAN 57.2957795131f
 #define POLYGONSCALING 1.0f
 
+/*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
 	float kcontrastscalefactor{ 0.18f };

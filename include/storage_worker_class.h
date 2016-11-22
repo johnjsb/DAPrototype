@@ -11,13 +11,17 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef STORAGEWORKER_H
 #define STORAGEWORKER_H
 
-#include "frame_queue_class.h"
+//3rd party libraries
 #include "opencv2/opencv.hpp"
 
+//Project libraries
+#include "frame_queue_class.h"
 
+/*****************************************************************************************/
 class StorageWorker
 {
 	public:

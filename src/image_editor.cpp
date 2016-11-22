@@ -11,6 +11,7 @@
 	  
 ******************************************************************************************/
 
+//Standard libraries
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
@@ -18,13 +19,18 @@
 #include <sstream>
 #include <mutex>
 #include <atomic>
+
+//3rd party libraries
+#include "opencv2/opencv.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+
+//Project libraries
 #include "image_editor.h"
 #include "lane_detect_processor.h"
 #include "pace_setter_class.h"
 #include "xml_reader.h"
-#include "opencv2/opencv.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
 
+/*****************************************************************************************/
 void ImageEditorThread( cv::Mat *orgimage,
                         std::mutex *capturemutex,
 						cv::Mat *displayimage,

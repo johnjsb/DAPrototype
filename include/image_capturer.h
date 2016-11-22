@@ -11,13 +11,18 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef IMAGE_CAPTURER_H_INCLUDED
 #define IMAGE_CAPTURER_H_INCLUDED
 
+//Standard libraries
 #include <mutex>
 #include <atomic>
+
+//3rd party libraries
 #include "opencv2/opencv.hpp"
 
+/*****************************************************************************************/
 void CaptureImageThread( cv::Mat *capture,
 						 std::mutex *capturemutex,
 						 std::atomic<bool> *exitsignal);

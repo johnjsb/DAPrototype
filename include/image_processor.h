@@ -11,14 +11,21 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef IMAGE_PROCESSOR_H_INCLUDED
 #define IMAGE_PROCESSOR_H_INCLUDED
 
+//Standard libraries
 #include <mutex>
 #include <atomic>
+
+//3rd party libraries
 #include "opencv2/opencv.hpp"
+
+//Project libraries
 #include "process_values_class.h"
 
+/*****************************************************************************************/
 void ProcessImageThread( cv::Mat *orgimage,
                          std::mutex *capturemutex,
 						 ProcessValues *processvalues,

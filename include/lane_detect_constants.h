@@ -11,11 +11,14 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef LANEDETECTCONSTANTS_H
 #define LANEDETECTCONSTANTS_H
 
+//Project libraries
 #include "lane_detect_processor.h"
 
+/*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
 	extern float kotsuscalefactor;

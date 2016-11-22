@@ -11,18 +11,24 @@
 	  
 ******************************************************************************************/
 
+//Standard libraries
 #include <iostream>
 #include <algorithm> 
 #include <mutex>
 #include <atomic>
 #include <deque>
 #include <array>
+
+//3rd party libraries
+#include "opencv2/opencv.hpp"
+
+//Project libraries
 #include "lane_detect_processor.h"
 #include "pace_setter_class.h"
 #include "process_values_class.h"
 #include "xml_reader.h"
-#include "opencv2/opencv.hpp"
 
+/*****************************************************************************************/
 void ProcessImageThread( cv::Mat *orgimage,
                          std::mutex *capturemutex,
 						 ProcessValues *processvalues,

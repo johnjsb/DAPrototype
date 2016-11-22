@@ -11,16 +11,21 @@
 	  
 ******************************************************************************************/
 
+//Standard libraries
 #include <iostream>
 #include <atomic>
 #include <thread>
+
+//Project libraries
 #include "pace_setter_class.h"
 #include "process_values_class.h"
 #include "fcw_tracker_class.h"
 #include "xml_reader.h"
 
+//Preprocessor
 #define FEETPERCENTIMETER 0.0328084
 
+/*****************************************************************************************/
 #ifndef __arm__									//Detect if not compiling for raspberry pi
 void LidarPolingThread( ProcessValues *processvalues,
 						std::atomic<bool> *exitsignal )

@@ -11,12 +11,17 @@
 	  
 ******************************************************************************************/
 
+//Header guard
 #ifndef GPIO_HANDLER_H_INCLUDED
 #define GPIO_HANDLER_H_INCLUDED
 
+//Standard libraries
 #include <atomic>
+
+//Project libraries
 #include "process_values_class.h"
 
+/*****************************************************************************************/
 void GpioHandlerThread( ProcessValues *processvalues,
 						std::atomic<bool> *exitsignal,
 						std::atomic<bool> *shutdownsignal );
