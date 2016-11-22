@@ -136,7 +136,7 @@ void VideoWriterThread ( cv::Mat *orgimage,
 	t_storagethread.join();
 	
 	std::cout << "Exiting video writer thread!" << '\n';
-
+	return;
 }
 
 /*****************************************************************************************/

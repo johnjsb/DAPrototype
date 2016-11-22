@@ -204,6 +204,7 @@ void ImageEditorThread( cv::Mat *orgimage,
 	}
 	
 	std::cout << "Exiting image editor thread!" << '\n';
+	return;
 
 }
 /*****************************************************************************************/

@@ -93,5 +93,6 @@ void CaptureImageThread( cv::Mat *capture,
 	}
 
 	std::cout << "Exiting image capturer thread!" << '\n';
+	return;
 
 }

@@ -111,5 +111,6 @@ void ProcessImageThread( cv::Mat *orgimage,
 	}
 	
 	std::cout << "Exiting image processor thread!" << '\n';
+	return;
 
 }

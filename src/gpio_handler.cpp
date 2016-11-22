@@ -255,5 +255,6 @@ void GpioHandlerThread( ProcessValues *processvalues,
 //	system ("sudo shutdown -h now");				//Shutdown RPi
 	#endif
 	std::cout << "Exiting GPIO handler thread!" << '\n';
+	return;
 
 }

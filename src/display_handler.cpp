@@ -116,5 +116,6 @@ void DisplayUpdateThread( cv::Mat *image,
 	}
 	
 	std::cout << "Exiting display handler thread!" << '\n';
+	return;
 
 }
