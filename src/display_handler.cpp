@@ -111,7 +111,7 @@ void DisplayUpdateThread( cv::Mat *image,
 		cv::waitKey( 1 );
 		#endif
 		
-		//Set pace - at beginning due to waitkey
+		//Set pace
 		displaypacer.SetPace();
 	}
 	

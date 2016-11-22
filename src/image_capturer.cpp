@@ -15,7 +15,7 @@
 #include <iostream>
 #include <algorithm> 
 #include <mutex>
-#include <atomic
+#include <atomic>
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
@@ -54,7 +54,7 @@ void CaptureImageThread( cv::Mat *capture,
 	#else
 	if ( !stream1.isOpened() ) {                //For Laptop
 	#endif
-		std::cerr<<"Error opening the camera"<<'\n';
+		std::cerr << "Error opening the camera" << '\n';
 		exit(-1);
 	}
 	std::cout << "Camera opened succesfully!" << '\n';
@@ -69,11 +69,11 @@ void CaptureImageThread( cv::Mat *capture,
 	while( !(*exitsignal) ) {
 		cv::Mat newimage;
 		#ifdef __arm__							//Detect if compiling for raspberry pi
-		(Camera.grab());                       	//For Raspberry Pi
-		(Camera.retrieve(newimage));           	//For Raspberry Pi
-		cv::flip(newimage, newimage, -1);
+		Camera.grab();                       	//For Raspberry Pi
+		Camera.retrieve( newimage );           	//For Raspberry Pi
+		cv::flip( newimage, newimage, -1 );
 		#else
-		stream1.read(newimage);                 //For Laptop
+		stream1.read( newimage );                 //For Laptop
 		#endif
 		//resize image
 		#ifndef __arm__
@@ -89,6 +89,7 @@ void CaptureImageThread( cv::Mat *capture,
 		*capture = newimage;
 		capturemutex->unlock(); 
 
+		//Set pace
 		camerapacer.SetPace();
 	}
 
