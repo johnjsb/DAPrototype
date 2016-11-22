@@ -115,7 +115,7 @@ void LidarPolingThread( ProcessValues *processvalues,
 		//3 = fcw alarm
 		//4 = following too close alarm
 		//5 = driver ahead takeoff notification
-		if (readerror) {
+		if ( readerror ) {
 			processvalues->fcwstatus_ = -1;
 		} else if ( (1000*fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionwarning ) {
