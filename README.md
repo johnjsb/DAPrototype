@@ -29,11 +29,6 @@
           </button>
 </form>  </div>
 
-  <div class="file-info">
-      67 lines (46 sloc)
-      <span class="file-info-divider"></span>
-    1.69 KB
-  </div>
 </div>
 
   
@@ -43,10 +38,6 @@
 <blockquote>
 <p>A standalone driver assist unit based on Raspberry Pi hardware and OpenCV libraries</p>
 </blockquote>
-
-<p><a href="https://npmjs.org/package/datadog-metrics"><img src="https://camo.githubusercontent.com/5f764b15a5a631771a214a086b0da2799b1c8327/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f762f64617461646f672d6d6574726963732e7376673f7374796c653d666c61742d737175617265" alt="NPM Version" data-canonical-src="https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square" style="max-width:100%;"></a>
-<a href="https://travis-ci.org/nategreco/node-datadog-metrics"><img src="https://camo.githubusercontent.com/e14fac8021872d240bf8baf6c136a5ae3c84b589/68747470733a2f2f696d672e736869656c64732e696f2f7472617669732f6462616465722f6e6f64652d64617461646f672d6d6574726963732f6d61737465722e7376673f7374796c653d666c61742d737175617265" alt="Build Status" data-canonical-src="https://img.shields.io/travis/nategreco/node-datadog-metrics/master.svg?style=flat-square" style="max-width:100%;"></a>
-<a href="https://npmjs.org/package/datadog-metrics"><img src="https://camo.githubusercontent.com/6b23c710537e328ef22ba09b126775f6cb8bf730/68747470733a2f2f696d672e736869656c64732e696f2f6e706d2f646d2f64617461646f672d6d6574726963732e7376673f7374796c653d666c61742d737175617265" alt="Downloads Stats" data-canonical-src="https://img.shields.io/npm/dm/datadog-metrics.svg?style=flat-square" style="max-width:100%;"></a></p>
 
 <blockquote>
 <p>This project is an attempt to create a standalone, windshield mounted driver assist unit with the following functionality:<blockquote><p>- LDW (Lane Departure Warning)</p><p>- FCW (Forward Collision Warning)</p><p>- Driver pull-ahead warning</p><p>- Dashcam functionality (with GPS & timestamp overlay)</p>
@@ -59,17 +50,6 @@
 <p>Debian (Jessie):</p>
 
 <div class="highlight highlight-source-shell"><pre>todo</pre></div>
-
-<h2><a id="user-content-usage-example" class="anchor" href="#usage-example" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Usage example</h2>
-
-<p>A few motivating and useful examples of how your product can be used. Spice this up with code blocks and potentially more screenshots.</p>
-
-<h2><a id="user-content-development-setup" class="anchor" href="#development-setup" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Development setup</h2>
-
-<p>Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.</p>
-
-<div class="highlight highlight-source-shell"><pre>make install
-npm <span class="pl-c1">test</span></pre></div>
 
 <h2><a id="user-content-release-history" class="anchor" href="#release-history" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Release History</h2>
 
