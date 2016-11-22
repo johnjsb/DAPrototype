@@ -72,7 +72,7 @@ namespace settings{
     namespace fcw{
         extern const bool kenabled;
         extern const int ksamplestoaverage;
-		extern const double kdistanceoffset;
+		extern const float kdistanceoffset;
         extern const int kmsfollowdistwarning;
         extern const int kmsfollowdistalarm;
         extern const int kmscollisionwarning;
