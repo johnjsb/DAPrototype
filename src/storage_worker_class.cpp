@@ -14,7 +14,7 @@
 //Standard libraries
 #include <condition_variable>
 #include <mutex>
-#include <queue
+#include <queue>
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
