@@ -36,9 +36,6 @@ class ProcessValues
 		//6 = right alarm
 		//-1 = error (no lane identified)	
 		std::atomic<int> ldwstatus_;
-		//Scaled over-threshold value for PWM
-		//0-1023
-		std::atomic<int> ldwpwmvalue_;
 		//FCW Status
 		//0 = inactive (disabled by xml or zero speed)
 		//1 = fcw warning
@@ -48,9 +45,6 @@ class ProcessValues
 		//5 = driver pullahead notification
 		//-1 = error (sensor error)	
 		std::atomic<int> fcwstatus_;
-		//Scaled over-threshold value for PWM
-		//0-1023
-		std::atomic<int> fcwpwmvalue_;
 		//GPS Status
 		//0 = inactive (disabled by xml)
 		//1 = no GPS lock
