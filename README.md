@@ -39,7 +39,7 @@
 <p>A standalone driver assist unit based on Raspberry Pi hardware and OpenCV libraries</p>
 </blockquote>
 
-<p><a href="/nategreco/DAPrototype/Example.png" target="_blank"><img src="/nategreco/DAPrototype/Example.png" alt="" style="max-width:100%;"></a></p>
+<p><a href="/Example.png" target="_blank"><img src="/Example.png" alt="" style="max-width:100%;"></a></p>
 
 <blockquote>
 <p>This project is an attempt to create a standalone, windshield mounted driver assist unit with the following functionality:
