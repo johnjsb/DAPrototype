@@ -39,7 +39,7 @@ void DisplayUpdateThread( cv::Mat *image,
 	
 	//Check image sizing to prevent exception
 	if ( (sideborderthickness < 0) || (topborderthickness < 0) ) {
-		std::cout << "Captured image too large for display, esiting!" << '\n';
+		std::cout << "Captured image too large for display, exiting!" << '\n';
 		return;
 	}
 	
@@ -65,10 +65,7 @@ void DisplayUpdateThread( cv::Mat *image,
 
 	
 	//Loop
-	while( !(*exitsignal || (cv::waitKey(1) == 27)) ) {
-		//Set pace - at beginning due to waitkey
-		displaypacer.SetPace();
-		
+	while( !(*exitsignal) ) {
 		//Get latest image
 		displaymutex->lock();
 		cv::copyMakeBorder( *image,
@@ -85,14 +82,16 @@ void DisplayUpdateThread( cv::Mat *image,
 		//OpenGL implementation
 		buffer.copyFrom(imagetemp, cv::ogl::Buffer::ARRAY_BUFFER, true);
 		cv::imshow( "Output", buffer );
+		cv::waitKey( 1 );
 		#else
 		//Display
 		cv::imshow( "Output", imagetemp );
+		cv::waitKey( 1 );
 		#endif
+		
+		//Set pace - at beginning due to waitkey
+		displaypacer.SetPace();
 	}
-	
-	//In case of escape returned from waitkey, initiate exit
-	*exitsignal = true;
 	
 	std::cout << "Exiting display handler thread!" << '\n';
 
