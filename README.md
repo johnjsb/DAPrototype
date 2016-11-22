@@ -4,12 +4,6 @@
   <div class="file-header">
   <div class="file-actions">
 
-    <div class="BtnGroup">
-      <a href="/nategreco/DAPrototype/raw/master/README.md" class="btn btn-sm BtnGroup-item" id="raw-url">Raw</a>
-        <a href="/nategreco/DAPrototype/blame/master/README.md" class="btn btn-sm js-update-url-with-hash BtnGroup-item">Blame</a>
-      <a href="/nategreco/DAPrototype/commits/master/README.md" class="btn btn-sm BtnGroup-item" rel="nofollow">History</a>
-    </div>
-
         <a class="btn-octicon tooltipped tooltipped-nw"
            href="https://windows.github.com"
            aria-label="Open this file in GitHub Desktop"
