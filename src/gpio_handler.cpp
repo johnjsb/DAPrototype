@@ -90,7 +90,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	for(;;) {
 		//Check for Warnings
 		if ( (processvalues->ldwstatus_ > 2) ||
-			 (processvalues->fcwstatus_ > 0) ||
+			 (processvalues->fcwstatus_ > 1) ||
 			 (processvalues->gpsstatus_ > 3) ) {
 			warning = true;
 		} else {
@@ -98,7 +98,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 		}
 		//Check for Alarms
 		if ( (processvalues->ldwstatus_ > 4) ||
-			 (processvalues->fcwstatus_ > 2) ||
+			 (processvalues->fcwstatus_ > 3) ||
 			 (processvalues->gpsstatus_ > 4) ) {
 			alarm = true;
 		}
@@ -129,11 +129,11 @@ void GpioHandlerThread( ProcessValues *processvalues,
 
 			//Set center LED
 			if ( (processvalues->ldwstatus_ >= 0) &&
-				 (processvalues->fcwstatus_ >= 0) &&
+				 (processvalues->fcwstatus_ >= 1) &&
 				 (processvalues->gpsstatus_ > 1) ) {
 					digitalWrite(CENTERPIN, 1);
 			} else if ( (processvalues->ldwstatus_ >= 0) &&
-						(processvalues->fcwstatus_ >= 0) &&
+						(processvalues->fcwstatus_ >= 1) &&
 						(processvalues->gpsstatus_ == 0) ) {
 				blinkercount++;
 				if ( blinkercount % blinkinterval != 0) continue;

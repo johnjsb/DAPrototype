@@ -293,23 +293,23 @@ std::string GetDiagnosticString ( int ldwstatus, int fcwstatus, int gpsstatus )
 	}
 	//FCW
 	switch ( fcwstatus ) {
-		case 1:
+		case 2:
 			diagnosticstring += "FCW warning, ";
 			break;
-		case 2:
+		case 4:
 			diagnosticstring += "FCW alarm, ";
 			break;
 		case 3:
 			diagnosticstring += "FCW tailgate warning, ";
 			break;
-		case 4:
-			diagnosticstring += "FCW tailgate alarm, ";
-			break;
 		case 5:
 			diagnosticstring += "FCW tailgate alarm, ";
 			break;
-		case -1:
+		case 6:
 			diagnosticstring += "FCW driver pull ahead detected, ";
+			break;
+		case -1:
+			diagnosticstring += "FCW read error, ";
 			break;
 	}
 	//GPS

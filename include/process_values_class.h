@@ -26,6 +26,30 @@
 #include "opencv2/opencv.hpp"
 
 /*****************************************************************************************/
+enum LDWStatus
+{
+	ERROR = -1,
+	INACTIVE,
+	LEFT_DEVIATION_OK,
+	RIGHT_DEVIATION_OK,
+	LEFT_DEVIATION_WARNING,
+	RIGHT_DEVIATION_WARNING,
+	LEFT_DEVIATION_ALARM,
+	RIGHT_DEVIATION_ALARM
+}
+
+enum FCWStatus
+{
+	ERROR = -1,
+	INACTIVE,
+	LEFT_DEVIATION_OK,
+	RIGHT_DEVIATION_OK,
+	LEFT_DEVIATION_WARNING,
+	RIGHT_DEVIATION_WARNING,
+	LEFT_DEVIATION_ALARM,
+	RIGHT_DEVIATION_ALARM
+}
+
 class ProcessValues
 {
     public:
@@ -44,13 +68,14 @@ class ProcessValues
 		//-1 = error (no lane identified)	
 		std::atomic<int> ldwstatus_;
 		//FCW Status
+		//-1 = error (sensor error)
 		//0 = inactive (disabled by xml or zero speed)
-		//1 = fcw warning
-		//2 = following too close warning
-		//3 = fcw alarm
-		//4 = following too close alarm
-		//5 = driver pullahead notification
-		//-1 = error (sensor error)	
+		//1 = active and OK
+		//2 = fcw warning
+		//3 = following too close warning
+		//4 = fcw alarm
+		//5 = following too close alarm
+		//6 = driver ahead takeoff notification
 		std::atomic<int> fcwstatus_;
 		//GPS Status
 		//0 = inactive (disabled by xml)
