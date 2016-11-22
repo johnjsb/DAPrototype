@@ -440,7 +440,9 @@ float Score( const Polygon& polygon ,
 	
 	float heightwidthratio{ static_cast<float>(polygon[0].y - polygon[3].y) /
 							static_cast<float>(polygon[1].x - polygon[0].x) };
-	float centeroffset{ fabs((imagewidth - (polygon[0].x + polygon[1].x)) * 0.5f) };
+	float centeroffset{ static_cast<float>(fabs((imagewidth -
+												(polygon[0].x + polygon[1].x)) *
+												0.5f)) };
 	
 	return lanedetectconstants::kheightwidthscalefactor * heightwidthratio - centeroffset;
 }
