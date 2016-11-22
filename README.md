@@ -40,8 +40,15 @@
 </blockquote>
 
 <blockquote>
-<p>This project is an attempt to create a standalone, windshield mounted driver assist unit with the following functionality:<ul><pli>- LDW (Lane Departure Warning)</li><li>- FCW (Forward Collision Warning)</li><li>- Driver pull-ahead warning</li><li>- Dashcam functionality (with GPS & timestamp overlay)</p>
+<p>This project is an attempt to create a standalone, windshield mounted driver assist unit with the following functionality:
+<ul>
+<li>LDW (Lane Departure Warning)</li>
+<li>FCW (Forward Collision Warning)</li>
+<li>Driver pull-ahead warning</li>
+<li>Dashcam functionality (with GPS & timestamp overlay)</li>
 </ul>
+</p>
+</blockquote>
 
 <p><a href="/nategreco/DAPrototype/blob/master/Example.png" target="_blank"><img src="/nategreco/DAPrototype/raw/master/Example.png" alt="" style="max-width:100%;"></a></p>
 
