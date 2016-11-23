@@ -89,17 +89,17 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	//Loop indefinitely
 	for(;;) {
 		//Check for Warnings
-		if ( (processvalues->ldwstatus_ > 2) ||
-			 (processvalues->fcwstatus_ > 1) ||
-			 (processvalues->gpsstatus_ > 3) ) {
+		if ( (processvalues->ldwstatus_ > LDW_RIGHT_DEVIATION_OK) ||
+			 (processvalues->fcwstatus_ > FCW_ACTIVE) ||
+			 (processvalues->gpsstatus_ > GPS_LOCK_LDW_ON) ) {
 			warning = true;
 		} else {
 			warning = alarm = false;
 		}
 		//Check for Alarms
-		if ( (processvalues->ldwstatus_ > 4) ||
-			 (processvalues->fcwstatus_ > 3) ||
-			 (processvalues->gpsstatus_ > 4) ) {
+		if ( (processvalues->ldwstatus_ > LDW_RIGHT_DEVIATION_WARNING) ||
+			 (processvalues->fcwstatus_ > FCW_TAILGATE_WARNING) ||
+			 (processvalues->gpsstatus_ > GPS_SPEED_WARNING) ) {
 			alarm = true;
 		}
 				
@@ -128,13 +128,13 @@ void GpioHandlerThread( ProcessValues *processvalues,
 			}
 
 			//Set center LED
-			if ( (processvalues->ldwstatus_ >= 0) &&
-				 (processvalues->fcwstatus_ >= 1) &&
-				 (processvalues->gpsstatus_ > 1) ) {
+			if ( (processvalues->ldwstatus_ >= LDW_INACTIVE) &&
+				 (processvalues->fcwstatus_ >= FCW_ACTIVE) &&
+				 (processvalues->gpsstatus_ > GPS_NO_LOCK) ) {
 					digitalWrite(CENTERPIN, 1);
-			} else if ( (processvalues->ldwstatus_ >= 0) &&
-						(processvalues->fcwstatus_ >= 1) &&
-						(processvalues->gpsstatus_ == 0) ) {
+			} else if ( (processvalues->ldwstatus_ >= LDW_INACTIVE) &&
+						(processvalues->fcwstatus_ >= FCW_ACTIVE) &&
+						(processvalues->gpsstatus_ == GPS_INACTIVE) ) {
 				blinkercount++;
 				if ( blinkercount % blinkinterval != 0) continue;
 					if (digitalRead(CENTERPIN)) {

@@ -275,55 +275,55 @@ std::string GetDiagnosticString ( int ldwstatus, int fcwstatus, int gpsstatus )
 	std::string diagnosticstring{ "" };
 	//LDW
 	switch ( ldwstatus ) {
-		case 1:
+		case LDW_LEFT_DEVIATION_ALARM:
 			diagnosticstring += "LDW left alarm, ";
 			break;
-		case 2:
+		case LDW_LEFT_DEVIATION_WARNING:
 			diagnosticstring += "LDW left warning, ";
 			break;
-		case 5:
+		case LDW_RIGHT_DEVIATION_WARNING:
 			diagnosticstring += "LDW right warning, ";
 			break;
-		case 6:
+		case LDW_RIGHT_DEVIATION_ALARM:
 			diagnosticstring += "LDW right alarm, ";
 			break;
-		case -1:
+		case LDW_ERROR:
 			diagnosticstring += "LDW lane detection failed, ";
 			break;
 	}
 	//FCW
 	switch ( fcwstatus ) {
-		case 2:
+		case FCW_WARNING:
 			diagnosticstring += "FCW warning, ";
 			break;
-		case 4:
+		case FCW_ALARM:
 			diagnosticstring += "FCW alarm, ";
 			break;
-		case 3:
+		case FCW_TAILGATE_WARNING:
 			diagnosticstring += "FCW tailgate warning, ";
 			break;
-		case 5:
+		case FCW_TAILGATE_ALARM:
 			diagnosticstring += "FCW tailgate alarm, ";
 			break;
-		case 6:
+		case FCW_PULL_AHEAD_WARNING:
 			diagnosticstring += "FCW driver pull ahead detected, ";
 			break;
-		case -1:
+		case FCW_ERROR:
 			diagnosticstring += "FCW read error, ";
 			break;
 	}
 	//GPS
 	switch ( gpsstatus ) {
-		case 1:
+		case GPS_NO_LOCK:
 			diagnosticstring += "GPS no lock, ";
 			break;
-		case 4:
+		case GPS_SPEED_WARNING:
 			diagnosticstring += "Speed warning, ";
 			break;
-		case 5:
+		case GPS_SPEED_ALARM:
 			diagnosticstring += "Speed alarm, ";
 			break;
-		case -1:
+		case GPS_ERROR:
 			diagnosticstring += "GPS sensor failure, ";
 			break;
 	}

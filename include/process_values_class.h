@@ -26,7 +26,7 @@
 #include "opencv2/opencv.hpp"
 
 /*****************************************************************************************/
-/*
+
 enum LDWStatus
 {
 	LDW_ERROR = -1,
@@ -37,19 +37,19 @@ enum LDWStatus
 	LDW_RIGHT_DEVIATION_WARNING,
 	LDW_LEFT_DEVIATION_ALARM,
 	LDW_RIGHT_DEVIATION_ALARM
-}
+};
 
 enum FCWStatus
 {
 	FCW_ERROR = -1,
 	FCW_INACTIVE,
 	FCW_ACTIVE,
-	FCW_FCW_WARNING,
+	FCW_WARNING,
 	FCW_TAILGATE_WARNING,
-	FCW_FCW_ALARM,
+	FCW_ALARM,
 	FCW_TAILGATE_ALARM,
 	FCW_PULL_AHEAD_WARNING
-}
+};
 
 enum GPSStatus
 {
@@ -60,8 +60,8 @@ enum GPSStatus
 	GPS_LOCK_LDW_ON,
 	GPS_SPEED_WARNING,
 	GPS_SPEED_ALARM
-}
-*/
+};
+
 class ProcessValues
 {
     public:

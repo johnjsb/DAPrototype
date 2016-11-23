@@ -82,29 +82,29 @@ void ProcessImageThread( cv::Mat *orgimage,
 									  static_cast<double>(newpolygon[1].x -
 														  newpolygon[0].x);	
 				if ( settings::ldw::kperoffsetalarm < deviationper ) {
-					processvalues->ldwstatus_ = 1;
+					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_OK;
 				} else if ( (settings::ldw::kperoffsetwarning < deviationper) &&
 							(deviationper < settings::ldw::kperoffsetalarm) ) {
-					processvalues->ldwstatus_ = 2;
+					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_OK;
 				} else if ( (0.0 < deviationper) &&
 						    (deviationper < settings::ldw::kperoffsetwarning) ) {
-					processvalues->ldwstatus_ = 3;
+					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_WARNING;
 				} else if ( (0.0 > deviationper) &&
 							(deviationper > -settings::ldw::kperoffsetwarning) ) {
-					processvalues->ldwstatus_ = 4;
+					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_WARNING;
 				} else if ( (-settings::ldw::kperoffsetwarning > deviationper) &&
 							(deviationper > -settings::ldw::kperoffsetalarm) ) {
-					processvalues->ldwstatus_ = 5;
+					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_ALARM;
 				} else if ( -settings::ldw::kperoffsetalarm > deviationper ) {
-					processvalues->ldwstatus_ = 6;
+					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_ALARM;
 				}
 			} else {
-				processvalues->ldwstatus_ = -1;
+				processvalues->ldwstatus_ = LDW_ERROR;
 			}
 			//Write new data
 			processvalues->SetPolygon(newpolygon);
 		} else {
-			processvalues->ldwstatus_ = 0;
+			processvalues->ldwstatus_ = LDW_INACTIVE;
 		}
 		
 		processorpacer.SetPace();

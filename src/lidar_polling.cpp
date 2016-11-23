@@ -32,7 +32,7 @@ void LidarPolingThread( ProcessValues *processvalues,
 {
 
 	std::cout << "Lidar polling thread starting!" << '\n';
-	processvalues->fcwstatus_ = 0;
+	processvalues->fcwstatus_ = FCW_INACTIVE;
 	std::cout << "Lidar not operational, exiting thread!" << '\n';
 	return;
 }
@@ -117,33 +117,31 @@ void LidarPolingThread( ProcessValues *processvalues,
 		//5 = following too close alarm
 		//6 = driver ahead takeoff notification
 		if ( readerror ) {
-			processvalues->fcwstatus_ = -1;
+			processvalues->fcwstatus_ = FCW_ERROR;
 		} else if ( (1000 * fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionwarning ) {
-			processvalues->fcwstatus_ = 2;
+			processvalues->fcwstatus_ = FCW_WARNING;
 		} else if ( vehiclemoving &&
 					(1000 * fcwtracker.followingtime_) <
 					settings::fcw::kmsfollowdistwarning ) {
-			processvalues->fcwstatus_ = 3;
+			processvalues->fcwstatus_ = FCW_TAILGATE_WARNING;
 		} else if ( (1000 * fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionalarm ) {
-			processvalues->fcwstatus_ = 4;
+			processvalues->fcwstatus_ = FCW_ALARM;
 		} else if ( vehiclemoving &&
 					(1000 * fcwtracker.followingtime_) <
 					settings::fcw::kmsfollowdistalarm ) {
-			processvalues->fcwstatus_ = 5;
+			processvalues->fcwstatus_ = FCW_TAILGATE_ALARM;
 		} else {
-			processvalues->fcwstatus_ = 1;
+			processvalues->fcwstatus_ = FCW_ACTIVE;
 		}
 
 		//Check for driver pullahead
 		if ( !vehiclemoving &&
 			 (fcwtracker.acceleration_ > 0.1) &&
-			 (processvalues->fcwstatus_ = 0) &&
 			 (pullaheadcount > pullaheaddelay) ) {
-			processvalues->fcwstatus_ = 6;
-		} else if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) &&
-					(processvalues->fcwstatus_ = 0) ) {
+			processvalues->fcwstatus_ = FCW_PULL_AHEAD_WARNING;
+		} else if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) ) {
 			pullaheadcount++;
 		} else {
 			pullaheadcount = 0;

@@ -40,7 +40,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 #ifdef __arm__									//Detect if compiling for raspberry pi
 	//Create thread variables
 	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
-	processvalues->gpsstatus_ = 1;
+	processvalues->gpsstatus_ = GPS_NO_LOCK;
 	
 	//Check that gpsd service is running
     if (gps_rec.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
@@ -111,10 +111,10 @@ void GpsPollingThread( ProcessValues *processvalues,
 		struct gps_data_t* newdata;
 
 		if (!gps_rec.waiting(2000000)) {
-			processvalues->gpsstatus_ = -1;
+			processvalues->gpsstatus_ = GPS_ERROR;
 			std::cout << "GPS timeout." << '\n';
 		} else if ((newdata = gps_rec.read()) == NULL) {
-			processvalues->gpsstatus_ = -1;
+			processvalues->gpsstatus_ = GPS_ERROR;
 			std::cout << "GPS read error!" << '\n';
 		} else {
 			if ( newdata->fix.mode > 1) {
@@ -123,13 +123,13 @@ void GpsPollingThread( ProcessValues *processvalues,
 				processvalues->longitude_ = newdata->fix.longitude;
 				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * newdata->fix.speed;
 				if ( processvalues->gpsspeed_ > settings::ldw::kenablespeed ) {
-					processvalues->gpsstatus_ =  3;
+					processvalues->gpsstatus_ =  GPS_LOCK_LDW_ON;
 				} else {
-					processvalues->gpsstatus_ =  2;
+					processvalues->gpsstatus_ =  GPS_LOCK_LDW_OFF;
 				}
 				
 			} else {
-				processvalues->gpsstatus_ = 1;
+				processvalues->gpsstatus_ = GPS_NO_LOCK;
 			}
 		}
 
