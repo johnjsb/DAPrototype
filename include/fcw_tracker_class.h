@@ -27,8 +27,7 @@ class FcwTracker
 		double followingtime_;  			//s
 		double timetocollision_;			//s
 		double acceleration_;				//ft/s^2 (averaged)
-        FcwTracker( double distanceoffset,
-					int samplestoaverage = 3 );
+        FcwTracker( int samplestoaverage = 3 );
         void Update( double distance,
 					 double speed );
         virtual ~FcwTracker();

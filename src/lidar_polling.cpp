@@ -58,8 +58,7 @@ void LidarPolingThread( ProcessValues *processvalues,
 	int timeoutdelay{ settings::comm::kpollratelidar / 2 };		//500ms
 	int pullaheadcount{ 0 };
 	int timeoutcount{ 0 };
-	FcwTracker fcwtracker( settings::fcw::kdistanceoffset,
-						   settings::fcw::ksamplestoaverage );
+	FcwTracker fcwtracker( settings::fcw::ksamplestoaverage );
 
 	//Setup I2C
 	int dacModule { wiringPiI2CSetup(0x62) };
