@@ -31,7 +31,7 @@ static bool g_camrecordorgimage{ false };
 static std::string g_camfilepath{ "/" };
 static std::string g_camorgfilename{ "original.avi" };
 static std::string g_cammodfilename{ "modified.avi" };
-static int g_campixwidth{ 640 };
+static int g_campixwidth{ 800 };
 static int g_campixheight{ 480 };
 static bool g_camshowspeed{ true };
 static bool g_camshowloc{ true };
