@@ -31,7 +31,7 @@ struct EvaluatedContour {
     cv::RotatedRect ellipse;
     float lengthwidthratio;
 	float angle;
-    //cv::Vec4f fitline;
+    cv::Vec4f fitline;
 };
 
 struct PolygonDifferences {

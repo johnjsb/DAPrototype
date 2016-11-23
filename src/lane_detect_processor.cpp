@@ -45,7 +45,7 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
-	float kcontrastscalefactor{ 0.18f };
+	float kcontrastscalefactor{ 0.19f };
 	
 	//Polygon filtering
 	Polygon optimalpolygon{ cv::Point(100,400),
@@ -59,10 +59,10 @@ namespace lanedetectconstants {
     uint16_t kmaxroadwidth{ static_cast<uint16_t>(koptimumwidth + kroadwithtolerance) };
 	
 	//Segment filtering
-	uint16_t ksegmentellipseheight{ 10 };			//In terms of pixels, future change
+	uint16_t ksegmentellipseheight{ 8 };			//In terms of pixels, future change
 	uint16_t kverticalsegmentlimit{ static_cast<uint16_t>(optimalpolygon[2].y) };
 	float ksegmentminimumangle{ 20.0f };
-	float ksegmentlengthwidthratio{ 2.6f };
+	float ksegmentlengthwidthratio{ 2.0f };
 	
 	//Contour construction filter
 	float ksegmentsanglewindow{ 34.0f };
@@ -70,12 +70,12 @@ namespace lanedetectconstants {
 	//Contour filtering
 	uint16_t kellipseheight{ 20 };					//In terms of pixels, future change
 	float kminimumangle{ 25.0f };
-	float klengthwidthratio{ 4.0f };
+	float klengthwidthratio{ 4.7f };
 	
 	//Scoring
-	float kanglefromcenter{ 30.0f };
-	float klowestscorelimit{ -FLT_MAX };
-	float kheightwidthscalefactor{ 200.0f };
+	float kanglefromcenter{ 26.0f };
+	float klowestscorelimit{ -40.0f };
+	float kheightwidthscalefactor{ 400.0f };
 
 }
 
@@ -200,7 +200,7 @@ void ProcessImage ( cv::Mat& image,
 			}
 		}
 	}
-	
+
 	//Set bottom of polygon equal to optimal polygon
 	if ( bestpolygon[0] != cv::Point(0,0) ) {
 		FindPolygon( bestpolygon, leftcontour, rightcontour, true );
@@ -237,19 +237,15 @@ void EvaluateSegment( const Contour& contour,
 	
 	//Filter by length to width ratio
 	if ( lengthwidthratio < lanedetectconstants::ksegmentlengthwidthratio ) return;
-	/*
+
 	//Create fitline
 	cv::Vec4f fitline;
 	cv::fitLine(contour, fitline, CV_DIST_L2, 0, 0.1, 0.1 );
 
 	//Filter by angle
 	float angle{ FastArcTan2(fitline[1], fitline[0]) };
-	*/
-	float angle;
-	if (ellipse.angle > 90.0f) {
-		angle = ellipse.angle - 90.0f;
-	} else {
-		angle = ellipse.angle + 90.0f;
+	if (angle < 0.0f) {
+		angle = ellipse.angle + 180.0f;
 	}
 	
 	if (angle < 90.0f) {
@@ -261,8 +257,9 @@ void EvaluateSegment( const Contour& contour,
 	evaluatedsegments.push_back( EvaluatedContour{contour,
 												  ellipse,
 												  lengthwidthratio,
-												  angle} );
-	//											    angle, fitline} );
+	//											  angle} );
+												  angle,
+												  fitline} );
 	return;
 }
 
@@ -273,8 +270,8 @@ void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegme
     for ( const EvaluatedContour &segcontour1 : evaluatedsegments ) {
 		for ( const EvaluatedContour &segcontour2 : evaluatedsegments ) {
 			//if ( segcontour1.ellipse == segcontour2.ellipse ) continue;
-			if ( segcontour1.contour == segcontour2.contour ) continue;
-			//if ( segcontour1.fitline == segcontour2.fitline ) continue;
+			//if ( segcontour1.contour == segcontour2.contour ) continue;
+			if ( segcontour1.fitline == segcontour2.fitline ) continue;
 			float angledifference1( fabs(segcontour1.angle -	segcontour2.angle) );
 			if ( angledifference1 > lanedetectconstants::ksegmentsanglewindow ) continue;
 			float createdangle { FastArcTan2((segcontour1.ellipse.center.y -
