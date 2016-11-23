@@ -25,8 +25,7 @@
 #define MPHTOFPSCONVERSION 1.46667f
 
 /*****************************************************************************************/
-FcwTracker::FcwTracker( double distanceoffset,
-						int samplestoaverage ) :
+FcwTracker::FcwTracker( int samplestoaverage ) :
 						kdistanceoffset_{ distanceoffset },
 						ksamplestoaverage_{ samplestoaverage }
 {
@@ -45,11 +44,9 @@ void FcwTracker::Update( double distance, double speed )
 	sampletime_ = std::chrono::duration_cast<std::chrono::microseconds>(
 		          std::chrono::high_resolution_clock::now() - lastsampletime_).count();
     lastsampletime_ = std::chrono::high_resolution_clock::now();
-	
-	//Check distance is valid
-	if ( distance < kdistanceoffset_ ) distance = kdistanceoffset_;
+
 	//Calculate speed relative to object ahead
-	distances_.push_back( distance - kdistanceoffset_ );
+	distances_.push_back( distance );
 	//Calculate velocity relative to object ahead
 	velocities_.push_back( (1000000.0 * (distances_[0] - distances_[1])) / sampletime_ );
 	//Calculate acceleration relative to object ahead

@@ -79,7 +79,7 @@ void LidarPolingThread( ProcessValues *processvalues,
 		int fcwresult{ -1 };
 		bool readerror{ true };
 		fcwresult = lidar_read(dacModule);
-		if ( fcwresult > 0 ) {
+		if ( fcwresult > settings::fcw::kdistanceoffset ) {
 			fcwtracker.Update( FEETPERCENTIMETER * fcwresult,
 							   processvalues->gpsspeed_ );
 			timeoutcount = 0;
@@ -101,33 +101,29 @@ void LidarPolingThread( ProcessValues *processvalues,
 
 		//Update everything
 		processvalues->forwarddistance_ = fcwtracker.followingdistance_;
-		if ( fcwtracker.followingtime_ < fcwtracker.timetocollision_ ) {
+		//if ( fcwtracker.followingtime_ < fcwtracker.timetocollision_ ) {
 			processvalues->timetocollision_ = fcwtracker.followingtime_;
-		} else {
-			processvalues->timetocollision_ = fcwtracker.timetocollision_;			
-		}
+		//} else {
+		//	processvalues->timetocollision_ = fcwtracker.timetocollision_;			
+		//}
 
 		//FCW Status
-		//-1 = error (sensor error)
-		//0 = inactive (disabled by xml or zero speed)
-		//1 = active and OK
-		//2 = fcw warning
-		//3 = following too close warning
-		//4 = fcw alarm
-		//5 = following too close alarm
-		//6 = driver ahead takeoff notification
 		if ( readerror ) {
 			processvalues->fcwstatus_ = FCW_ERROR;
+		/*
 		} else if ( (1000 * fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionwarning ) {
 			processvalues->fcwstatus_ = FCW_WARNING;
+		*/
 		} else if ( vehiclemoving &&
 					(1000 * fcwtracker.followingtime_) <
 					settings::fcw::kmsfollowdistwarning ) {
 			processvalues->fcwstatus_ = FCW_TAILGATE_WARNING;
+		/*
 		} else if ( (1000 * fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionalarm ) {
 			processvalues->fcwstatus_ = FCW_ALARM;
+		*/
 		} else if ( vehiclemoving &&
 					(1000 * fcwtracker.followingtime_) <
 					settings::fcw::kmsfollowdistalarm ) {
