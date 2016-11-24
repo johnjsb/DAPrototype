@@ -45,7 +45,7 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
-	float kcontrastscalefactor{ 0.19f };
+	float kcontrastscalefactor{ 0.195f };
 	
 	//Polygon filtering
 	Polygon optimalpolygon{ cv::Point(100,480),

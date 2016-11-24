@@ -131,7 +131,7 @@ void LidarPolingThread( ProcessValues *processvalues,
 		} else {
 			processvalues->fcwstatus_ = FCW_ACTIVE;
 		}
-
+/*
 		//Check for driver pullahead
 		if ( !vehiclemoving &&
 			 (fcwtracker.acceleration_ > 0.1) &&
@@ -142,7 +142,7 @@ void LidarPolingThread( ProcessValues *processvalues,
 		} else {
 			pullaheadcount = 0;
 		}
-
+*/
 		//Setpace
 		lidarpacer.SetPace();
 	}
