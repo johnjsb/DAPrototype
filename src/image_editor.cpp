@@ -62,10 +62,10 @@ void ImageEditorThread( cv::Mat *orgimage,
 	float widthscalefactor{ orgimage->cols / 800.0f };
 	float heightscalefactor{ orgimage->rows / 480.0f };
 	capturemutex->unlock();
-	cv::Point datetimelocation{ cv::Point(510 * widthscalefactor,
+	cv::Point datetimelocation{ cv::Point(550 * widthscalefactor,
 										  470 * heightscalefactor) };
 	float datetimesize{ 0.5f * heightscalefactor };
-	cv::Point speedlocation{ cv::Point(645 * widthscalefactor,
+	cv::Point speedlocation{ cv::Point(660 * widthscalefactor,
 									   30 * heightscalefactor) };
 	float speedsize{ 0.75f * heightscalefactor };
 	cv::Point latlonglocation{ cv::Point(10 * widthscalefactor,

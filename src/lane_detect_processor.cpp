@@ -48,10 +48,10 @@ namespace lanedetectconstants {
 	float kcontrastscalefactor{ 0.19f };
 	
 	//Polygon filtering
-	Polygon optimalpolygon{ cv::Point(100,400),
-							cv::Point(540,400),
-							cv::Point(340,250),
-							cv::Point(300,250) };
+	Polygon optimalpolygon{ cv::Point(125,460),
+							cv::Point(675,460),
+							cv::Point(430,250),
+							cv::Point(370,250) };
 	uint16_t koptimumwidth{ static_cast<uint16_t>(optimalpolygon[1].x -
 												  optimalpolygon[0].x) };
 	uint16_t kroadwithtolerance{ 100 };
