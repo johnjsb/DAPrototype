@@ -78,7 +78,8 @@ void LidarPolingThread( ProcessValues *processvalues,
 		int fcwresult{ -1 };
 		bool readerror{ true };
 		fcwresult = lidar_read(dacModule);
-		if ( fcwresult > settings::fcw::kdistanceoffset ) {
+		if ( (FEETPERCENTIMETER * fcwresult) >
+			 settings::fcw::kdistanceoffset ) {
 			fcwtracker.Update( FEETPERCENTIMETER * fcwresult,
 							   processvalues->gpsspeed_ );
 			timeoutcount = 0;
