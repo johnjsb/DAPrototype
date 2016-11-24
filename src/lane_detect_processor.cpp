@@ -48,10 +48,10 @@ namespace lanedetectconstants {
 	float kcontrastscalefactor{ 0.19f };
 	
 	//Polygon filtering
-	Polygon optimalpolygon{ cv::Point(125,460),
-							cv::Point(675,460),
-							cv::Point(430,250),
-							cv::Point(370,250) };
+	Polygon optimalpolygon{ cv::Point(100,480),
+							cv::Point(700,480),
+							cv::Point(440,240),
+							cv::Point(360,240) };
 	uint16_t koptimumwidth{ static_cast<uint16_t>(optimalpolygon[1].x -
 												  optimalpolygon[0].x) };
 	uint16_t kroadwithtolerance{ 100 };
@@ -74,6 +74,7 @@ namespace lanedetectconstants {
 	
 	//Scoring
 	float kanglefromcenter{ 26.0f };
+	uint16_t kminimumpolygonheight{ 25 };
 	float klowestscorelimit{ -40.0f };
 	float kheightwidthscalefactor{ 400.0f };
 
@@ -365,6 +366,11 @@ void FindPolygon( Polygon& polygon,
 		maxy = maxyoptimal;
 	} else {
 		maxy = maxyactual;
+	}
+	
+	//Filter by height
+	if ( (maxyactual - miny) < lanedetectconstants::kminimumpolygonheight ) {
+		return;
 	}
 	
 	//Define slopes

@@ -44,7 +44,9 @@ namespace lanedetectconstants {
 	
 	//Scoring
 	extern float kanglefromcenter;
+	extern uint16_t kminimumpolygonheight;
 	extern float klowestscorelimit;
+	extern float kheightwidthscalefactor;
 	
 }
 
