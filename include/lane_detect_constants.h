@@ -21,7 +21,7 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
-	extern float kotsuscalefactor;
+	extern float kcontrastscalefactor;
 	
 	//Polygon filtering
 	extern Polygon optimalpolygon;
