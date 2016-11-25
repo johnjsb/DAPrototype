@@ -82,19 +82,19 @@ void ProcessImageThread( cv::Mat *orgimage,
 									  static_cast<double>(newpolygon[1].x -
 														  newpolygon[0].x);	
 				if ( settings::ldw::kperoffsetalarm < deviationper ) {
-					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_OK;
+					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_ALARM;
 				} else if ( (settings::ldw::kperoffsetwarning < deviationper) &&
 							(deviationper < settings::ldw::kperoffsetalarm) ) {
-					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_OK;
+					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_WARNING;
 				} else if ( (0.0 < deviationper) &&
 						    (deviationper < settings::ldw::kperoffsetwarning) ) {
-					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_WARNING;
+					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_OK;
 				} else if ( (0.0 > deviationper) &&
 							(deviationper > -settings::ldw::kperoffsetwarning) ) {
-					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_WARNING;
+					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_OK;
 				} else if ( (-settings::ldw::kperoffsetwarning > deviationper) &&
 							(deviationper > -settings::ldw::kperoffsetalarm) ) {
-					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_ALARM;
+					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_WARNING;
 				} else if ( -settings::ldw::kperoffsetalarm > deviationper ) {
 					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_ALARM;
 				}
