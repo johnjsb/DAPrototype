@@ -48,10 +48,10 @@ namespace lanedetectconstants {
 	float kcontrastscalefactor{ 0.195f };
 	
 	//Polygon filtering
-	Polygon optimalpolygon{ cv::Point(100,480),
-							cv::Point(700,480),
-							cv::Point(440,240),
-							cv::Point(360,240) };
+	Polygon optimalpolygon{ cv::Point(110,480),
+							cv::Point(690,480),
+							cv::Point(390,250),
+							cv::Point(410,250) };
 	uint16_t koptimumwidth{ static_cast<uint16_t>(optimalpolygon[1].x -
 												  optimalpolygon[0].x) };
 	uint16_t kroadwithtolerance{ 100 };
@@ -258,7 +258,6 @@ void EvaluateSegment( const Contour& contour,
 	evaluatedsegments.push_back( EvaluatedContour{contour,
 												  ellipse,
 												  lengthwidthratio,
-	//											  angle} );
 												  angle,
 												  fitline} );
 	return;
@@ -270,8 +269,6 @@ void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegme
 {
     for ( const EvaluatedContour &segcontour1 : evaluatedsegments ) {
 		for ( const EvaluatedContour &segcontour2 : evaluatedsegments ) {
-			//if ( segcontour1.ellipse == segcontour2.ellipse ) continue;
-			//if ( segcontour1.contour == segcontour2.contour ) continue;
 			if ( segcontour1.fitline == segcontour2.fitline ) continue;
 			float angledifference1( fabs(segcontour1.angle -	segcontour2.angle) );
 			if ( angledifference1 > lanedetectconstants::ksegmentsanglewindow ) continue;
