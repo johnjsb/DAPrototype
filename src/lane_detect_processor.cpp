@@ -54,7 +54,7 @@ namespace lanedetectconstants {
 							cv::Point(410,250) };
 	uint16_t koptimumwidth{ static_cast<uint16_t>(optimalpolygon[1].x -
 												  optimalpolygon[0].x) };
-	uint16_t kroadwithtolerance{ 100 };
+	uint16_t kroadwithtolerance{ 80 };
     uint16_t kminroadwidth{ static_cast<uint16_t>(koptimumwidth - kroadwithtolerance) };
     uint16_t kmaxroadwidth{ static_cast<uint16_t>(koptimumwidth + kroadwithtolerance) };
 	
