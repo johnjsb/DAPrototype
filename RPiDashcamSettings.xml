@@ -41,9 +41,9 @@
 		<samplesToKeep>5</samplesToKeep>
 		<samplesToAverage>3</samplesToAverage>
 		<!Warning limit as % of screen width>
-		<perOffsetWarning>35</perOffsetWarning>
+		<perOffsetWarning>10</perOffsetWarning>
 		<!Alarm limit as % of screen width>
-		<perOffsetAlarm>40</perOffsetAlarm>
+		<perOffsetAlarm>15</perOffsetAlarm>
 		<msUntilWarning>500</msUntilWarning>
 		<msUntilAlarm>500</msUntilAlarm>
 		<updateFPS>15</updateFPS>
