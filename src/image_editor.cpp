@@ -15,10 +15,10 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-#include <math.h>
 #include <sstream>
 #include <mutex>
 #include <atomic>
+#include <math.h>
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
@@ -229,21 +229,19 @@ std::string ConvertLatLong ( double latitude,
 	} else {
 		latitude = -latitude;
 	}
-	uint16_t degrees{ static_cast<uint16_t>(latitude) };
-	uint16_t minutes{ static_cast<uint16_t>((latitude -
-		static_cast<double>(degrees))*60.0) };
-	double seconds{ (latitude - static_cast<double>(degrees) -
-		(static_cast<double>(minutes)/60.0))*3600.0 };
-	std::stringstream secondstext;
-	secondstext  << std::fixed << std::setprecision(2) <<  seconds;
-	std::string positionstring{ std::to_string(degrees) + "* " + std::to_string(minutes) +
-		"' " + secondstext.str()  + "\"" };
+	double degrees, minutes, seconds;
+	minutes = modf( latitude, &degrees );
+	seconds = modf( (minutes * 60.0), &minutes );
+	seconds *= 60.0;
+	std::stringstream  positionstring{ "" };
+	positionstring << std::fixed << std::setprecision(0) << degrees << "* "
+				   << minutes << "' " << std::setprecision(2) << seconds << "\"";
 	if (north) {
-		positionstring += " N";
+		positionstring << " N";
 	} else {
-		positionstring += " S";
+		positionstring << " S";
 	}
-	positionstring += ", ";
+	positionstring << ", ";
 	
 	//Longitude
 	bool east{false};
@@ -252,20 +250,17 @@ std::string ConvertLatLong ( double latitude,
 	} else {
 		longitude = -longitude;
 	}
-	degrees = static_cast<uint16_t>(longitude);
-	minutes = static_cast<uint16_t>((longitude - static_cast<double>(degrees))*60.0);
-	seconds = (longitude - static_cast<double>(degrees) -
-		(static_cast<double>(minutes)/60.0))*3600.0;
-	secondstext.str(std::string());
-	secondstext  << std::fixed << std::setprecision(2) <<  seconds;
-	positionstring += std::to_string(degrees) + "* " + std::to_string(minutes) + "' " +
-		secondstext.str()  + "\"";
+	minutes = modf( longitude, &degrees );
+	seconds = modf( (minutes * 60.0), &minutes );
+	seconds *= 60.0;
+	positionstring << std::fixed << std::setprecision(0) << degrees << "* "
+				   << minutes << "' " << std::setprecision(2) << seconds << "\"";
 	if (east) {
-		positionstring += " E";
+		positionstring << " E";
 	} else {
-		positionstring += " W";
+		positionstring << " W";
 	}
-	return positionstring;
+	return positionstring.str();
 }
 /*****************************************************************************************/
 std::string GetDiagnosticString ( int ldwstatus, int fcwstatus, int gpsstatus )
