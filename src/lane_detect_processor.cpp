@@ -45,7 +45,7 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
-	float kcontrastscalefactor{ 0.188f };
+	float kcontrastscalefactor{ 0.450f };
 	
 	//Polygon filtering
 	Polygon optimalpolygon{ cv::Point(110,480),
@@ -75,7 +75,7 @@ namespace lanedetectconstants {
 	//Scoring
 	float kanglefromcenter{ 26.0f };
 	uint16_t kminimumpolygonheight{ 40 };
-	float klowestscorelimit{ -50.0f };
+	float klowestscorelimit{ -FLT_MAX };			//{ -50.0f };
 	float kheightwidthscalefactor{ 500.0f };
 
 }
@@ -91,16 +91,17 @@ void ProcessImage ( cv::Mat& image,
 	cv::cvtColor( image, image, CV_BGR2GRAY );
 	
 	//Blur to reduce noise
-    cv::blur( image, image, cv::Size(2,2) );
+    cv::blur( image, image, cv::Size(3,3) );
 	
 //-----------------------------------------------------------------------------------------
 //Find contours
 //-----------------------------------------------------------------------------------------
-	//Auto threshold values for canny edge detection - should use stddev instead?
-	double minintensity, maxintensity;
-	cv::minMaxLoc(image, &minintensity, &maxintensity);
-	float lowerthreshold{ lanedetectconstants::kcontrastscalefactor *
-						  static_cast<float>(maxintensity - minintensity) };
+	//Auto threshold values for canny edge detection
+	cv::Scalar mean;     
+	cv::Scalar std;
+	cv::meanStdDev(image, mean, std);
+	float lowerthreshold{ lanedetectconstants::kcontrastscalefactor * std[0] };
+	
 	//Canny edge detection
     cv::Canny( image, image, lowerthreshold, 3 * lowerthreshold );
 	std::vector<Contour> detectedcontours;
