@@ -15,6 +15,7 @@
 #include <iostream>
 #include <atomic>
 #include <deque>
+#include <cmath>
 #include <sys/time.h>
 
 //3rd party libraries
@@ -55,11 +56,13 @@ void GpsPollingThread( ProcessValues *processvalues,
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
 	
 	//Loop until first GPS lock to set system time
-	while ( ((firstdata = gps_rec.read()) == NULL) ||
-		    (firstdata->fix.mode <= 1) ) {
+	while ( ((firstdata == NULL) ||
+		    (firstdata->fix.mode <= 1) ||
+			std::isnan(firstdata->fix.time) {
 		if (*exitsignal) {
 			return;
 		}
+		firstdata = gps_rec.read();
 		gpspacer.SetPace();
 	}
 	
