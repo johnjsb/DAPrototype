@@ -127,9 +127,9 @@ void ProcessImage ( cv::Mat& image,
 	std::vector<EvaluatedContour> evaluatedparentsegments; 
     for ( int i = 0; i < detectedcontours.size(); i++ ) {
         if ( detectedhierarchy[i][3] > -1 ) {
-			EvaluateSegment( detectedcontours[i], image.rows, evaluatedchildsegments );
+			EvaluateSegment( detectedcontours[i], evaluatedchildsegments );
         } else {
-			EvaluateSegment( detectedcontours[i], image.rows, evaluatedparentsegments );
+			EvaluateSegment( detectedcontours[i], evaluatedparentsegments );
 		}
     }
 
@@ -143,7 +143,7 @@ void ProcessImage ( cv::Mat& image,
 //Evaluate constructed segments
 //-----------------------------------------------------------------------------------------	
 	for ( Contour contour : constructedcontours ) {
-		EvaluateSegment( contour, image.rows, evaluatedparentsegments );
+		EvaluateSegment( contour, evaluatedparentsegments );
 	}
 	
 //-----------------------------------------------------------------------------------------
@@ -227,17 +227,20 @@ void ProcessImage ( cv::Mat& image,
 
 /*****************************************************************************************/	
 void EvaluateSegment( const Contour& contour,
-                      const int imageheight,
 					  std::vector<EvaluatedContour>& evaluatedsegments )
 {	
 	//Filter by size, only to prevent exception when creating ellipse or fitline
 	if ( contour.size() < 5 ) return;
 		
+	//Calculate center point
+	cv::Point center { std::accumulate(contour.begin(),	contour.end(), cv::Point(0,0)) };
+	center = cv::Point(center.x / contour.size(), center.y / contour.size());
+									
+	//Filter by screen position
+	if ( center.y < (lanedetectconstants::kverticalsegmentlimit)) return;
+	
 	//Create ellipse
 	cv::RotatedRect ellipse{ fitEllipse(contour) };
-	
-	//Filter by screen position
-	if ( ellipse.center.y < (lanedetectconstants::kverticalsegmentlimit)) return;
 	
 	//Filter by length (ellipse vs segment?)
 	if ( ellipse.size.height < lanedetectconstants::ksegmentellipseheight ) return;
@@ -268,7 +271,8 @@ void EvaluateSegment( const Contour& contour,
 												  ellipse,
 												  lengthwidthratio,
 												  angle,
-												  fitline} );
+												  fitline,
+												  center} );
 	return;
 }
 
@@ -281,10 +285,10 @@ void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegme
 			if ( segcontour1.fitline == segcontour2.fitline ) continue;
 			float angledifference1( fabs(segcontour1.angle -	segcontour2.angle) );
 			if ( angledifference1 > lanedetectconstants::ksegmentsanglewindow ) continue;
-			float createdangle { FastArcTan2((segcontour1.ellipse.center.y -
-											  segcontour2.ellipse.center.y),
-											 (segcontour1.ellipse.center.x -
-											  segcontour2.ellipse.center.x)) };
+			float createdangle { FastArcTan2((segcontour1.center.y -
+											  segcontour2.center.y),
+											 (segcontour1.center.x -
+											  segcontour2.center.x)) };
 			if ( createdangle < 90.0f ) {
 				if ( createdangle < lanedetectconstants::ksegmentminimumangle ) return;
 			} else {
@@ -321,7 +325,7 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 			continue;
 		
 		//Push into either left or right evaluated contour set
-		if ( evaluatedcontour.ellipse.center.x < (imagewidth * 0.6f) ) {
+		if ( evaluatedcontour.center.x < (imagewidth * 0.6f) ) {
 			//Filter by angle
 			if ( evaluatedcontour.angle > (180.0f - lanedetectconstants::kminimumangle) ) {
 				continue;
@@ -329,7 +333,7 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 			if ( evaluatedcontour.angle < 75.0f ) continue;
 			leftcontours.push_back( evaluatedcontour );
 		} 
-		if ( evaluatedcontour.ellipse.center.x > (imagewidth * 0.4f) ) {
+		if ( evaluatedcontour.center.x > (imagewidth * 0.4f) ) {
 			//Filter by angle
 			if ( evaluatedcontour.angle < lanedetectconstants::kminimumangle) continue;
 			if ( evaluatedcontour.angle > 105.0f ) continue;
@@ -374,24 +378,12 @@ void FindPolygon( Polygon& polygon,
 	//Define slopes
 	float evaluatedleftslope { leftcontour.fitline[1] / leftcontour.fitline[0] };
 	float evaluatedrightslope { rightcontour.fitline[1] / rightcontour.fitline[0] };
-
-	//Calculate center points
-	cv::Point sum { std::accumulate(leftcontour.contour.begin(),
-									leftcontour.contour.end(),
-									cv::Point(0,0)) };
-	cv::Point leftcenter{ cv::Point(sum.x / leftcontour.contour.size(),
-									sum.y / leftcontour.contour.size()) };
-	sum = std::accumulate( rightcontour.contour.begin(),
-						   rightcontour.contour.end(),
-						   cv::Point(0,0) );
-	cv::Point rightcenter{ cv::Point(sum.x / rightcontour.contour.size(),
-									sum.y / rightcontour.contour.size()) };
 	
 	//Calculate optimal bottom points
-	cv::Point bottomleftoptimal{ cv::Point(leftcenter.x +(maxyoptimal - leftcenter.y) /
+	cv::Point bottomleftoptimal{ cv::Point(leftcontour.center.x +(maxyoptimal - leftcontour.center.y) /
 										   evaluatedleftslope,
 										   maxyoptimal) };
-	cv::Point bottomrightoptimal{ cv::Point(rightcenter.x +	(maxyoptimal - rightcenter.y) /
+	cv::Point bottomrightoptimal{ cv::Point(rightcontour.center.x +	(maxyoptimal - rightcontour.center.y) /
 											evaluatedrightslope,
 											maxyoptimal) };
 	
@@ -400,9 +392,9 @@ void FindPolygon( Polygon& polygon,
 	if ( roadwidth < lanedetectconstants::kminroadwidth ) return;
 	if ( roadwidth > lanedetectconstants::kmaxroadwidth ) return;
 	
-	cv::Point topright{ cv::Point(rightcenter.x - (rightcenter.y - miny) / evaluatedrightslope,
+	cv::Point topright{ cv::Point(rightcontour.center.x - (rightcontour.center.y - miny) / evaluatedrightslope,
 								  miny) };
-	cv::Point topleft{ cv::Point(leftcenter.x - (leftcenter.y - miny) / evaluatedleftslope,
+	cv::Point topleft{ cv::Point(leftcontour.center.x - (leftcontour.center.y - miny) / evaluatedleftslope,
 								 miny) };
 		
 	//Check validity of shape
@@ -414,9 +406,9 @@ void FindPolygon( Polygon& polygon,
 			polygon[0] = bottomleftoptimal;
 			polygon[1] = bottomrightoptimal;
 		} else {
-			polygon[0] = cv::Point(leftcenter.x + (maxy - leftcenter.y) / evaluatedleftslope,
+			polygon[0] = cv::Point(leftcontour.center.x + (maxy - leftcontour.center.y) / evaluatedleftslope,
 								   maxy);
-			polygon[1] = cv::Point(rightcenter.x + (maxy - rightcenter.y) / evaluatedrightslope,
+			polygon[1] = cv::Point(rightcontour.center.x + (maxy - rightcontour.center.y) / evaluatedrightslope,
 								   maxy);
 		}
 		polygon[2] = topright;

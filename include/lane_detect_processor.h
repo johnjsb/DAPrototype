@@ -32,6 +32,7 @@ struct EvaluatedContour {
     float lengthwidthratio;
 	float angle;
     cv::Vec4f fitline;
+	cv::Point center;
 };
 
 struct PolygonDifferences {
@@ -40,8 +41,7 @@ struct PolygonDifferences {
 };
 
 void EvaluateSegment( const Contour& contour,
-					  const int imageheight,
-	                  std::vector<EvaluatedContour>&	evaluatedsegments );
+	                  std::vector<EvaluatedContour>& evaluatedsegments );
 void ConstructFromSegments( const std::vector<EvaluatedContour>& evaluatedsegments,
                             std::vector<Contour>& constructedcontours );
 void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
