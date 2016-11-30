@@ -74,7 +74,7 @@ namespace lanedetectconstants {
 	
 	//Scoring
 	float kanglefromcenter{ 26.0f };
-	uint16_t kminimumpolygonheight{ 40 };
+	uint16_t kminimumpolygonheight{ 15 };
 	float klowestscorelimit{ -FLT_MAX };			//{ -50.0f };
 	float kheightwidthscalefactor{ 500.0f };
 
