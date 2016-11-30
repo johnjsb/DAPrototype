@@ -49,8 +49,8 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 				   std::vector<EvaluatedContour>& leftcontours,
 				   std::vector<EvaluatedContour>& rightcontours );
 void FindPolygon( Polygon& polygon,
-                  const Contour& leftcontour,
-				  const Contour& rightcontour,
+                  const EvaluatedContour& leftcontour,
+				  const EvaluatedContour& rightcontour,
 				  bool useoptimaly = false );
 float Score( const Polygon& polygon ,
 			 const int imagewidth );
