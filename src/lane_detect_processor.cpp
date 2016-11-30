@@ -74,8 +74,8 @@ namespace lanedetectconstants {
 	
 	//Scoring
 	float kanglefromcenter{ 26.0f };
-	uint16_t kminimumpolygonheight{ 15 };
-	float klowestscorelimit{ -FLT_MAX };			//{ -50.0f };
+	uint16_t kminimumpolygonheight{ 10 };
+	float klowestscorelimit{ -100.0f };
 	float kheightwidthscalefactor{ 500.0f };
 
 }
@@ -104,6 +104,14 @@ void ProcessImage ( cv::Mat& image,
 	
 	//Canny edge detection
     cv::Canny( image, image, lowerthreshold, 3 * lowerthreshold );
+	//int erosion_size = 1;   
+	//cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,
+	//					  cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), 
+	//					  cv::Point(erosion_size, erosion_size) );
+	//Dilate
+	//cv::dilate( image, image, element );
+	//Erode
+	//cv::erode( image, image, element );
 	std::vector<Contour> detectedcontours;
     std::vector<cv::Vec4i> detectedhierarchy;
     cv::findContours( image,
@@ -154,8 +162,8 @@ void ProcessImage ( cv::Mat& image,
 						 cv::Point(0,0),
 						 cv::Point(0,0) };
 	float maxscore{ lanedetectconstants::klowestscorelimit };
-	Contour leftcontour;
-	Contour rightcontour;
+	EvaluatedContour leftcontour;
+	EvaluatedContour rightcontour;
 	
 	//Create optimal polygon mat
 	cv::Mat optimalmat{ cv::Mat(POLYGONSCALING * image.rows,
@@ -183,8 +191,8 @@ void ProcessImage ( cv::Mat& image,
 								cv::Point(0,0),
 								cv::Point(0,0) };
 			FindPolygon( newpolygon,
-						 leftevaluatedcontour.contour,
-						 rightevaluatedcontour.contour );
+						 leftevaluatedcontour,
+						 rightevaluatedcontour );
 				
 			//If invalid polygon created, goto next
 			if ( newpolygon[0] == cv::Point(0,0) ) continue;
@@ -195,8 +203,8 @@ void ProcessImage ( cv::Mat& image,
 			
 			//If highest score update
 			if ( score > maxscore ) {
-				leftcontour = leftevaluatedcontour.contour;
-				rightcontour = rightevaluatedcontour.contour;
+				leftcontour = leftevaluatedcontour;
+				rightcontour = rightevaluatedcontour;
 				maxscore = score;
 				bestpolygon = newpolygon;
 			}
@@ -333,29 +341,21 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 
 /*****************************************************************************************/
 void FindPolygon( Polygon& polygon,
-                  const Contour& leftcontour,
-				  const Contour& rightcontour,
+                  const EvaluatedContour& leftcontour,
+				  const EvaluatedContour& rightcontour,
 				  bool useoptimaly )
 {
 	//Get point extremes
-	auto minmaxyleft = std::minmax_element( leftcontour.begin(),
-											leftcontour.end(),
+	auto minmaxyleft = std::minmax_element( leftcontour.contour.begin(),
+											leftcontour.contour.end(),
 											[]( const cv::Point& lhs,
 												const cv::Point& rhs )
 											{ return lhs.y < rhs.y; } );
-	auto minmaxyright = std::minmax_element( rightcontour.begin(),
-											 rightcontour.end(),
+	auto minmaxyright = std::minmax_element( rightcontour.contour.begin(),
+											 rightcontour.contour.end(),
 											 []( const cv::Point& lhs,
 												 const cv::Point& rhs )
 											 { return lhs.y < rhs.y; } );
-	int leftmaxx{ minmaxyleft.second->x },
-		leftminx{ minmaxyleft.first->x },
-		leftmaxy{ minmaxyleft.second->y },
-		leftminy{ minmaxyleft.first->y },
-		rightmaxx{ minmaxyright.second->x },
-		rightminx{ minmaxyright.first->x },
-		rightmaxy{ minmaxyright.second->y },
-		rightminy{ minmaxyright.first->y };
 	int	maxyoptimal{ lanedetectconstants::optimalpolygon[0].y };
 	int maxyactual{ std::max(minmaxyleft.second->y, minmaxyright.second->y) };
 	int miny{ std::max(minmaxyleft.first->y, minmaxyright.first->y) };
@@ -372,33 +372,27 @@ void FindPolygon( Polygon& polygon,
 	}
 	
 	//Define slopes
-	float leftslope;
-	if ((leftmaxx - leftminx) == 0) {
-		leftslope = FLT_MAX;
-	} else {
-		leftslope = static_cast<float>(leftmaxy-leftminy) /
-					static_cast<float>(leftmaxx - leftminx);
-	}
-	float rightslope;
-	if ((rightmaxx - rightminx) == 0) {
-		rightslope = FLT_MAX;
-	} else {
-		rightslope = static_cast<float>(rightmaxy-rightminy) /
-					 static_cast<float>(rightmaxx - rightminx);
-	}
+	float evaluatedleftslope { leftcontour.fitline[1] / leftcontour.fitline[0] };
+	float evaluatedrightslope { rightcontour.fitline[1] / rightcontour.fitline[0] };
 
 	//Calculate center points
-    cv::Point leftcenter{ cv::Point((leftmaxx + leftminx) * 0.5f,
-									(leftmaxy + leftminy) * 0.5f) };
-    cv::Point rightcenter{ cv::Point((rightmaxx + rightminx) * 0.5f,
-									 (rightmaxy + rightminy) * 0.5f) };
+	cv::Point sum { std::accumulate(leftcontour.contour.begin(),
+									leftcontour.contour.end(),
+									cv::Point(0,0)) };
+	cv::Point leftcenter{ cv::Point(sum.x / leftcontour.contour.size(),
+									sum.y / leftcontour.contour.size()) };
+	sum = std::accumulate( rightcontour.contour.begin(),
+						   rightcontour.contour.end(),
+						   cv::Point(0,0) );
+	cv::Point rightcenter{ cv::Point(sum.x / rightcontour.contour.size(),
+									sum.y / rightcontour.contour.size()) };
 	
 	//Calculate optimal bottom points
 	cv::Point bottomleftoptimal{ cv::Point(leftcenter.x +(maxyoptimal - leftcenter.y) /
-										   leftslope,
+										   evaluatedleftslope,
 										   maxyoptimal) };
 	cv::Point bottomrightoptimal{ cv::Point(rightcenter.x +	(maxyoptimal - rightcenter.y) /
-											rightslope,
+											evaluatedrightslope,
 											maxyoptimal) };
 	
 	//Perform filtering based on width of polygon with optimal maxy
@@ -406,15 +400,13 @@ void FindPolygon( Polygon& polygon,
 	if ( roadwidth < lanedetectconstants::kminroadwidth ) return;
 	if ( roadwidth > lanedetectconstants::kmaxroadwidth ) return;
 	
-	cv::Point topright{ cv::Point(rightcenter.x - (rightcenter.y - miny) / rightslope,
+	cv::Point topright{ cv::Point(rightcenter.x - (rightcenter.y - miny) / evaluatedrightslope,
 								  miny) };
-	cv::Point topleft{ cv::Point(leftcenter.x - (leftcenter.y - miny) / leftslope,
+	cv::Point topleft{ cv::Point(leftcenter.x - (leftcenter.y - miny) / evaluatedleftslope,
 								 miny) };
 		
 	//Check validity of shape
-	if ( (((leftslope < 0.0f) && (rightslope > 0.0f)) ||
-		  ((leftslope > 0.0f) && (rightslope > 0.0f)) ||
-		  ((leftslope < 0.0f) && (rightslope < 0.0f))) &&
+	if ( !((evaluatedleftslope > 0.0f) && (evaluatedrightslope < 0.0f)) &&
 		 ((bottomleftoptimal.x < bottomrightoptimal.x) && (topleft.x < topright.x)) ) {
 
 		//Construct polygon
@@ -422,9 +414,9 @@ void FindPolygon( Polygon& polygon,
 			polygon[0] = bottomleftoptimal;
 			polygon[1] = bottomrightoptimal;
 		} else {
-			polygon[0] = cv::Point(leftcenter.x + (maxy - leftcenter.y) / leftslope,
+			polygon[0] = cv::Point(leftcenter.x + (maxy - leftcenter.y) / evaluatedleftslope,
 								   maxy);
-			polygon[1] = cv::Point(rightcenter.x + (maxy - rightcenter.y) / rightslope,
+			polygon[1] = cv::Point(rightcenter.x + (maxy - rightcenter.y) / evaluatedrightslope,
 								   maxy);
 		}
 		polygon[2] = topright;
