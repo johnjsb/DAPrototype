@@ -376,15 +376,15 @@ void FindPolygon( Polygon& polygon,
 	}
 	
 	//Define slopes
-	float evaluatedleftslope { leftcontour.fitline[1] / leftcontour.fitline[0] };
-	float evaluatedrightslope { rightcontour.fitline[1] / rightcontour.fitline[0] };
+	float leftslopeinverse { leftcontour.fitline[0] / leftcontour.fitline[1] };
+	float rightslopeinverse { rightcontour.fitline[0] / rightcontour.fitline[1] };
 	
 	//Calculate optimal bottom points
-	cv::Point bottomleftoptimal{ cv::Point(leftcontour.center.x +(maxyoptimal - leftcontour.center.y) /
-										   evaluatedleftslope,
+	cv::Point bottomleftoptimal{ cv::Point(leftcontour.center.x +(maxyoptimal - leftcontour.center.y) *
+										   leftslopeinverse,
 										   maxyoptimal) };
-	cv::Point bottomrightoptimal{ cv::Point(rightcontour.center.x +	(maxyoptimal - rightcontour.center.y) /
-											evaluatedrightslope,
+	cv::Point bottomrightoptimal{ cv::Point(rightcontour.center.x +	(maxyoptimal - rightcontour.center.y) *
+											rightslopeinverse,
 											maxyoptimal) };
 	
 	//Perform filtering based on width of polygon with optimal maxy
@@ -392,13 +392,13 @@ void FindPolygon( Polygon& polygon,
 	if ( roadwidth < lanedetectconstants::kminroadwidth ) return;
 	if ( roadwidth > lanedetectconstants::kmaxroadwidth ) return;
 	
-	cv::Point topright{ cv::Point(rightcontour.center.x - (rightcontour.center.y - miny) / evaluatedrightslope,
+	cv::Point topright{ cv::Point(rightcontour.center.x - (rightcontour.center.y - miny) * rightslopeinverse,
 								  miny) };
-	cv::Point topleft{ cv::Point(leftcontour.center.x - (leftcontour.center.y - miny) / evaluatedleftslope,
+	cv::Point topleft{ cv::Point(leftcontour.center.x - (leftcontour.center.y - miny) * leftslopeinverse,
 								 miny) };
 		
 	//Check validity of shape
-	if ( !((evaluatedleftslope > 0.0f) && (evaluatedrightslope < 0.0f)) &&
+	if ( !((leftslopeinverse > 0.0f) && (rightslopeinverse < 0.0f)) &&
 		 ((bottomleftoptimal.x < bottomrightoptimal.x) && (topleft.x < topright.x)) ) {
 
 		//Construct polygon
@@ -406,9 +406,9 @@ void FindPolygon( Polygon& polygon,
 			polygon[0] = bottomleftoptimal;
 			polygon[1] = bottomrightoptimal;
 		} else {
-			polygon[0] = cv::Point(leftcontour.center.x + (maxy - leftcontour.center.y) / evaluatedleftslope,
+			polygon[0] = cv::Point(leftcontour.center.x + (maxy - leftcontour.center.y) * leftslopeinverse,
 								   maxy);
-			polygon[1] = cv::Point(rightcontour.center.x + (maxy - rightcontour.center.y) / evaluatedrightslope,
+			polygon[1] = cv::Point(rightcontour.center.x + (maxy - rightcontour.center.y) * rightslopeinverse,
 								   maxy);
 		}
 		polygon[2] = topright;
