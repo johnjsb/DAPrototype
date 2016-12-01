@@ -20,33 +20,31 @@
 
 /*****************************************************************************************/
 namespace lanedetectconstants {
-	//Image evaluation
-	extern float kcontrastscalefactor;
 	
-	//Polygon filtering
-	extern Polygon optimalpolygon;
-	extern uint16_t koptimumwidth;
-	extern uint16_t kroadwithtolerance;
-    extern uint16_t kminroadwidth;
-    extern uint16_t kmaxroadwidth;
+	//Image evaluation
+	extern float k_contrastscalefactor;
 	
 	//Segment filtering
-	extern uint16_t ksegmentellipseheight;
-	extern uint16_t kverticalsegmentlimit;
-	extern float ksegmentminimumangle;
-	extern float ksegmentlengthwidthratio;
-	extern float ksegmentsanglewindow;
+	extern uint16_t k_segmentminimumsize;
+	extern uint16_t k_verticalsegmentlimit;
+	extern float k_segmentminimumangle;
+	//extern float k_segmentlengthwidthratio;
+	extern float k_segmentsanglewindow;
 	
 	//Contour filtering
-	extern uint16_t kellipseheight;
-	extern float kminimumangle;
-	extern float klengthwidthratio;
+	extern uint16_t k_minimumsize;
+	extern float k_minimumangle;
+	//extern float k_lengthwidthratio;
+	
+	//Polygon filtering
+    extern uint16_t k_minroadwidth;
+    extern uint16_t k_maxroadwidth;
 	
 	//Scoring
-	extern float kanglefromcenter;
-	extern uint16_t kminimumpolygonheight;
-	extern float klowestscorelimit;
-	extern float kheightwidthscalefactor;
+	extern float k_anglefromcenter;
+	extern uint16_t k_minimumpolygonheight;
+	extern float k_lowestscorelimit;
+	extern float k_heightwidthscalefactor;
 	
 }
 

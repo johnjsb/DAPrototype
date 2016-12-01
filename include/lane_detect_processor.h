@@ -28,8 +28,8 @@ typedef std::vector<cv::Point> Contour;
 
 struct EvaluatedContour {
     Contour contour;
-    cv::RotatedRect ellipse;
-    float lengthwidthratio;
+    //cv::RotatedRect ellipse;
+    //float lengthwidthratio;
 	float angle;
     cv::Vec4f fitline;
 	cv::Point center;
@@ -51,11 +51,10 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 void FindPolygon( Polygon& polygon,
                   const EvaluatedContour& leftcontour,
 				  const EvaluatedContour& rightcontour,
+                  const int imageheight,
 				  bool useoptimaly = false );
 float Score( const Polygon& polygon ,
 			 const int imagewidth );
-float PercentMatch( const Polygon& polygon,
-					const cv::Mat& optimalmat );
 void AveragePolygon( Polygon& polygon,
 					 std::deque<Polygon>& pastpolygons,
 					 int samplestoaverage,

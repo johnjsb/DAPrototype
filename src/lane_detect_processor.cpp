@@ -40,43 +40,35 @@
 	#define M_1_PI 0.31830988618f
 #endif
 #define DEGREESPERRADIAN 57.2957795131f
-#define POLYGONSCALING 1.0f
 
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
-	float kcontrastscalefactor{ 0.450f };
-	
-	//Polygon filtering
-	Polygon optimalpolygon{ cv::Point(110,480),
-							cv::Point(690,480),
-							cv::Point(390,250),
-							cv::Point(410,250) };
-	uint16_t koptimumwidth{ static_cast<uint16_t>(optimalpolygon[1].x -
-												  optimalpolygon[0].x) };
-	uint16_t kroadwithtolerance{ 80 };
-    uint16_t kminroadwidth{ static_cast<uint16_t>(koptimumwidth - kroadwithtolerance) };
-    uint16_t kmaxroadwidth{ static_cast<uint16_t>(koptimumwidth + kroadwithtolerance) };
+	float k_contrastscalefactor{ 0.26f };
 	
 	//Segment filtering
-	uint16_t ksegmentellipseheight{ 16 };			//In terms of pixels, future change
-	uint16_t kverticalsegmentlimit{ static_cast<uint16_t>(optimalpolygon[2].y) };
-	float ksegmentminimumangle{ 26.0f };
-	float ksegmentlengthwidthratio{ 4.0f };
+	uint16_t k_segmentminimumsize{ 30 };			//Relative to image size, must change
+	uint16_t k_verticalsegmentlimit{ 250 };			//Relative to image size, must change
+	float k_segmentminimumangle{ 20.0f };
+	//float k_segmentlengthwidthratio{ 3.5f };
 	
 	//Contour construction filter
-	float ksegmentsanglewindow{ 34.0f };
+	float k_segmentsanglewindow{ 34.0f };
 	
 	//Contour filtering
-	uint16_t kellipseheight{ 24 };					//In terms of pixels, future change
-	float kminimumangle{ 26.0f };
-	float klengthwidthratio{ 6.5f };
+	uint16_t k_minimumsize{ 36 };					//Relative to image size, must change
+	float k_minimumangle{ 24.0f };
+	//float k_lengthwidthratio{ 4.5f };
+	
+	//Polygon filtering
+    uint16_t k_minroadwidth{ 400 };					//Relative to image size, must change
+    uint16_t k_maxroadwidth{ 680 };					//Relative to image size, must change
 	
 	//Scoring
-	float kanglefromcenter{ 26.0f };
-	uint16_t kminimumpolygonheight{ 10 };
-	float klowestscorelimit{ -100.0f };
-	float kheightwidthscalefactor{ 500.0f };
+	float k_anglefromcenter{ 30.0f };
+	uint16_t k_minimumpolygonheight{ 12 };			//Relative to image size, must change
+	float k_lowestscorelimit{ -50.0f };				//Relative to image size, must change
+	float k_heightwidthscalefactor{ 520.0f };		//Relative to image size, must change
 
 }
 
@@ -100,7 +92,7 @@ void ProcessImage ( cv::Mat& image,
 	cv::Scalar mean;     
 	cv::Scalar std;
 	cv::meanStdDev(image, mean, std);
-	float lowerthreshold{ lanedetectconstants::kcontrastscalefactor * std[0] };
+	double lowerthreshold{ lanedetectconstants::k_contrastscalefactor * std[0] };
 	
 	//Canny edge detection
     cv::Canny( image, image, lowerthreshold, 3 * lowerthreshold );
@@ -136,15 +128,15 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------
 //Construct from segments
 //-----------------------------------------------------------------------------------------	
-    std::vector<std::vector<cv::Point>> constructedcontours;
-	ConstructFromSegments( evaluatedchildsegments, constructedcontours );
+    //std::vector<std::vector<cv::Point>> constructedcontours;
+	//ConstructFromSegments( evaluatedchildsegments, constructedcontours );
 
 //-----------------------------------------------------------------------------------------
 //Evaluate constructed segments
 //-----------------------------------------------------------------------------------------	
-	for ( Contour contour : constructedcontours ) {
-		EvaluateSegment( contour, evaluatedparentsegments );
-	}
+	//for ( Contour contour : constructedcontours ) {
+	//	EvaluateSegment( contour, evaluatedparentsegments );
+	//}
 	
 //-----------------------------------------------------------------------------------------
 //Filter and sort all evaluated contours
@@ -161,30 +153,16 @@ void ProcessImage ( cv::Mat& image,
 						 cv::Point(0,0),
 						 cv::Point(0,0),
 						 cv::Point(0,0) };
-	float maxscore{ lanedetectconstants::klowestscorelimit };
+	float maxscore{ lanedetectconstants::k_lowestscorelimit };
 	EvaluatedContour leftcontour;
 	EvaluatedContour rightcontour;
-	
-	//Create optimal polygon mat
-	cv::Mat optimalmat{ cv::Mat(POLYGONSCALING * image.rows,
-						POLYGONSCALING * image.cols,
-						CV_8UC1,
-						cv::Scalar(0)) };
-	cv::Point cvpointarray[4];
-	for  (int i =0; i < 4; i++ ) {
-		cvpointarray[i] = cv::Point(POLYGONSCALING *
-									lanedetectconstants::optimalpolygon[i].x,
-									POLYGONSCALING *
-									lanedetectconstants::optimalpolygon[i].y);
-	}
-	cv::fillConvexPoly( optimalmat, cvpointarray, 4,  cv::Scalar(1) );
 	
 	//Find best score
 	for ( EvaluatedContour &leftevaluatedcontour : leftcontours ) {
 		for ( EvaluatedContour &rightevaluatedcontour : rightcontours ) {
 			//Check sum angle
 			if ( (fabs(180.0f - leftevaluatedcontour.angle - rightevaluatedcontour.angle) *
-				  0.5f) > lanedetectconstants::kanglefromcenter ) continue;
+				  0.5f) > lanedetectconstants::k_anglefromcenter ) continue;
 			
 			Polygon newpolygon{ cv::Point(0,0),
 								cv::Point(0,0),
@@ -192,13 +170,13 @@ void ProcessImage ( cv::Mat& image,
 								cv::Point(0,0) };
 			FindPolygon( newpolygon,
 						 leftevaluatedcontour,
-						 rightevaluatedcontour );
+						 rightevaluatedcontour,
+						 image.rows );
 				
 			//If invalid polygon created, goto next
 			if ( newpolygon[0] == cv::Point(0,0) ) continue;
 			
 			//Score
-			//float score{ PercentMatch(newpolygon, optimalmat) };
 			float score{ Score(newpolygon, image.cols) };
 			
 			//If highest score update
@@ -213,7 +191,7 @@ void ProcessImage ( cv::Mat& image,
 
 	//Set bottom of polygon equal to optimal polygon
 	if ( bestpolygon[0] != cv::Point(0,0) ) {
-		FindPolygon( bestpolygon, leftcontour, rightcontour, true );
+		FindPolygon( bestpolygon, leftcontour, rightcontour, image.rows, true );
 	}
 	
 //-----------------------------------------------------------------------------------------
@@ -230,26 +208,26 @@ void EvaluateSegment( const Contour& contour,
 					  std::vector<EvaluatedContour>& evaluatedsegments )
 {	
 	//Filter by size, only to prevent exception when creating ellipse or fitline
-	if ( contour.size() < 5 ) return;
+	if ( contour.size() < lanedetectconstants::k_segmentminimumsize ) return;
 		
 	//Calculate center point
 	cv::Point center { std::accumulate(contour.begin(),	contour.end(), cv::Point(0,0)) };
 	center = cv::Point(center.x / contour.size(), center.y / contour.size());
 									
 	//Filter by screen position
-	if ( center.y < (lanedetectconstants::kverticalsegmentlimit)) return;
+	if ( center.y < (lanedetectconstants::k_verticalsegmentlimit)) return;
 	
 	//Create ellipse
-	cv::RotatedRect ellipse{ fitEllipse(contour) };
+	//cv::RotatedRect ellipse{ fitEllipse(contour) };
 	
 	//Filter by length (ellipse vs segment?)
-	if ( ellipse.size.height < lanedetectconstants::ksegmentellipseheight ) return;
+	//if ( ellipse.size.height < lanedetectconstants::k_segmentminimumsize ) return;
 	
 	//Calculate length to width ratio
-	float lengthwidthratio{ ellipse.size.height / ellipse.size.width };
+	//float lengthwidthratio{ ellipse.size.height / ellipse.size.width };
 	
 	//Filter by length to width ratio
-	if ( lengthwidthratio < lanedetectconstants::ksegmentlengthwidthratio ) return;
+	//if ( lengthwidthratio < lanedetectconstants::k_segmentlengthwidthratio ) return;
 
 	//Create fitline
 	cv::Vec4f fitline;
@@ -258,18 +236,18 @@ void EvaluateSegment( const Contour& contour,
 	//Filter by angle
 	float angle{ FastArcTan2(fitline[1], fitline[0]) };
 	if (angle < 0.0f) {
-		angle = ellipse.angle + 180.0f;
+		angle += 180.0f;
 	}
 	
 	if (angle < 90.0f) {
-		if ( angle < lanedetectconstants::ksegmentminimumangle ) return;
+		if ( angle < lanedetectconstants::k_segmentminimumangle ) return;
 	} else {
-		if ( angle > (180.0f - lanedetectconstants::ksegmentminimumangle) ) return;
+		if ( angle > (180.0f - lanedetectconstants::k_segmentminimumangle) ) return;
 	}
 
 	evaluatedsegments.push_back( EvaluatedContour{contour,
-												  ellipse,
-												  lengthwidthratio,
+	//											  ellipse,
+	//											  lengthwidthratio,
 												  angle,
 												  fitline,
 												  center} );
@@ -284,21 +262,21 @@ void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegme
 		for ( const EvaluatedContour &segcontour2 : evaluatedsegments ) {
 			if ( segcontour1.fitline == segcontour2.fitline ) continue;
 			float angledifference1( fabs(segcontour1.angle -	segcontour2.angle) );
-			if ( angledifference1 > lanedetectconstants::ksegmentsanglewindow ) continue;
+			if ( angledifference1 > lanedetectconstants::k_segmentsanglewindow ) continue;
 			float createdangle { FastArcTan2((segcontour1.center.y -
 											  segcontour2.center.y),
 											 (segcontour1.center.x -
 											  segcontour2.center.x)) };
 			if ( createdangle < 90.0f ) {
-				if ( createdangle < lanedetectconstants::ksegmentminimumangle ) return;
+				if ( createdangle < lanedetectconstants::k_segmentminimumangle ) return;
 			} else {
 				if ( createdangle > (180.0f -
-					 lanedetectconstants::ksegmentminimumangle) ) return;
+					 lanedetectconstants::k_segmentminimumangle) ) return;
 			}
 			float angledifference2( fabs(createdangle -	segcontour1.angle) );
-			if ( angledifference2 > lanedetectconstants::ksegmentsanglewindow ) continue;
+			if ( angledifference2 > lanedetectconstants::k_segmentsanglewindow ) continue;
 			float angledifference3( fabs(createdangle -	segcontour2.angle) );
-			if ( angledifference3 > lanedetectconstants::ksegmentsanglewindow ) continue;
+			if ( angledifference3 > lanedetectconstants::k_segmentsanglewindow ) continue;
 			Contour newcontour{ segcontour1.contour };
 			newcontour.insert( newcontour.end(),
 							   segcontour2.contour.begin(),
@@ -317,17 +295,20 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 {
 	for ( const EvaluatedContour &evaluatedcontour : evaluatedsegments ) {
 		//Filter by length (ellipse vs segment?)
-		if ( evaluatedcontour.ellipse.size.height < lanedetectconstants::kellipseheight )
+		//if ( evaluatedcontour.ellipse.size.height < lanedetectconstants::k_minimumsize )
+		//	continue;
+		if ( evaluatedcontour.contour.size() < lanedetectconstants::k_minimumsize ) {
 			continue;
+		}
 		
 		//Filter by length to width ratio
-		if ( evaluatedcontour.lengthwidthratio < lanedetectconstants::klengthwidthratio )
-			continue;
+		//if ( evaluatedcontour.lengthwidthratio < lanedetectconstants::k_lengthwidthratio )
+		//	continue;
 		
 		//Push into either left or right evaluated contour set
 		if ( evaluatedcontour.center.x < (imagewidth * 0.6f) ) {
 			//Filter by angle
-			if ( evaluatedcontour.angle > (180.0f - lanedetectconstants::kminimumangle) ) {
+			if ( evaluatedcontour.angle > (180.0f - lanedetectconstants::k_minimumangle) ) {
 				continue;
 			}
 			if ( evaluatedcontour.angle < 75.0f ) continue;
@@ -335,7 +316,7 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 		} 
 		if ( evaluatedcontour.center.x > (imagewidth * 0.4f) ) {
 			//Filter by angle
-			if ( evaluatedcontour.angle < lanedetectconstants::kminimumangle) continue;
+			if ( evaluatedcontour.angle < lanedetectconstants::k_minimumangle) continue;
 			if ( evaluatedcontour.angle > 105.0f ) continue;
 			rightcontours.push_back( evaluatedcontour );
 		}
@@ -347,8 +328,34 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 void FindPolygon( Polygon& polygon,
                   const EvaluatedContour& leftcontour,
 				  const EvaluatedContour& rightcontour,
+                  const int imageheight,
 				  bool useoptimaly )
 {
+	//Check for correct left/right assignment
+	if ( leftcontour.center.x > rightcontour.center.x ) return;
+	
+	//Define slopes
+	float leftslopeinverse { leftcontour.fitline[0] / leftcontour.fitline[1] };
+	float rightslopeinverse { rightcontour.fitline[0] / rightcontour.fitline[1] };
+	
+	//Check shape before continuing
+	if ( (leftslopeinverse > 0.0f) && (rightslopeinverse < 0.0f) ) return;
+	
+	//Calculate optimal bottom points
+	cv::Point bottomleftoptimal{ cv::Point(leftcontour.center.x + 
+										   (imageheight - leftcontour.center.y) *
+										   leftslopeinverse,
+										   imageheight) };
+	cv::Point bottomrightoptimal{ cv::Point(rightcontour.center.x +
+										    (imageheight - rightcontour.center.y) *
+											rightslopeinverse,
+											imageheight) };
+	
+	//Perform filtering based on width of polygon with optimal maxy
+	int roadwidth{ bottomrightoptimal.x - bottomleftoptimal.x };
+	if ( roadwidth < lanedetectconstants::k_minroadwidth ) return;
+	if ( roadwidth > lanedetectconstants::k_maxroadwidth ) return;
+	
 	//Get point extremes
 	auto minmaxyleft = std::minmax_element( leftcontour.contour.begin(),
 											leftcontour.contour.end(),
@@ -360,60 +367,43 @@ void FindPolygon( Polygon& polygon,
 											 []( const cv::Point& lhs,
 												 const cv::Point& rhs )
 											 { return lhs.y < rhs.y; } );
-	int	maxyoptimal{ lanedetectconstants::optimalpolygon[0].y };
 	int maxyactual{ std::max(minmaxyleft.second->y, minmaxyright.second->y) };
 	int miny{ std::max(minmaxyleft.first->y, minmaxyright.first->y) };
 	int maxy;	
 	if ( useoptimaly ) {
-		maxy = maxyoptimal;
+		maxy = imageheight;
 	} else {
 		maxy = maxyactual;
 	}
 	
 	//Filter by height
-	if ( (maxyactual - miny) < lanedetectconstants::kminimumpolygonheight ) {
-		return;
-	}
+	if ( (maxyactual - miny) < lanedetectconstants::k_minimumpolygonheight ) return;
 	
-	//Define slopes
-	float leftslopeinverse { leftcontour.fitline[0] / leftcontour.fitline[1] };
-	float rightslopeinverse { rightcontour.fitline[0] / rightcontour.fitline[1] };
-	
-	//Calculate optimal bottom points
-	cv::Point bottomleftoptimal{ cv::Point(leftcontour.center.x +(maxyoptimal - leftcontour.center.y) *
-										   leftslopeinverse,
-										   maxyoptimal) };
-	cv::Point bottomrightoptimal{ cv::Point(rightcontour.center.x +	(maxyoptimal - rightcontour.center.y) *
-											rightslopeinverse,
-											maxyoptimal) };
-	
-	//Perform filtering based on width of polygon with optimal maxy
-	int roadwidth{ bottomrightoptimal.x - bottomleftoptimal.x };
-	if ( roadwidth < lanedetectconstants::kminroadwidth ) return;
-	if ( roadwidth > lanedetectconstants::kmaxroadwidth ) return;
-	
-	cv::Point topright{ cv::Point(rightcontour.center.x - (rightcontour.center.y - miny) * rightslopeinverse,
+	cv::Point topright{ cv::Point(rightcontour.center.x -
+								  (rightcontour.center.y - miny) *
+								  rightslopeinverse,
 								  miny) };
-	cv::Point topleft{ cv::Point(leftcontour.center.x - (leftcontour.center.y - miny) * leftslopeinverse,
+	cv::Point topleft{ cv::Point(leftcontour.center.x -
+								 (leftcontour.center.y - miny) *
+								 leftslopeinverse,
 								 miny) };
 		
-	//Check validity of shape
-	if ( !((leftslopeinverse > 0.0f) && (rightslopeinverse < 0.0f)) &&
-		 ((bottomleftoptimal.x < bottomrightoptimal.x) && (topleft.x < topright.x)) ) {
-
-		//Construct polygon
-		if ( useoptimaly ) {
-			polygon[0] = bottomleftoptimal;
-			polygon[1] = bottomrightoptimal;
-		} else {
-			polygon[0] = cv::Point(leftcontour.center.x + (maxy - leftcontour.center.y) * leftslopeinverse,
-								   maxy);
-			polygon[1] = cv::Point(rightcontour.center.x + (maxy - rightcontour.center.y) * rightslopeinverse,
-								   maxy);
-		}
-		polygon[2] = topright;
-		polygon[3] = topleft;
+	//Construct polygon
+	if ( useoptimaly ) {
+		polygon[0] = bottomleftoptimal;
+		polygon[1] = bottomrightoptimal;
+	} else {
+		polygon[0] = cv::Point(leftcontour.center.x +
+							   (maxy - leftcontour.center.y) *
+							   leftslopeinverse,
+							   maxy);
+		polygon[1] = cv::Point(rightcontour.center.x +
+							   (maxy - rightcontour.center.y) *
+							   rightslopeinverse,
+							   maxy);
 	}
+	polygon[2] = topright;
+	polygon[3] = topleft;
 
 	return;
 }
@@ -429,51 +419,7 @@ float Score( const Polygon& polygon ,
 												(polygon[0].x + polygon[1].x)) *
 												0.5f)) };
 	
-	return lanedetectconstants::kheightwidthscalefactor * heightwidthratio - centeroffset;
-}
-
-/*****************************************************************************************/
-float PercentMatch( const Polygon& polygon,
-					const cv::Mat& optimalmat )
-{
-	//Create blank mat
-	cv::Mat polygonmat{ cv::Mat(optimalmat.rows,
-								optimalmat.cols,
-								CV_8UC1,
-								cv::Scalar(0)) };
-	
-	//Draw polygon
-	cv::Point cvpointarray[4];
-	for  (int i =0; i < 4; i++ ) {
-		cvpointarray[i] = cv::Point(POLYGONSCALING * polygon[i].x,
-									POLYGONSCALING * polygon[i].y);
-	}
-	cv::fillConvexPoly( polygonmat, cvpointarray, 4,  cv::Scalar(2) );
-
-	//Add together
-	polygonmat += optimalmat;
-	
-	//Evaluate result
-	uint32_t excessarea{ 0 };
-	uint32_t overlaparea{ 0 };
-	for ( int i = 0; i < polygonmat.rows; i++ ) {
-		uchar* p { polygonmat.ptr<uchar>(i) };
-		for ( int j = 0; j < polygonmat.cols; j++ ) {
-			switch ( p[j] )
-			{
-				case 1:
-					excessarea++;
-					break;
-				case 2:
-					excessarea++;
-					break;
-				case 3:
-					overlaparea++;
-					break;
-			}
-		}
-	}
-	return (100.0f * overlaparea) / (overlaparea + excessarea);
+	return lanedetectconstants::k_heightwidthscalefactor * heightwidthratio - centeroffset;
 }
 
 /*****************************************************************************************/
