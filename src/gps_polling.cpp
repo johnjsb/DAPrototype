@@ -50,37 +50,8 @@ void GpsPollingThread( ProcessValues *processvalues,
     }
     
     //Get first reading to set time
-	struct gps_data_t* firstdata;
-		
-	//create pace setter
-	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
-	
-	//Loop until first GPS lock to set system time
-	while ( (firstdata == NULL) ||
-		    (firstdata->fix.mode <= 1) ||
-			std::isnan(firstdata->fix.time) ) {
-		if (*exitsignal) {
-			return;
-		}
-		firstdata = gps_rec.read();
-		gpspacer.SetPace();
-	}
-	
-	//Convert gps_data_t* member 'time' to timeval
-	timeval tv;
-	double wholeseconds, decimalseconds, offsettime;
-	offsettime = firstdata->fix.time - (5.0 * 3600.0);
-	decimalseconds = modf(offsettime, &wholeseconds);
-	tv.tv_sec = static_cast<int32_t>(wholeseconds);
-	tv.tv_usec = static_cast<int32_t>(decimalseconds * 1000000.0);
-
-	//Set system time
-	if ( settimeofday(&tv, NULL) >= 0) {
-		std::cout << "Time set succesful!" << '\n';
-	} else {
-		std::cout << "Time set failure!" << '\n';
-	}
-	
+	struct gps_data_t* firstdata{ gps_rec.read() };
+			
 	//Set baud rate 115200
 	if (gps_send(firstdata,"$PMTK251,115200*1F\r\n") >= 0) {
 		std::cout << "GPS baud rate set to 115200" << '\n';
@@ -109,6 +80,35 @@ void GpsPollingThread( ProcessValues *processvalues,
 		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
 	
+	//create pace setter
+	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
+	
+	//Loop until first GPS lock to set system time
+	while ( (firstdata == NULL) ||
+			(firstdata->fix.mode <= 1) ||
+			std::isnan(firstdata->fix.time) ) {
+		if (*exitsignal) {
+			return;
+		}
+		firstdata = gps_rec.read();
+		gpspacer.SetPace();
+	}
+	
+	//Convert gps_data_t* member 'time' to timeval
+	timeval tv;
+	double wholeseconds, decimalseconds, offsettime;
+	offsettime = firstdata->fix.time - (5.0 * 3600.0);
+	decimalseconds = modf(offsettime, &wholeseconds);
+	tv.tv_sec = static_cast<int32_t>(wholeseconds);
+	tv.tv_usec = static_cast<int32_t>(decimalseconds * 1000000.0);
+
+	//Set system time
+	if ( settimeofday(&tv, NULL) >= 0) {
+		std::cout << "Time set succesful!" << '\n';
+	} else {
+		std::cout << "Time set failure!" << '\n';
+	}
+
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
 		struct gps_data_t* newdata;
