@@ -382,6 +382,7 @@ void FindPolygon( Polygon& polygon,
 											 { return lhs.y < rhs.y; } );
 	int maxyactual{ std::max(minmaxyleft.second->y, minmaxyright.second->y) };
 	int miny{ std::min(minmaxyleft.first->y, minmaxyright.first->y) };
+	if ( miny < (imageheight / 2) ) miny = imageheight / 2; 
 	int maxy;	
 	if ( useoptimaly ) {
 		maxy = imageheight;
