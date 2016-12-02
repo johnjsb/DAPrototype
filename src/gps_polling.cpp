@@ -86,6 +86,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 	//Loop until first GPS lock to set system time
 	while ( (firstdata == NULL) ||
 			(firstdata->fix.mode <= 1) ||
+			(firstdata->fix.time < 1) ||
 			std::isnan(firstdata->fix.time) ) {
 		if (*exitsignal) {
 			return;
@@ -102,7 +103,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 	tv.tv_sec = static_cast<int32_t>(wholeseconds);
 	tv.tv_usec = static_cast<int32_t>(decimalseconds * 1000000.0);
 
-	//Set system time
+	//Set system time - THIS IS CAUSING CRASHES, WHY?
 	if ( settimeofday(&tv, NULL) >= 0) {
 		std::cout << "Time set succesful!" << '\n';
 	} else {
