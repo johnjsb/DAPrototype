@@ -49,11 +49,13 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 				   std::vector<EvaluatedContour>& leftcontours,
 				   std::vector<EvaluatedContour>& rightcontours );
 void FindPolygon( Polygon& polygon,
-                  const EvaluatedContour& leftcontour,
-				  const EvaluatedContour& rightcontour,
+                  const EvaluatedContour& leftevaluatedcontour,
+				  const EvaluatedContour& rightevaluatedcontour,
                   const int imageheight,
 				  bool useoptimaly = false );
-float Score( const Polygon& polygon ,
+float Score( const Polygon& polygon,
+             const EvaluatedContour& leftevaluatedcontour,
+			 const EvaluatedContour& rightevaluatedcontour,
 			 const int imagewidth );
 void AveragePolygon( Polygon& polygon,
 					 std::deque<Polygon>& pastpolygons,

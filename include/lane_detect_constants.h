@@ -34,7 +34,7 @@ namespace lanedetectconstants {
 	//Contour filtering
 	extern uint16_t k_minimumsize;
 	extern float k_minimumangle;
-	//extern float k_lengthwidthratio;
+	extern float k_lengthwidthratio;
 	
 	//Polygon filtering
     extern uint16_t k_minroadwidth;
@@ -44,7 +44,9 @@ namespace lanedetectconstants {
 	extern float k_anglefromcenter;
 	extern uint16_t k_minimumpolygonheight;
 	extern float k_lowestscorelimit;
-	extern float k_heightwidthscalefactor;
+	extern float k_weightedheightwidth;
+	extern float k_weightedangleoffset;
+	extern float k_weightedcenteroffset;
 	
 }
 

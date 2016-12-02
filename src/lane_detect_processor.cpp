@@ -13,6 +13,7 @@
 
 //Standard libraries
 #include <iostream>
+#include <iomanip>
 #include <ctime>
 #include <sys/time.h>
 #include <deque>
@@ -44,7 +45,7 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
-	float k_contrastscalefactor{ 0.26f };
+	float k_contrastscalefactor{ 0.3f };
 	
 	//Segment filtering
 	uint16_t k_segmentminimumsize{ 30 };			//Relative to image size, must change
@@ -58,17 +59,19 @@ namespace lanedetectconstants {
 	//Contour filtering
 	uint16_t k_minimumsize{ 36 };					//Relative to image size, must change
 	float k_minimumangle{ 24.0f };
-	//float k_lengthwidthratio{ 4.5f };
+	float k_lengthwidthratio{ 3.5f };
 	
 	//Polygon filtering
-    uint16_t k_minroadwidth{ 400 };					//Relative to image size, must change
-    uint16_t k_maxroadwidth{ 680 };					//Relative to image size, must change
+    uint16_t k_minroadwidth{ 520 };					//Relative to image size, must change
+    uint16_t k_maxroadwidth{ 660 };					//Relative to image size, must change
 	
 	//Scoring
-	float k_anglefromcenter{ 30.0f };
+	float k_anglefromcenter{ 26.0f };
 	uint16_t k_minimumpolygonheight{ 12 };			//Relative to image size, must change
-	float k_lowestscorelimit{ -50.0f };				//Relative to image size, must change
-	float k_heightwidthscalefactor{ 520.0f };		//Relative to image size, must change
+	float k_lowestscorelimit{ -200.0f };			//Relative to image size, must change
+	float k_weightedheightwidth{ 100.0f };			//Relative to image size, must change
+	float k_weightedangleoffset{ -1.0f };
+	float k_weightedcenteroffset{ -1.0f };			//Relative to image size, must change
 
 }
 
@@ -134,10 +137,13 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------
 //Evaluate constructed segments
 //-----------------------------------------------------------------------------------------	
+
+///-------------------------Not effective, replace with RANSAC?-------------------------///
 	//for ( Contour contour : constructedcontours ) {
 	//	EvaluateSegment( contour, evaluatedparentsegments );
 	//}
-	
+///-------------------------Not effective, replace with RANSAC?-------------------------///
+
 //-----------------------------------------------------------------------------------------
 //Filter and sort all evaluated contours
 //-----------------------------------------------------------------------------------------	
@@ -177,7 +183,10 @@ void ProcessImage ( cv::Mat& image,
 			if ( newpolygon[0] == cv::Point(0,0) ) continue;
 			
 			//Score
-			float score{ Score(newpolygon, image.cols) };
+			float score{ Score(newpolygon,
+						 leftevaluatedcontour,
+						 rightevaluatedcontour,
+						 image.cols) };
 			
 			//If highest score update
 			if ( score > maxscore ) {
@@ -200,6 +209,7 @@ void ProcessImage ( cv::Mat& image,
 	std::copy( std::begin(bestpolygon),
 			   std::end(bestpolygon),
 			   std::begin(polygon) );
+	std::cout << std::fixed << std::setprecision(2) <<  maxscore << " ";
 	return;
 }
 
@@ -301,9 +311,12 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 			continue;
 		}
 		
-		//Filter by length to width ratio
-		//if ( evaluatedcontour.lengthwidthratio < lanedetectconstants::k_lengthwidthratio )
-		//	continue;
+		//Filter by length to width ratio - removes non-linear lines	
+		cv::RotatedRect ellipse{ fitEllipse(evaluatedcontour.contour) };
+		float lengthwidthratio{ ellipse.size.height / ellipse.size.width };
+		if ( lengthwidthratio < lanedetectconstants::k_lengthwidthratio ) {
+			continue;
+		}
 		
 		//Push into either left or right evaluated contour set
 		if ( evaluatedcontour.center.x < (imagewidth * 0.6f) ) {
@@ -326,28 +339,28 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 
 /*****************************************************************************************/
 void FindPolygon( Polygon& polygon,
-                  const EvaluatedContour& leftcontour,
-				  const EvaluatedContour& rightcontour,
+                  const EvaluatedContour& leftevaluatedcontour,
+				  const EvaluatedContour& rightevaluatedcontour,
                   const int imageheight,
 				  bool useoptimaly )
 {
 	//Check for correct left/right assignment
-	if ( leftcontour.center.x > rightcontour.center.x ) return;
+	if ( leftevaluatedcontour.center.x > rightevaluatedcontour.center.x ) return;
 	
 	//Define slopes
-	float leftslopeinverse { leftcontour.fitline[0] / leftcontour.fitline[1] };
-	float rightslopeinverse { rightcontour.fitline[0] / rightcontour.fitline[1] };
+	float leftslopeinverse { leftevaluatedcontour.fitline[0] / leftevaluatedcontour.fitline[1] };
+	float rightslopeinverse { rightevaluatedcontour.fitline[0] / rightevaluatedcontour.fitline[1] };
 	
 	//Check shape before continuing
 	if ( (leftslopeinverse > 0.0f) && (rightslopeinverse < 0.0f) ) return;
 	
 	//Calculate optimal bottom points
-	cv::Point bottomleftoptimal{ cv::Point(leftcontour.center.x + 
-										   (imageheight - leftcontour.center.y) *
+	cv::Point bottomleftoptimal{ cv::Point(leftevaluatedcontour.center.x + 
+										   (imageheight - leftevaluatedcontour.center.y) *
 										   leftslopeinverse,
 										   imageheight) };
-	cv::Point bottomrightoptimal{ cv::Point(rightcontour.center.x +
-										    (imageheight - rightcontour.center.y) *
+	cv::Point bottomrightoptimal{ cv::Point(rightevaluatedcontour.center.x +
+										    (imageheight - rightevaluatedcontour.center.y) *
 											rightslopeinverse,
 											imageheight) };
 	
@@ -357,13 +370,13 @@ void FindPolygon( Polygon& polygon,
 	if ( roadwidth > lanedetectconstants::k_maxroadwidth ) return;
 	
 	//Get point extremes
-	auto minmaxyleft = std::minmax_element( leftcontour.contour.begin(),
-											leftcontour.contour.end(),
+	auto minmaxyleft = std::minmax_element( leftevaluatedcontour.contour.begin(),
+											leftevaluatedcontour.contour.end(),
 											[]( const cv::Point& lhs,
 												const cv::Point& rhs )
 											{ return lhs.y < rhs.y; } );
-	auto minmaxyright = std::minmax_element( rightcontour.contour.begin(),
-											 rightcontour.contour.end(),
+	auto minmaxyright = std::minmax_element( rightevaluatedcontour.contour.begin(),
+											 rightevaluatedcontour.contour.end(),
 											 []( const cv::Point& lhs,
 												 const cv::Point& rhs )
 											 { return lhs.y < rhs.y; } );
@@ -379,37 +392,36 @@ void FindPolygon( Polygon& polygon,
 	//Filter by height
 	if ( (maxyactual - miny) < lanedetectconstants::k_minimumpolygonheight ) return;
 	
-	cv::Point topright{ cv::Point(rightcontour.center.x -
-								  (rightcontour.center.y - miny) *
-								  rightslopeinverse,
-								  miny) };
-	cv::Point topleft{ cv::Point(leftcontour.center.x -
-								 (leftcontour.center.y - miny) *
-								 leftslopeinverse,
-								 miny) };
-		
 	//Construct polygon
 	if ( useoptimaly ) {
 		polygon[0] = bottomleftoptimal;
 		polygon[1] = bottomrightoptimal;
 	} else {
-		polygon[0] = cv::Point(leftcontour.center.x +
-							   (maxy - leftcontour.center.y) *
+		polygon[0] = cv::Point(leftevaluatedcontour.center.x +
+							   (maxy - leftevaluatedcontour.center.y) *
 							   leftslopeinverse,
 							   maxy);
-		polygon[1] = cv::Point(rightcontour.center.x +
-							   (maxy - rightcontour.center.y) *
+		polygon[1] = cv::Point(rightevaluatedcontour.center.x +
+							   (maxy - rightevaluatedcontour.center.y) *
 							   rightslopeinverse,
 							   maxy);
 	}
-	polygon[2] = topright;
-	polygon[3] = topleft;
+	polygon[2] = cv::Point( rightevaluatedcontour.center.x -
+							(rightevaluatedcontour.center.y - miny) *
+							rightslopeinverse,
+							miny );
+	polygon[3] = cv::Point( leftevaluatedcontour.center.x -
+							(leftevaluatedcontour.center.y - miny) *
+							leftslopeinverse,
+							miny );
 
 	return;
 }
 
 /*****************************************************************************************/
-float Score( const Polygon& polygon ,
+float Score( const Polygon& polygon,
+             const EvaluatedContour& leftevaluatedcontour,
+			 const EvaluatedContour& rightevaluatedcontour,
 			 const int imagewidth )
 {
 	
@@ -418,8 +430,13 @@ float Score( const Polygon& polygon ,
 	float centeroffset{ static_cast<float>(fabs((imagewidth -
 												(polygon[0].x + polygon[1].x)) *
 												0.5f)) };
+	float angleoffset{ 0.5f * fabs(180.0f -
+								   leftevaluatedcontour.angle -
+								   rightevaluatedcontour.angle) };
 	
-	return lanedetectconstants::k_heightwidthscalefactor * heightwidthratio - centeroffset;
+	return lanedetectconstants::k_weightedheightwidth * heightwidthratio +
+		   lanedetectconstants::k_weightedangleoffset * angleoffset +
+		   lanedetectconstants::k_weightedcenteroffset * centeroffset;
 }
 
 /*****************************************************************************************/
