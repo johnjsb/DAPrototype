@@ -82,7 +82,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 	
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
-	
+/*
 	//Loop until first GPS lock to set system time
 	while ( (firstdata == NULL) ||
 			(firstdata->fix.mode <= 1) ||
@@ -94,7 +94,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 		firstdata = gps_rec.read();
 		gpspacer.SetPace();
 	}
-	
+
 	//Convert gps_data_t* member 'time' to timeval
 	timeval tv;
 	double wholeseconds, decimalseconds, offsettime;
@@ -109,7 +109,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 	} else {
 		std::cout << "Time set failure!" << '\n';
 	}
-
+*/
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
 		struct gps_data_t* newdata;
