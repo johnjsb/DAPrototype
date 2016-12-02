@@ -56,9 +56,9 @@ void GpsPollingThread( ProcessValues *processvalues,
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
 	
 	//Loop until first GPS lock to set system time
-	while ( ((firstdata == NULL) ||
+	while ( (firstdata == NULL) ||
 		    (firstdata->fix.mode <= 1) ||
-			std::isnan(firstdata->fix.time) {
+			std::isnan(firstdata->fix.time) ) {
 		if (*exitsignal) {
 			return;
 		}
