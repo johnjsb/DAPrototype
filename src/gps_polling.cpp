@@ -48,7 +48,7 @@ void GpsPollingThread( ProcessValues *processvalues,
         std::cout << "No GPSD running. exiting GPS thread." << '\n';
         return;
     }
-    
+/*
     //Get first reading to set time
 	struct gps_data_t* firstdata{ gps_rec.read() };
 			
@@ -79,7 +79,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 	} else {
 		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
-	
+*/
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
 /*
