@@ -45,7 +45,7 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
-	float k_contrastscalefactor{ 0.3f };
+	float k_contrastscalefactor{ 0.35f };
 	
 	//Segment filtering
 	uint16_t k_segmentminimumsize{ 30 };			//Relative to image size, must change
@@ -209,7 +209,6 @@ void ProcessImage ( cv::Mat& image,
 	std::copy( std::begin(bestpolygon),
 			   std::end(bestpolygon),
 			   std::begin(polygon) );
-	std::cout << std::fixed << std::setprecision(2) <<  maxscore << " ";
 	return;
 }
 
@@ -383,7 +382,7 @@ void FindPolygon( Polygon& polygon,
 	int maxyactual{ std::max(minmaxyleft.second->y, minmaxyright.second->y) };
 	int miny{ std::min(minmaxyleft.first->y, minmaxyright.first->y) };
 	if ( miny < (imageheight / 2) ) miny = imageheight / 2; 
-	int maxy;	
+	int maxy;
 	if ( useoptimaly ) {
 		maxy = imageheight;
 	} else {
@@ -415,6 +414,19 @@ void FindPolygon( Polygon& polygon,
 							(leftevaluatedcontour.center.y - miny) *
 							leftslopeinverse,
 							miny );
+	//Handle polygon intersection
+	if ( polygon[3].x > polygon[2].x ) {
+		//Use intersection point for both - y=mx+b
+		float bleft{ leftevaluatedcontour.center.y -
+					 leftevaluatedcontour.center.x / leftslopeinverse };
+		float bright{ rightevaluatedcontour.center.y -
+					 rightevaluatedcontour.center.x / rightslopeinverse };
+		int x{ static_cast<int>((bright - bleft) /
+								((1.0f / leftslopeinverse) -
+								 (1.0f / rightslopeinverse))) };
+		int y{ static_cast<int>((1.0f / leftslopeinverse) * x) + bleft };
+		polygon[3] = polygon[2] = cv::Point(x, y);
+	}
 
 	return;
 }
