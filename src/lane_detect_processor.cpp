@@ -99,14 +99,6 @@ void ProcessImage ( cv::Mat& image,
 	
 	//Canny edge detection
     cv::Canny( image, image, lowerthreshold, 3 * lowerthreshold );
-	//int erosion_size = 1;   
-	//cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,
-	//					  cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1), 
-	//					  cv::Point(erosion_size, erosion_size) );
-	//Dilate
-	//cv::dilate( image, image, element );
-	//Erode
-	//cv::erode( image, image, element );
 	std::vector<Contour> detectedcontours;
     std::vector<cv::Vec4i> detectedhierarchy;
     cv::findContours( image,
@@ -129,22 +121,6 @@ void ProcessImage ( cv::Mat& image,
     }
 
 //-----------------------------------------------------------------------------------------
-//Construct from segments
-//-----------------------------------------------------------------------------------------	
-    //std::vector<std::vector<cv::Point>> constructedcontours;
-	//ConstructFromSegments( evaluatedchildsegments, constructedcontours );
-
-//-----------------------------------------------------------------------------------------
-//Evaluate constructed segments
-//-----------------------------------------------------------------------------------------	
-
-///-------------------------Not effective, replace with RANSAC?-------------------------///
-	//for ( Contour contour : constructedcontours ) {
-	//	EvaluateSegment( contour, evaluatedparentsegments );
-	//}
-///-------------------------Not effective, replace with RANSAC?-------------------------///
-
-//-----------------------------------------------------------------------------------------
 //Filter and sort all evaluated contours
 //-----------------------------------------------------------------------------------------	
 	std::vector<EvaluatedContour> leftcontours;
@@ -164,8 +140,8 @@ void ProcessImage ( cv::Mat& image,
 	EvaluatedContour rightcontour;
 	
 	//Find best score
-	for ( EvaluatedContour &leftevaluatedcontour : leftcontours ) {
-		for ( EvaluatedContour &rightevaluatedcontour : rightcontours ) {
+	for ( const EvaluatedContour &leftevaluatedcontour : leftcontours ) {
+		for ( const EvaluatedContour &rightevaluatedcontour : rightcontours ) {
 			//Check sum angle
 			if ( (fabs(180.0f - leftevaluatedcontour.angle - rightevaluatedcontour.angle) *
 				  0.5f) > lanedetectconstants::k_anglefromcenter ) continue;
@@ -225,18 +201,6 @@ void EvaluateSegment( const Contour& contour,
 									
 	//Filter by screen position
 	if ( center.y < (lanedetectconstants::k_verticalsegmentlimit)) return;
-	
-	//Create ellipse
-	//cv::RotatedRect ellipse{ fitEllipse(contour) };
-	
-	//Filter by length (ellipse vs segment?)
-	//if ( ellipse.size.height < lanedetectconstants::k_segmentminimumsize ) return;
-	
-	//Calculate length to width ratio
-	//float lengthwidthratio{ ellipse.size.height / ellipse.size.width };
-	
-	//Filter by length to width ratio
-	//if ( lengthwidthratio < lanedetectconstants::k_segmentlengthwidthratio ) return;
 
 	//Create fitline
 	cv::Vec4f fitline;
@@ -281,41 +245,6 @@ bool CheckAngle( const cv::Point center,
 		return false;
 	}
 }
-/*****************************************************************************************/	
-void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegments,
-                            std::vector<Contour>& constructedcontours )
-{
-    for ( const EvaluatedContour &segcontour1 : evaluatedsegments ) {
-		for ( const EvaluatedContour &segcontour2 : evaluatedsegments ) {
-			if ( segcontour1.fitline == segcontour2.fitline ) continue;
-			float angledifference1( fabs(segcontour1.angle -	segcontour2.angle) );
-			if ( angledifference1 > lanedetectconstants::k_segmentsanglewindow ) continue;
-			float createdangle { FastArcTan2((segcontour1.center.y -
-											  segcontour2.center.y),
-											 (segcontour1.center.x -
-											  segcontour2.center.x)) };
-			if ( createdangle < 0.0f ) {
-				createdangle += 180.0f;
-			}
-			if ( createdangle < 90.0f ) {
-				if ( createdangle < lanedetectconstants::k_maxvanishingpointangle ) return;
-			} else {
-				if ( createdangle > (180.0f -
-					 lanedetectconstants::k_maxvanishingpointangle) ) return;
-			}
-			float angledifference2( fabs(createdangle -	segcontour1.angle) );
-			if ( angledifference2 > lanedetectconstants::k_segmentsanglewindow ) continue;
-			float angledifference3( fabs(createdangle -	segcontour2.angle) );
-			if ( angledifference3 > lanedetectconstants::k_segmentsanglewindow ) continue;
-			Contour newcontour{ segcontour1.contour };
-			newcontour.insert( newcontour.end(),
-							   segcontour2.contour.begin(),
-							   segcontour2.contour.end() );
-			constructedcontours.push_back( newcontour );
-		}
-    }	
-	return;
-}
 
 /*****************************************************************************************/
 void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
@@ -324,9 +253,7 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 				   std::vector<EvaluatedContour>& rightcontours )
 {
 	for ( const EvaluatedContour &evaluatedcontour : evaluatedsegments ) {
-		//Filter by length (ellipse vs segment?)
-		//if ( evaluatedcontour.ellipse.size.height < lanedetectconstants::k_minimumsize )
-		//	continue;
+		//Filter by length
 		if ( evaluatedcontour.contour.size() < lanedetectconstants::k_minimumsize ) {
 			continue;
 		}
@@ -340,17 +267,9 @@ void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 		
 		//Push into either left or right evaluated contour set
 		if ( evaluatedcontour.center.x < (imagewidth * 0.6f) ) {
-			//Filter by angle
-			if ( evaluatedcontour.angle > (180.0f - lanedetectconstants::k_minimumangle) ) {
-				continue;
-			}
-			if ( evaluatedcontour.angle < 75.0f ) continue;
 			leftcontours.push_back( evaluatedcontour );
 		} 
 		if ( evaluatedcontour.center.x > (imagewidth * 0.4f) ) {
-			//Filter by angle
-			if ( evaluatedcontour.angle < lanedetectconstants::k_minimumangle) continue;
-			if ( evaluatedcontour.angle > 105.0f ) continue;
 			rightcontours.push_back( evaluatedcontour );
 		}
 	}

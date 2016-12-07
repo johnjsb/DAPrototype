@@ -44,8 +44,6 @@ void EvaluateSegment( const Contour& contour,
 	                  std::vector<EvaluatedContour>& evaluatedsegments );
 bool CheckAngle( const cv::Point center,
 				 const float angle );
-void ConstructFromSegments( const std::vector<EvaluatedContour>& evaluatedsegments,
-                            std::vector<Contour>& constructedcontours );
 void SortContours( const std::vector<EvaluatedContour>& evaluatedsegments,
 				   const int imagewidth,
 				   std::vector<EvaluatedContour>& leftcontours,
