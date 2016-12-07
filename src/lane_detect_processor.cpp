@@ -13,7 +13,6 @@
 
 //Standard libraries
 #include <iostream>
-#include <iomanip>
 #include <ctime>
 #include <sys/time.h>
 #include <deque>
@@ -45,13 +44,14 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
-	float k_contrastscalefactor{ 0.35f };
+	float k_contrastscalefactor{ 0.3f };
 	
 	//Segment filtering
 	uint16_t k_segmentminimumsize{ 30 };			//Relative to image size, must change
 	uint16_t k_verticalsegmentlimit{ 250 };			//Relative to image size, must change
-	float k_segmentminimumangle{ 20.0f };
-	//float k_segmentlengthwidthratio{ 3.5f };
+	float k_maxvanishingpointangle{ 18.0f };
+	uint16_t k_vanishingpointx{ 400 };				//Relative to image size, must change
+	uint16_t k_vanishingpointy{ 250 };				//Relative to image size, must change
 	
 	//Contour construction filter
 	float k_segmentsanglewindow{ 34.0f };
@@ -62,13 +62,13 @@ namespace lanedetectconstants {
 	float k_lengthwidthratio{ 3.5f };
 	
 	//Polygon filtering
-    uint16_t k_minroadwidth{ 520 };					//Relative to image size, must change
+    uint16_t k_minroadwidth{ 500 };					//Relative to image size, must change
     uint16_t k_maxroadwidth{ 660 };					//Relative to image size, must change
 	
 	//Scoring
 	float k_anglefromcenter{ 26.0f };
 	uint16_t k_minimumpolygonheight{ 12 };			//Relative to image size, must change
-	float k_lowestscorelimit{ -200.0f };			//Relative to image size, must change
+	float k_lowestscorelimit{ -400.0f };			//Relative to image size, must change
 	float k_weightedheightwidth{ 100.0f };			//Relative to image size, must change
 	float k_weightedangleoffset{ -1.0f };
 	float k_weightedcenteroffset{ -1.0f };			//Relative to image size, must change
@@ -248,11 +248,8 @@ void EvaluateSegment( const Contour& contour,
 		angle += 180.0f;
 	}
 	
-	if (angle < 90.0f) {
-		if ( angle < lanedetectconstants::k_segmentminimumangle ) return;
-	} else {
-		if ( angle > (180.0f - lanedetectconstants::k_segmentminimumangle) ) return;
-	}
+	//Check that angle points to vanishing point
+	if ( CheckAngle(center, angle) ) return;
 
 	evaluatedsegments.push_back( EvaluatedContour{contour,
 	//											  ellipse,
@@ -263,6 +260,27 @@ void EvaluateSegment( const Contour& contour,
 	return;
 }
 
+/*****************************************************************************************/	
+bool CheckAngle( const cv::Point center,
+				 const float angle )
+{
+	//Get angle fron contour center to vanishing point
+	float vanishingpointangle{ FastArcTan2((lanedetectconstants::k_vanishingpointy -
+											 center.y),
+											(lanedetectconstants::k_vanishingpointx -
+											 center.x)) };
+	if (vanishingpointangle < 0.0f) {
+		vanishingpointangle += 180.0f;
+	}
+
+	//Check difference against limit and return result
+	if ( fabs(angle - vanishingpointangle) >
+		 lanedetectconstants::k_maxvanishingpointangle ) {
+		return true;
+	} else {
+		return false;
+	}
+}
 /*****************************************************************************************/	
 void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegments,
                             std::vector<Contour>& constructedcontours )
@@ -276,11 +294,14 @@ void ConstructFromSegments( const  std::vector<EvaluatedContour>& evaluatedsegme
 											  segcontour2.center.y),
 											 (segcontour1.center.x -
 											  segcontour2.center.x)) };
+			if ( createdangle < 0.0f ) {
+				createdangle += 180.0f;
+			}
 			if ( createdangle < 90.0f ) {
-				if ( createdangle < lanedetectconstants::k_segmentminimumangle ) return;
+				if ( createdangle < lanedetectconstants::k_maxvanishingpointangle ) return;
 			} else {
 				if ( createdangle > (180.0f -
-					 lanedetectconstants::k_segmentminimumangle) ) return;
+					 lanedetectconstants::k_maxvanishingpointangle) ) return;
 			}
 			float angledifference2( fabs(createdangle -	segcontour1.angle) );
 			if ( angledifference2 > lanedetectconstants::k_segmentsanglewindow ) continue;
@@ -380,9 +401,8 @@ void FindPolygon( Polygon& polygon,
 												 const cv::Point& rhs )
 											 { return lhs.y < rhs.y; } );
 	int maxyactual{ std::max(minmaxyleft.second->y, minmaxyright.second->y) };
-	int miny{ std::min(minmaxyleft.first->y, minmaxyright.first->y) };
-	if ( miny < (imageheight / 2) ) miny = imageheight / 2; 
-	int maxy;
+	int miny{ std::max(minmaxyleft.first->y, minmaxyright.first->y) };
+	int maxy;	
 	if ( useoptimaly ) {
 		maxy = imageheight;
 	} else {
@@ -414,19 +434,6 @@ void FindPolygon( Polygon& polygon,
 							(leftevaluatedcontour.center.y - miny) *
 							leftslopeinverse,
 							miny );
-	//Handle polygon intersection
-	if ( polygon[3].x > polygon[2].x ) {
-		//Use intersection point for both - y=mx+b
-		float bleft{ leftevaluatedcontour.center.y -
-					 leftevaluatedcontour.center.x / leftslopeinverse };
-		float bright{ rightevaluatedcontour.center.y -
-					 rightevaluatedcontour.center.x / rightslopeinverse };
-		int x{ static_cast<int>((bright - bleft) /
-								((1.0f / leftslopeinverse) -
-								 (1.0f / rightslopeinverse))) };
-		int y{ static_cast<int>((1.0f / leftslopeinverse) * x) + bleft };
-		polygon[3] = polygon[2] = cv::Point(x, y);
-	}
 
 	return;
 }
