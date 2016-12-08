@@ -66,7 +66,6 @@ namespace lanedetectconstants {
     uint16_t k_maxroadwidth{ 660 };					//Relative to image size, must change
 	
 	//Scoring
-	float k_anglefromcenter{ 26.0f };
 	uint16_t k_minimumpolygonheight{ 12 };			//Relative to image size, must change
 	float k_lowestscorelimit{ -400.0f };			//Relative to image size, must change
 	float k_weightedheightwidth{ 100.0f };			//Relative to image size, must change
