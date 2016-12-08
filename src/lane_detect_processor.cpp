@@ -142,10 +142,7 @@ void ProcessImage ( cv::Mat& image,
 	//Find best score
 	for ( const EvaluatedContour &leftevaluatedcontour : leftcontours ) {
 		for ( const EvaluatedContour &rightevaluatedcontour : rightcontours ) {
-			//Check sum angle
-			if ( (fabs(180.0f - leftevaluatedcontour.angle - rightevaluatedcontour.angle) *
-				  0.5f) > lanedetectconstants::k_anglefromcenter ) continue;
-			
+			//Create polygon
 			Polygon newpolygon{ cv::Point(0,0),
 								cv::Point(0,0),
 								cv::Point(0,0),
