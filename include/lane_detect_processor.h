@@ -28,8 +28,6 @@ typedef std::vector<cv::Point> Contour;
 
 struct EvaluatedContour {
     Contour contour;
-    //cv::RotatedRect ellipse;
-    //float lengthwidthratio;
 	float angle;
     cv::Vec4f fitline;
 	cv::Point center;
