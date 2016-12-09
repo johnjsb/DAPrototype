@@ -116,8 +116,8 @@ void ProcessImage ( cv::Mat& image,
 	cv::Scalar std;
 	cv::meanStdDev( houghlinesmat(cv::Rect(0,
 										   lanedetectconstants::k_ystartposition,
-										   image.cols,
-										   image.rows -
+										   houghlinesmat.cols,
+										   houghlinesmat.rows -
 										   lanedetectconstants::k_ystartposition)),
 					mean,
 					std );
@@ -131,11 +131,7 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------
 	//Probalistic Houghlines
 	std::vector<cv::Vec4i> lines;
-	cv::HoughLinesP( houghlinesmat(cv::Rect(0,
-									 lanedetectconstants::k_ystartposition,
-									 houghlinesmat.cols,
-									 houghlinesmat.rows -
-									 lanedetectconstants::k_ystartposition)),
+	cv::HoughLinesP( houghlinesmat),
 					 lines,
 					 lanedetectconstants::k_rho,
 					 lanedetectconstants::k_theta,
