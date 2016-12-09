@@ -21,32 +21,28 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Default polygon
-	Polygon defaultpolygon { cv::Point(0,0),
-							 cv::Point(0,0),
-							 cv::Point(0,0),
-							 cv::Point(0,0) };
-							 
+	extern Polygon defaultpolygon;
+
 	//Image evaluation
 	extern float k_contrastscalefactor;
+	extern uint16_t k_ystartposition;
 	
-	//Segment filtering
-	extern uint16_t k_segmentminimumsize;
-	extern uint16_t k_verticalsegmentlimit;
-	extern float k_segmentsanglewindow;
+	//Line filtering
+	extern float k_maxvanishingpointangle;
 	extern uint16_t k_vanishingpointx;
 	extern uint16_t k_vanishingpointy;
-	
-	//Contour filtering
+	extern uint16_t k_verticallimit;
+	extern uint16_t k_rho;
+	extern float k_theta;
 	extern uint16_t k_minimumsize;
-	extern float k_minimumangle;
-	extern float k_lengthwidthratio;
+	extern uint16_t k_maxlinegap;
+	extern uint16_t k_threshold;
 	
 	//Polygon filtering
     extern uint16_t k_minroadwidth;
     extern uint16_t k_maxroadwidth;
 	
 	//Scoring
-	extern uint16_t k_minimumpolygonheight;
 	extern float k_lowestscorelimit;
 	extern float k_weightedheightwidth;
 	extern float k_weightedangleoffset;
