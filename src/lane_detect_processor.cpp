@@ -131,7 +131,11 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------
 	//Probalistic Houghlines
 	std::vector<cv::Vec4i> lines;
-	cv::HoughLinesP( houghlinesmat,
+	cv::HoughLinesP( houghlinesmat(cv::Rect(0,
+									 lanedetectconstants::k_ystartposition,
+									 houghlinesmat.cols,
+									 houghlinesmat.rows -
+									 lanedetectconstants::k_ystartposition)),
 					 lines,
 					 lanedetectconstants::k_rho,
 					 lanedetectconstants::k_theta,
