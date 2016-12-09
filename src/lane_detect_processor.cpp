@@ -44,7 +44,7 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Image evaluation
-	float k_contrastscalefactor{ 0.3f };
+	float k_contrastscalefactor{ 0.35f };
 	
 	//Segment filtering
 	uint16_t k_segmentminimumsize{ 30 };			//Relative to image size, must change
@@ -139,10 +139,7 @@ void ProcessImage ( cv::Mat& image,
 	for ( const EvaluatedContour &leftevaluatedcontour : leftcontours ) {
 		for ( const EvaluatedContour &rightevaluatedcontour : rightcontours ) {
 			//Create polygon
-			Polygon newpolygon{ cv::Point(0,0),
-								cv::Point(0,0),
-								cv::Point(0,0),
-								cv::Point(0,0) };
+			Polygon newpolygon{ lanedetectconstants::defaultpolygon };
 			FindPolygon( newpolygon,
 						 leftevaluatedcontour,
 						 rightevaluatedcontour,
@@ -168,7 +165,7 @@ void ProcessImage ( cv::Mat& image,
 	}
 
 	//Set bottom of polygon equal to optimal polygon
-	if ( bestpolygon[0] != cv::Point(0,0) ) {
+	if ( bestpolygon != lanedetectconstants::defaultpolygon ) {
 		FindPolygon( bestpolygon, leftcontour, rightcontour, image.rows, true );
 	}
 	
