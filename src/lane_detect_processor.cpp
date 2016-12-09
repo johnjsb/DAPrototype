@@ -348,6 +348,20 @@ void FindPolygon( Polygon& polygon,
 							(leftevaluatedcontour.center.y - miny) *
 							leftslopeinverse,
 							miny );
+							
+	//Handle polygon intersection
+	if ( polygon[3].x > polygon[2].x ) {
+		//Use intersection point for both - y=mx+b
+		float bleft{ leftevaluatedcontour.center.y -
+					 leftevaluatedcontour.center.x / leftslopeinverse };
+		float bright{ rightevaluatedcontour.center.y -
+					 rightevaluatedcontour.center.x / rightslopeinverse };
+		int x{ static_cast<int>((bright - bleft) /
+								((1.0f / leftslopeinverse) -
+								 (1.0f / rightslopeinverse))) };
+		int y{ static_cast<int>((1.0f / leftslopeinverse) * x) + bleft };
+		polygon[3] = polygon[2] = cv::Point(x, y);
+	}
 
 	return;
 }
