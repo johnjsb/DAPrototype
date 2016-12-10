@@ -39,14 +39,15 @@ namespace lanedetectconstants {
 	extern uint16_t k_threshold;
 	
 	//Polygon filtering
+	extern uint16_t k_maxoffsetfromcenter;
     extern uint16_t k_minroadwidth;
     extern uint16_t k_maxroadwidth;
 	
 	//Scoring
 	extern float k_lowestscorelimit;
-	extern float k_weightedheightwidth;
-	extern float k_weightedangleoffset;
-	extern float k_weightedcenteroffset;
+	extern float k_lengthweight;
+	extern float k_vanishingpointweight;
+	extern float k_centeroffsetweight;
 	
 }
 

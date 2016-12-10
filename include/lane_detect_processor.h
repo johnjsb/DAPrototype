@@ -48,16 +48,18 @@ void SortLines( const std::vector<EvaluatedLine>& evaluatedlines,
 void FindPolygon( Polygon& polygon,
                   const EvaluatedLine& leftevaluatedcontour,
 				  const EvaluatedLine& rightevaluatedcontour,
+                  const int imagewidth,
                   const int imageheight,
 				  bool useoptimaly = false );
+uint16_t Sqrt( uint16_t x );
 float Score( const Polygon& polygon,
              const EvaluatedLine& leftevaluatedline,
 			 const EvaluatedLine& rightevaluatedline,
 			 const int imagewidth );
 void AveragePolygon( Polygon& polygon,
 					 std::deque<Polygon>& pastpolygons,
-					 int samplestoaverage,
-					 int samplestokeep );
+					 const int samplestoaverage,
+					 const int samplestokeep );
 void ProcessImage( cv::Mat& image,
 				   Polygon& polygon );
 float FastArcTan2( const float y,

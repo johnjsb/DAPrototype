@@ -50,13 +50,13 @@ namespace lanedetectconstants {
 							 cv::Point(0,0) };
 							 
 	//Image evaluation
-	float k_contrastscalefactor{ 0.68f };
+	float k_contrastscalefactor{ 0.7f };
 	uint16_t k_ystartposition{ 240 };
 	
 	//Line filtering
 	float k_maxvanishingpointangle{ 18.0f };
 	uint16_t k_vanishingpointx{ 400 };				//Relative to image size, must change
-	uint16_t k_vanishingpointy{ 266 };				//Relative to image size, must change
+	uint16_t k_vanishingpointy{ 260 };				//Relative to image size, must change
 	uint16_t k_verticallimit{ 280 };				//Relative to image size, must change
 	uint16_t k_rho{ 1 };
 	float k_theta{ 0.13962634015f };				//Pi / 22.5
@@ -65,14 +65,15 @@ namespace lanedetectconstants {
 	uint16_t k_threshold{ 30 };						//Relative to image size, must change
 
 	//Polygon filtering
+	uint16_t k_maxoffsetfromcenter{ 400 };			//Relative to image size, must change
     uint16_t k_minroadwidth{ 500 };					//Relative to image size, must change
     uint16_t k_maxroadwidth{ 660 };					//Relative to image size, must change
 	
 	//Scoring
 	float k_lowestscorelimit{ -400.0f };			//Relative to image size, must change
-	float k_weightedheightwidth{ 100.0f };			//Relative to image size, must change
-	float k_weightedangleoffset{ -5.0f };
-	float k_weightedcenteroffset{ -1.0f };			//Relative to image size, must change
+	float k_lengthweight{ 1.0f };					//Relative to image size, must change
+	float k_vanishingpointweight{ -2.1f };
+	float k_centeroffsetweight{ -3.8f };			//Relative to image size, must change
 
 }
 
@@ -131,7 +132,7 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------
 	//Probalistic Houghlines
 	std::vector<cv::Vec4i> lines;
-	cv::HoughLinesP( houghlinesmat),
+	cv::HoughLinesP( houghlinesmat,
 					 lines,
 					 lanedetectconstants::k_rho,
 					 lanedetectconstants::k_theta,
@@ -170,6 +171,7 @@ void ProcessImage ( cv::Mat& image,
 			FindPolygon( newpolygon,
 						 leftevaluatedline,
 						 rightevaluatedline,
+						 houghlinesmat.cols,
 						 houghlinesmat.rows );
 				
 			//If invalid polygon created, goto next
@@ -193,7 +195,12 @@ void ProcessImage ( cv::Mat& image,
 
 	//Set bottom of polygon equal to optimal polygon
 	if ( bestpolygon != lanedetectconstants::defaultpolygon) {
-		FindPolygon( bestpolygon, leftline, rightline, houghlinesmat.rows, true );
+		FindPolygon( bestpolygon,
+					 leftline,
+					 rightline,
+					 houghlinesmat.cols,
+					 houghlinesmat.rows,
+					 true );
 	}
 	
 //-----------------------------------------------------------------------------------------
@@ -272,6 +279,7 @@ void SortLines( const std::vector<EvaluatedLine>& evaluatedlines,
 void FindPolygon( Polygon& polygon,
                   const EvaluatedLine& leftevaluatedline,
 				  const EvaluatedLine& rightevaluatedline,
+                  const int imagewidth,
                   const int imageheight,
 				  bool useoptimaly )
 {
@@ -300,8 +308,12 @@ void FindPolygon( Polygon& polygon,
 										    (imageheight - rightevaluatedline.center.y) *
 											rightslopeinverse,
 											imageheight) };
-	
-	//Perform filtering based on width of polygon with optimal maxy
+
+	//Filter by max offset from center
+	if ( (abs(bottomleftoptimal.x + bottomrightoptimal.x - imagewidth) / 2) >
+		 lanedetectconstants::k_maxoffsetfromcenter ) return; 
+
+	//Filter based on width of polygon
 	int roadwidth{ bottomrightoptimal.x - bottomleftoptimal.x };
 	if ( roadwidth < lanedetectconstants::k_minroadwidth ) return;
 	if ( roadwidth > lanedetectconstants::k_maxroadwidth ) return;
@@ -366,31 +378,75 @@ void FindPolygon( Polygon& polygon,
 }
 
 /*****************************************************************************************/
+// 15 times faster than the classical float sqrt. 
+// Reasonably accurate up to root(32500)
+// Source: http://supp.iar.com/FilesPublic/SUPPORT/000419/AN-G-002.pdf
+uint16_t Sqrt( uint16_t x )
+{
+    uint16_t a,b;
+    b     = x;
+    a = x = 0x3f;
+    x     = b/x;
+    a = x = (x+a)>>1;
+    x     = b/x;
+    a = x = (x+a)>>1;
+    x     = b/x;
+    x     = (x+a)>>1;
+    return(x);  
+}
+
+/*****************************************************************************************/
 float Score( const Polygon& polygon,
              const EvaluatedLine& leftevaluatedline,
 			 const EvaluatedLine& rightevaluatedline,
 			 const int imagewidth )
 {
+	//Line lengths
+	uint16_t leftlength{ Sqrt((leftevaluatedline.line[2] - leftevaluatedline.line[0]) *
+						   (leftevaluatedline.line[2] - leftevaluatedline.line[0]) +
+						   (leftevaluatedline.line[3] - leftevaluatedline.line[1]) *
+						   (leftevaluatedline.line[3] - leftevaluatedline.line[1])) };
+	uint16_t rightlength{ Sqrt((rightevaluatedline.line[2] - rightevaluatedline.line[0]) *
+							(rightevaluatedline.line[2] - rightevaluatedline.line[0]) +
+							(rightevaluatedline.line[3] - rightevaluatedline.line[1]) *
+							(rightevaluatedline.line[3] - rightevaluatedline.line[1])) };
 	
-	float heightwidthratio{ static_cast<float>(polygon[0].y - polygon[3].y) /
-							static_cast<float>(polygon[1].x - polygon[0].x) };
+	//Distance to vanishing point - should be intersection of lines
+	float leftslope{ static_cast<float>(leftevaluatedline.line[3] -
+										leftevaluatedline.line[1]) /
+					 static_cast<float>(leftevaluatedline.line[2] -
+										leftevaluatedline.line[0]) };
+	float rightslope{ static_cast<float>(rightevaluatedline.line[3] -
+										 rightevaluatedline.line[1]) /
+					  static_cast<float>(rightevaluatedline.line[2] -
+										 rightevaluatedline.line[0]) };
+	float bleft{ leftevaluatedline.center.y -
+				 leftevaluatedline.center.x * leftslope };
+	float bright{ rightevaluatedline.center.y -
+				 rightevaluatedline.center.x * rightslope };
+	int x{ static_cast<int>((bright - bleft) / (leftslope - rightslope)) };
+	int y{ static_cast<int>((leftslope * x) + bleft) };
+	uint16_t vanishingpointlength{ Sqrt((x - lanedetectconstants::k_vanishingpointx) *
+										(x - lanedetectconstants::k_vanishingpointx) +
+										(y - lanedetectconstants::k_vanishingpointy) *
+										(y - lanedetectconstants::k_vanishingpointy)) };
+
+	//Distance from center
 	float centeroffset{ static_cast<float>(fabs((imagewidth -
-												(polygon[0].x + polygon[1].x)) *
-												0.5f)) };
-	float angleoffset{ 0.5f * static_cast<float>(fabs(180.0f -
-													  leftevaluatedline.angle -
-													   rightevaluatedline.angle)) };
-	
-	return lanedetectconstants::k_weightedheightwidth * heightwidthratio +
-		   lanedetectconstants::k_weightedangleoffset * angleoffset +
-		   lanedetectconstants::k_weightedcenteroffset * centeroffset;
+											(polygon[0].x + polygon[1].x)) *
+											0.5f)) };
+
+	return lanedetectconstants::k_lengthweight * (leftlength + rightlength) +
+		   lanedetectconstants::k_vanishingpointweight * vanishingpointlength +
+		   lanedetectconstants::k_centeroffsetweight * centeroffset;
+
 }
 
 /*****************************************************************************************/
 void AveragePolygon ( Polygon& polygon,
                       std::deque<Polygon>& pastpolygons,
-					  int samplestoaverage,
-					  int samplestokeep )
+					  const int samplestoaverage,
+					  const int samplestokeep )
 {
 	//FIFO
 	pastpolygons.push_back( polygon );
