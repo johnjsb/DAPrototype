@@ -429,7 +429,7 @@ void AveragePolygon ( Polygon& polygon,
 	}
 	
 	//if not enough nonzero polygons, return
-	if ( nonzerocount < samplestoaverage ) {
+	if ( nonzerocount <= samplestoaverage ) {
 		std::copy( std::begin(averagepolygon),
 				   std::end(averagepolygon),
 				   std::begin(polygon) );
@@ -442,8 +442,8 @@ void AveragePolygon ( Polygon& polygon,
 		polygondifferences.push_back( PolygonDifferences{ipolygon,
 														 abs(averagepolygon[0].x -
 															 ipolygon[0].x) + 
-														 abs(averagepolygon[0].x -
-															 ipolygon[0].x)} );
+														 abs(averagepolygon[1].x -
+															 ipolygon[1].x)} );
 	}
 
 	//Sort
