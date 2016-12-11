@@ -12,7 +12,8 @@ else
 	DISPLAYONLY=${DISPLAY:0:2}
 	if [[ "$DISPLAYONLY" = ":0" ]]
 	then
-		echo "Launching DAPrototype!" 
+		echo "Launching DAPrototype!"
+		cd /DAPrototype/build
 		sudo /DAPrototype/build/DAPrototype
 	fi
 fi
