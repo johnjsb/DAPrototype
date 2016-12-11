@@ -36,8 +36,6 @@ void PaceSetter::SetPace()
 	sleeptime_ = targetusec_ -
 				 std::chrono::duration_cast<std::chrono::microseconds>(
 				 std::chrono::high_resolution_clock::now() - lastsettime_).count();
-    std::this_thread::sleep_for(std::chrono::microseconds(sleeptime_));
-    lastsettime_ =  std::chrono::high_resolution_clock::now();
 	if ( sleeptime_ < 0 ) {
 		missedcount_++;
 		if ( missedcount_%30 == 0) {
@@ -45,7 +43,10 @@ void PaceSetter::SetPace()
 			std::cout << " Only performing at: " << std::fixed << std::setprecision(1);
 			std::cout << (1000000.0 / (targetusec_ - sleeptime_)) << " fps!" << '\n';			
 		}
+	} else {
+		std::this_thread::sleep_for(std::chrono::microseconds(sleeptime_));		
 	}
+    lastsettime_ =  std::chrono::high_resolution_clock::now();
 }
 
 PaceSetter::~PaceSetter()
