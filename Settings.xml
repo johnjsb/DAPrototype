@@ -8,7 +8,7 @@
 		<debugTerminal>1</debugTerminal>
 	</GEN>
 	<CAM>
-		<recordOrgImage>1</recordOrgImage>
+		<recordOrgImage>0</recordOrgImage>
 		<filePath>/</filePath>
 		<orgFileName>original.avi</orgFileName>
 		<modFileName>modified.avi</modFileName>
