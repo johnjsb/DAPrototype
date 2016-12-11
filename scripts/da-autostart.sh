@@ -13,6 +13,6 @@ else
 	if [[ "$DISPLAYONLY" = ":0" ]]
 	then
 		echo "Launching DAPrototype!" 
-		sudo /DAPrototype
+		sudo /DAPrototype/build/DAPrototype
 	fi
 fi

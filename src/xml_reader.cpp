@@ -79,7 +79,7 @@ int ReadXmlSettings()
 {
     std::cout << "Reading XML..." << '\n';
 	XMLDocument doc;
-	doc.LoadFile( "/RPiDashcamSettings.xml" );
+	doc.LoadFile( "../Settings.xml" );
 	if ( doc.ErrorID() != 0 ) {
 		return -1;
 	} else {

@@ -4,4 +4,4 @@
 @xset s off
 @xset -dpms
 @xset s noblank
-/da-autostart.sh
+/DAPrototype/scripts/da-autostart.sh
