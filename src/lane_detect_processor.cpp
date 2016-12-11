@@ -439,13 +439,11 @@ void AveragePolygon ( Polygon& polygon,
 	//Find differences
 	std::vector<PolygonDifferences> polygondifferences;
 	for ( Polygon &ipolygon : pastpolygons ) {
-		float differencefromaverage{0.0f};
-		for ( int i = 0; i < ipolygon.size(); i++ ) {
-			differencefromaverage += fabs(averagepolygon[i].x - ipolygon[i].x);
-			differencefromaverage += fabs(averagepolygon[i].y - ipolygon[i].y);
-		}
-		polygondifferences.push_back( PolygonDifferences { ipolygon,
-														   differencefromaverage } );
+		polygondifferences.push_back( PolygonDifferences{ipolygon,
+														 abs(averagepolygon[0].x -
+															 ipolygon[0].x) + 
+														 abs(averagepolygon[0].x -
+															 ipolygon[0].x)} );
 	}
 
 	//Sort
@@ -456,7 +454,7 @@ void AveragePolygon ( Polygon& polygon,
 		  { return a.differencefromaverage < b.differencefromaverage; } );
 
 	//Sum closest values
-	averagepolygon = { lanedetectconstants::defaultpolygon };
+	averagepolygon = lanedetectconstants::defaultpolygon;
 	for ( int i = 0; i < samplestoaverage; i++ ) {
 		for (int j = 0; j < 4; j++) {
 			averagepolygon[j].x += polygondifferences[i].polygon[j].x;
