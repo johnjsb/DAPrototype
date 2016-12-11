@@ -44,10 +44,10 @@
 /*****************************************************************************************/
 namespace lanedetectconstants {
 	//Default polygon
-	Polygon defaultpolygon { cv::Point(0,0),
-							 cv::Point(0,0),
-							 cv::Point(0,0),
-							 cv::Point(0,0) };
+	Polygon defaultpolygon{ cv::Point(0,0),
+							cv::Point(0,0),
+							cv::Point(0,0),
+							cv::Point(0,0) };
 							 
 	//Image evaluation
 	float k_contrastscalefactor{ 0.8f };
@@ -158,7 +158,7 @@ void ProcessImage ( cv::Mat& image,
 //-----------------------------------------------------------------------------------------
 //Find highest scoring pair of lines
 //-----------------------------------------------------------------------------------------	
-	Polygon bestpolygon{ lanedetectconstants::defaultpolygon };
+	Polygon bestpolygon( lanedetectconstants::defaultpolygon );
 	float maxscore{ lanedetectconstants::k_lowestscorelimit };
 	EvaluatedLine leftline;
 	EvaluatedLine rightline;
@@ -167,7 +167,7 @@ void ProcessImage ( cv::Mat& image,
 	for ( EvaluatedLine &leftevaluatedline : leftlines ) {
 		for ( EvaluatedLine &rightevaluatedline : rightlines ) {
 			//Create polygon
-			Polygon newpolygon{ lanedetectconstants::defaultpolygon };
+			Polygon newpolygon( lanedetectconstants::defaultpolygon );
 			FindPolygon( newpolygon,
 						 leftevaluatedline,
 						 rightevaluatedline,
@@ -410,7 +410,7 @@ void AveragePolygon ( Polygon& polygon,
 	}
 
 	//Sum nonzero
-	Polygon averagepolygon { lanedetectconstants::defaultpolygon };
+	Polygon averagepolygon( lanedetectconstants::defaultpolygon );
 	int nonzerocount{0};
 	for ( Polygon &polygon : pastpolygons ) {
 		if ( polygon == lanedetectconstants::defaultpolygon) continue;

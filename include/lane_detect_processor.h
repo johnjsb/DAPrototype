@@ -34,7 +34,7 @@ struct EvaluatedLine {
 
 struct PolygonDifferences {
 	Polygon polygon;
-	float differencefromaverage;
+	int differencefromaverage;
 };
 
 bool CheckAngle( const cv::Point center,
