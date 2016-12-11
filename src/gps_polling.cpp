@@ -48,57 +48,57 @@ void GpsPollingThread( ProcessValues *processvalues,
         std::cout << "No GPSD running. exiting GPS thread." << '\n';
         return;
     }
-/*
+
     //Get first reading to set time
-	struct gps_data_t* firstdata{ gps_rec.read() };
-			
+	struct gps_data_t* gpsdata{ gps_rec.read() };
+	
 	//Set baud rate 115200
-	if (gps_send(firstdata,"$PMTK251,115200*1F\r\n") >= 0) {
+	if (gps_send(gpsdata,"$PMTK251,115200*1F\r\n") >= 0) {
 		std::cout << "GPS baud rate set to 115200" << '\n';
 	} else {
 		std::cout << "GPS baud rate setting failed!" << '\n';
 	}
 	
 	//Update every 100 ms
-	if (gps_send(firstdata,"$PMTK220,100*2F\r\n") >= 0) {
+	if (gps_send(gpsdata,"$PMTK220,100*2F\r\n") >= 0) {
 		std::cout << "GPS update rate set to 10hz" << '\n';
 	} else {
 		std::cout << "GPS update rate setting failed!" << '\n';
 	}
 	
 	//Measure every 200 ms
-	if (gps_send(firstdata,"$PMTK300,200,0,0,0,0*2F\r\n") >= 0) {
+	if (gps_send(gpsdata,"$PMTK300,200,0,0,0,0*2F\r\n") >= 0) {
 		std::cout << "GPS measure rate set to 5hz" << '\n';
 	} else {
 		std::cout << "GPS measure rate setting failed!" << '\n';
 	}
 	
 	//Set speed threshold @ 2.0 m/s
-	if (gps_send(firstdata,"$PMTK397,2.0*3F\r\n") >= 0) {
+	if (gps_send(gpsdata,"$PMTK397,2.0*3F\r\n") >= 0) {
 		std::cout << "GPS speed threshold set to 2.0 m/s" << '\n';
 	} else {
 		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
-*/
+
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
-/*
+
 	//Loop until first GPS lock to set system time
-	while ( (firstdata == NULL) ||
-			(firstdata->fix.mode <= 1) ||
-			(firstdata->fix.time < 1) ||
-			std::isnan(firstdata->fix.time) ) {
+	while ( (gpsdata == NULL) ||
+			(gpsdata->fix.mode <= 1) ||
+			(gpsdata->fix.time < 1) ||
+			std::isnan(gpsdata->fix.time) ) {
 		if (*exitsignal) {
 			return;
 		}
-		firstdata = gps_rec.read();
 		gpspacer.SetPace();
+		gpsdata = gps_rec.read();
 	}
 
 	//Convert gps_data_t* member 'time' to timeval
 	timeval tv;
 	double wholeseconds, decimalseconds, offsettime;
-	offsettime = firstdata->fix.time - (5.0 * 3600.0);
+	offsettime = gpsdata->fix.time - (5.0 * 3600.0);
 	decimalseconds = modf(offsettime, &wholeseconds);
 	tv.tv_sec = static_cast<int32_t>(wholeseconds);
 	tv.tv_usec = static_cast<int32_t>(decimalseconds * 1000000.0);
@@ -109,23 +109,21 @@ void GpsPollingThread( ProcessValues *processvalues,
 	} else {
 		std::cout << "Time set failure!" << '\n';
 	}
-*/
+
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
-		struct gps_data_t* newdata;
-
 		if (!gps_rec.waiting(2000000)) {
 			processvalues->gpsstatus_ = GPS_ERROR;
 			std::cout << "GPS timeout." << '\n';
-		} else if ((newdata = gps_rec.read()) == NULL) {
+		} else if ((gpsdata = gps_rec.read()) == NULL) {
 			processvalues->gpsstatus_ = GPS_ERROR;
 			std::cout << "GPS read error!" << '\n';
 		} else {
-			if ( newdata->fix.mode > 1) {
+			if ( gpsdata->fix.mode > 1) {
 				//Write values
-				processvalues->latitude_ = newdata->fix.latitude;
-				processvalues->longitude_ = newdata->fix.longitude;
-				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * newdata->fix.speed;
+				processvalues->latitude_ = gpsdata->fix.latitude;
+				processvalues->longitude_ = gpsdata->fix.longitude;
+				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * gpsdata->fix.speed;
 				if ( processvalues->gpsspeed_ > settings::ldw::kenablespeed ) {
 					processvalues->gpsstatus_ =  GPS_LOCK_LDW_ON;
 				} else {
@@ -137,7 +135,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 			}
 		}
 
-		gpspacer.SetPace();
+		//gpspacer.SetPace();
 	}
 #else
 	std::cout << "Hardware doesn't support GPS!" << '\n';
