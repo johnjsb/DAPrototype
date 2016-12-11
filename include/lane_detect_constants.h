@@ -45,9 +45,9 @@ namespace lanedetectconstants {
 	
 	//Scoring
 	extern float k_lowestscorelimit;
-	extern float k_lengthweight;
-	extern float k_vanishingpointweight;
-	extern float k_centeroffsetweight;
+	extern float k_weightedheightwidth;
+	extern float k_weightedangleoffset;
+	extern float k_weightedcenteroffset;
 	
 }
 

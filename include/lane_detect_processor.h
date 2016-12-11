@@ -51,7 +51,6 @@ void FindPolygon( Polygon& polygon,
                   const int imagewidth,
                   const int imageheight,
 				  bool useoptimaly = false );
-uint16_t Sqrt( uint16_t x );
 float Score( const Polygon& polygon,
              const EvaluatedLine& leftevaluatedline,
 			 const EvaluatedLine& rightevaluatedline,

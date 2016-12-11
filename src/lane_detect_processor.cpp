@@ -50,7 +50,7 @@ namespace lanedetectconstants {
 							 cv::Point(0,0) };
 							 
 	//Image evaluation
-	float k_contrastscalefactor{ 0.7f };
+	float k_contrastscalefactor{ 0.8f };
 	uint16_t k_ystartposition{ 240 };
 	
 	//Line filtering
@@ -66,14 +66,14 @@ namespace lanedetectconstants {
 
 	//Polygon filtering
 	uint16_t k_maxoffsetfromcenter{ 400 };			//Relative to image size, must change
-    uint16_t k_minroadwidth{ 500 };					//Relative to image size, must change
+    uint16_t k_minroadwidth{ 520 };					//Relative to image size, must change
     uint16_t k_maxroadwidth{ 660 };					//Relative to image size, must change
 	
 	//Scoring
 	float k_lowestscorelimit{ -400.0f };			//Relative to image size, must change
-	float k_lengthweight{ 1.0f };					//Relative to image size, must change
-	float k_vanishingpointweight{ -2.1f };
-	float k_centeroffsetweight{ -3.8f };			//Relative to image size, must change
+	float k_weightedheightwidth{ 100.0f };			//Relative to image size, must change
+	float k_weightedangleoffset{ -5.0f };
+	float k_weightedcenteroffset{ -1.0f };			//Relative to image size, must change
 
 }
 
@@ -378,68 +378,23 @@ void FindPolygon( Polygon& polygon,
 }
 
 /*****************************************************************************************/
-// 15 times faster than the classical float sqrt. 
-// Reasonably accurate up to root(32500)
-// Source: http://supp.iar.com/FilesPublic/SUPPORT/000419/AN-G-002.pdf
-uint16_t Sqrt( uint16_t x )
-{
-    uint16_t a,b;
-    b     = x;
-    a = x = 0x3f;
-    x     = b/x;
-    a = x = (x+a)>>1;
-    x     = b/x;
-    a = x = (x+a)>>1;
-    x     = b/x;
-    x     = (x+a)>>1;
-    return(x);  
-}
-
-/*****************************************************************************************/
 float Score( const Polygon& polygon,
              const EvaluatedLine& leftevaluatedline,
 			 const EvaluatedLine& rightevaluatedline,
 			 const int imagewidth )
 {
-	//Line lengths
-	uint16_t leftlength{ Sqrt((leftevaluatedline.line[2] - leftevaluatedline.line[0]) *
-						   (leftevaluatedline.line[2] - leftevaluatedline.line[0]) +
-						   (leftevaluatedline.line[3] - leftevaluatedline.line[1]) *
-						   (leftevaluatedline.line[3] - leftevaluatedline.line[1])) };
-	uint16_t rightlength{ Sqrt((rightevaluatedline.line[2] - rightevaluatedline.line[0]) *
-							(rightevaluatedline.line[2] - rightevaluatedline.line[0]) +
-							(rightevaluatedline.line[3] - rightevaluatedline.line[1]) *
-							(rightevaluatedline.line[3] - rightevaluatedline.line[1])) };
-	
-	//Distance to vanishing point - should be intersection of lines
-	float leftslope{ static_cast<float>(leftevaluatedline.line[3] -
-										leftevaluatedline.line[1]) /
-					 static_cast<float>(leftevaluatedline.line[2] -
-										leftevaluatedline.line[0]) };
-	float rightslope{ static_cast<float>(rightevaluatedline.line[3] -
-										 rightevaluatedline.line[1]) /
-					  static_cast<float>(rightevaluatedline.line[2] -
-										 rightevaluatedline.line[0]) };
-	float bleft{ leftevaluatedline.center.y -
-				 leftevaluatedline.center.x * leftslope };
-	float bright{ rightevaluatedline.center.y -
-				 rightevaluatedline.center.x * rightslope };
-	int x{ static_cast<int>((bright - bleft) / (leftslope - rightslope)) };
-	int y{ static_cast<int>((leftslope * x) + bleft) };
-	uint16_t vanishingpointlength{ Sqrt((x - lanedetectconstants::k_vanishingpointx) *
-										(x - lanedetectconstants::k_vanishingpointx) +
-										(y - lanedetectconstants::k_vanishingpointy) *
-										(y - lanedetectconstants::k_vanishingpointy)) };
-
-	//Distance from center
+	float heightwidthratio{ static_cast<float>(polygon[0].y - polygon[3].y) /
+							static_cast<float>(polygon[1].x - polygon[0].x) };
 	float centeroffset{ static_cast<float>(fabs((imagewidth -
-											(polygon[0].x + polygon[1].x)) *
-											0.5f)) };
-
-	return lanedetectconstants::k_lengthweight * (leftlength + rightlength) +
-		   lanedetectconstants::k_vanishingpointweight * vanishingpointlength +
-		   lanedetectconstants::k_centeroffsetweight * centeroffset;
-
+												(polygon[0].x + polygon[1].x)) *
+												0.5f)) };
+	float angleoffset{ 0.5f * static_cast<float>(fabs(180.0f -
+													  leftevaluatedline.angle -
+													   rightevaluatedline.angle)) };
+	
+	return lanedetectconstants::k_weightedheightwidth * heightwidthratio +
+		   lanedetectconstants::k_weightedangleoffset * angleoffset +
+		   lanedetectconstants::k_weightedcenteroffset * centeroffset;
 }
 
 /*****************************************************************************************/
