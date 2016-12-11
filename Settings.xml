@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<SETTINGS>
+	<GEN>
+		<!Value of 0 disables>
+		<enBuzzer>0</enBuzzer>
+		<debugScreen>1</debugScreen>
+		<debugTerminal>1</debugTerminal>
+	</GEN>
+	<CAM>
+		<recordOrgImage>1</recordOrgImage>
+		<filePath>/</filePath>
+		<orgFileName>original.avi</orgFileName>
+		<modFileName>modified.avi</modFileName>
+		<pixWidth>800</pixWidth>
+		<pixHeight>480</pixHeight>
+		<showSpeed>1</showSpeed>
+		<showLoc>1</showLoc>
+		<shadeLanes>1</shadeLanes>
+		<recFPS>15</recFPS>
+		<filesToKeep>25</filesToKeep>
+		<minPerFile>20</minPerFile>
+	</CAM>
+	<DISP>
+		<enabled>1</enabled>
+		<pixWidth>800</pixWidth>
+		<pixHeight>480</pixHeight>
+		<updateFPS>10</updateFPS>
+	</DISP>
+	<COMM>
+		<pollRateGPS>1</pollRateGPS>
+		<pollRateLIDAR>5</pollRateLIDAR>
+		<pollRateGpio>5</pollRateGpio>
+	</COMM>
+	<GPS>
+		<samplesToAverage>3</samplesToAverage>
+	</GPS>
+	<LDW>
+		<enabled>1</enabled>
+		<enableSpeed>30</enableSpeed>
+		<samplesToKeep>5</samplesToKeep>
+		<samplesToAverage>3</samplesToAverage>
+		<!Warning limit as % of screen width>
+		<perOffsetWarning>20</perOffsetWarning>
+		<!Alarm limit as % of screen width>
+		<perOffsetAlarm>35</perOffsetAlarm>
+		<msUntilWarning>500</msUntilWarning>
+		<msUntilAlarm>500</msUntilAlarm>
+		<updateFPS>10</updateFPS>
+	</LDW>
+	<FCW>
+		<enabled>1</enabled>
+		<samplesToAverage>3</samplesToAverage>
+		<distanceOffset>5.0</distanceOffset>
+		<msFollowDistWarning>2500</msFollowDistWarning>
+		<msFollowDistAlarm>2000</msFollowDistAlarm>
+		<msCollisionWarning>300</msCollisionWarning>
+		<msCollisionAlarm>300</msCollisionAlarm>
+	</FCW>
+	<GPIO>
+		<enabled>1</enabled>
+		<autoShutdown>1</autoShutdown>
+	</GPIO>
+</SETTINGS>
