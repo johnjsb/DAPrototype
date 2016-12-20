@@ -16,6 +16,10 @@
 #include <atomic>
 #include <thread>
 
+//3rd party libraries
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
+
 //Project libraries
 #include "pace_setter_class.h"
 #include "process_values_class.h"
@@ -25,27 +29,11 @@
 //Preprocessor
 #define FEETPERCENTIMETER 0.0328084f
 
-/*****************************************************************************************/
-#ifndef __arm__									//Detect if not compiling for raspberry pi
-void LidarPolingThread( ProcessValues *processvalues,
-						std::atomic<bool> *exitsignal )
-{
-
-	std::cout << "Lidar polling thread starting!" << '\n';
-	processvalues->fcwstatus_ = FCW_INACTIVE;
-	std::cout << "Lidar not operational, exiting thread!" << '\n';
-	return;
-}
-#endif
-
-#ifdef __arm__									//Detect if compiling for raspberry pi
-#include <wiringPi.h>
-#include <wiringPiI2C.h>
-
 extern "C" {
 	#include "lidarLite.h"
 }
 
+/*****************************************************************************************/
 void LidarPolingThread( ProcessValues *processvalues,
 						std::atomic<bool> *exitsignal )
 {
@@ -151,6 +139,3 @@ void LidarPolingThread( ProcessValues *processvalues,
 	return;
 
 }
-#endif
-
-

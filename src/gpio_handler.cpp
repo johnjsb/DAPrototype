@@ -13,13 +13,11 @@
 //Standard libraries
 #include <iostream>
 #include <atomic>
-#include <stdlib.h>								//For auto shutdown
+#include <stdlib.h>
 
 //3rd party libraries
-#ifdef __arm__									//Detect if compiling for raspberry pi
-	#include <wiringPi.h>						//For Raspberry Pi
-	#include <wiringPiI2C.h>
-#endif
+#include <wiringPi.h>
+#include <wiringPiI2C.h>
 
 //Project libraries
 #include "pace_setter_class.h"
@@ -64,7 +62,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	int blinkinterval{  settings::comm::kpollrategpio / 2  };	//500ms
 	int buzzercount{ 0 };
 	int blinkercount{ 0 };
-	#ifdef __arm__									//Detect if compiling for raspberry pi
+
 	wiringPiSetupGpio();
 	pinMode(POWERINPUTPIN, INPUT); 
 	pinMode(POWEROUTPUTPIN, OUTPUT); 
@@ -80,7 +78,7 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	pinMode(FORWARDWARNINGPIN, PWM_OUTPUT);
 	pinMode(FORWARDOKPIN, PWM_OUTPUT);
 	pinMode(CENTERPIN, OUTPUT);
-	#endif
+
 	int inputfailcount{ 0 };
 	
 	//create pace setter
@@ -102,8 +100,6 @@ void GpioHandlerThread( ProcessValues *processvalues,
 			 (processvalues->gpsstatus_ > GPS_SPEED_WARNING) ) {
 			alarm = true;
 		}
-				
-		#ifdef __arm__							//Detect if compiling for raspberry pi
 
 			//Shutdown logic on power loss
 			if ( !digitalRead(POWERINPUTPIN) && settings::gpio::kautoshutdown ) {
@@ -145,7 +141,6 @@ void GpioHandlerThread( ProcessValues *processvalues,
 				} else {
 				digitalWrite(CENTERPIN, 0);
 			}
-		#endif
 	
         gpiopacer.SetPace();
     }
@@ -155,11 +150,10 @@ void GpioHandlerThread( ProcessValues *processvalues,
 	while( !(*shutdownsignal) ) {
 		//Just wait for video writer thread to exit
 	}
-	#ifdef __arm__									//Detect if compiling for raspberry pi
-	digitalWrite(POWEROUTPUTPIN, 0);				//Kill power to RPi
 
+	digitalWrite(POWEROUTPUTPIN, 0);				//Kill power to RPi
 //	system ("sudo shutdown -h now");				//Shutdown RPi
-	#endif
+
 	std::cout << "Exiting GPIO handler thread!" << '\n';
 	return;
 

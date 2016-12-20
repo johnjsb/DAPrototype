@@ -19,9 +19,7 @@
 #include <sys/time.h>
 
 //3rd party libraries
-#ifdef __arm__									//Detect if compiling for raspberry pi
-	#include <libgpsmm.h>
-#endif
+#include <libgpsmm.h>
 
 //Project libraries
 #include "pace_setter_class.h"
@@ -38,7 +36,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 {
 
 	std::cout << "GPS polling thread starting!" << '\n';
-#ifdef __arm__									//Detect if compiling for raspberry pi
+
 	//Create thread variables
 	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
 	processvalues->gpsstatus_ = GPS_NO_LOCK;
@@ -137,9 +135,6 @@ void GpsPollingThread( ProcessValues *processvalues,
 
 		//gpspacer.SetPace();
 	}
-#else
-	std::cout << "Hardware doesn't support GPS!" << '\n';
-#endif
 	
 	std::cout << "Exiting GPS polling thread!" << '\n';
 	return;

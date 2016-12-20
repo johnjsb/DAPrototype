@@ -15,15 +15,10 @@
 #include <iostream>
 #include <mutex>
 #include <atomic>
-#ifdef __arm__									//Detect if compiling for raspberry pi
-	#include <gtk/gtk.h>	
-#endif
+#include <gtk/gtk.h>	
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
-#ifdef __arm__									//Detect if compiling for raspberry pi
-	//#include "opencv2/core/opengl.hpp"
-#endif
 
 //Project libraries
 #include "pace_setter_class.h"
@@ -65,23 +60,15 @@ void DisplayUpdateThread( cv::Mat *image,
 	
 	cv::Mat imagetemp{ image->rows, image->cols, image->type(), cv::Scalar(0) };
 	
-	//Initialize display with first image
-	#ifdef __arm__								//Detect if compiling for raspberry pi
 	//Check if running headless
 	if ( !gtk_init_check(NULL, NULL) ){
 		std::cout << "Display unavailable, continuing without..." << '\n';
 		return;
 	}
-	#endif
+	//Initialize display with first image
 	std::cout << "Attempting to open display..." << '\n';
-	#ifdef __arm__								//Detect if compiling for raspberry pi
-	//cv::namedWindow( "Output", cv::WINDOW_OPENGL );
 	cv::namedWindow( "Output", cv::WINDOW_NORMAL );
 	cv::setWindowProperty( "Output", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN );
-	//cv::ogl::Buffer buffer;
-	#else
-	cv::namedWindow( "Output", cv::WINDOW_NORMAL );
-	#endif
 	std::cout << "Display opened!" << '\n';
 
 	
@@ -98,18 +85,8 @@ void DisplayUpdateThread( cv::Mat *image,
 							cv::BORDER_CONSTANT,
 							cv::Scalar(0) );
 		displaymutex->unlock();
-
-		#ifdef __arm__
-		//OpenGL implementation
-		//buffer.copyFrom(imagetemp, cv::ogl::Buffer::ARRAY_BUFFER, true);
-		//cv::imshow( "Output", buffer );
 		cv::imshow( "Output", imagetemp );
 		cv::waitKey( 1 );
-		#else
-		//Display
-		cv::imshow( "Output", imagetemp );
-		cv::waitKey( 1 );
-		#endif
 		
 		//Set pace
 		displaypacer.SetPace();
