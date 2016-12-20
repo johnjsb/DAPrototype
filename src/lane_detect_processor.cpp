@@ -349,15 +349,11 @@ void FindPolygon( Polygon& polygon,
 							
 	//Handle polygon intersection
 	if ( polygon[3].x > polygon[2].x ) {
+		//Check for invalid slopes
+		if ( (leftslopeinverse == 0.0f) || (rightslopeinverse == 0.0f) ) return;
 		//Use intersection point for both - y=mx+b
-		float bleft, bright;
-		if ( leftslopeinverse != 0.0f ) {
-			bleft = leftevaluatedline.center.y -
-					(leftevaluatedline.center.x / leftslopeinverse);			
-		} else {
-			bleft = FLT_MAX;
-		}
-
+		float bleft{ leftevaluatedline.center.y -
+					 leftevaluatedline.center.x / leftslopeinverse };
 		float bright{ rightevaluatedline.center.y -
 					 rightevaluatedline.center.x / rightslopeinverse };
 		int x{ static_cast<int>((bright - bleft) /
