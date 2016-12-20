@@ -260,15 +260,27 @@ void FindPolygon( Polygon& polygon,
 						   static_cast<float>(leftevaluatedline.line[3] -
 											  leftevaluatedline.line[1]);
 	} else {
-		leftslopeinverse = FLT_MAX;
+		if ( leftevaluatedline.line[2] > leftevaluatedline.line[0] ) {
+			leftslopeinverse = FLT_MAX;
+		} else if ( leftevaluatedline.line[2] < leftevaluatedline.line[0] ) {
+			leftslopeinverse = -FLT_MAX;
+		} else {
+			leftslopeinverse = 0.0f;
+		}
 	}
 	if ( rightevaluatedline.line[3] != rightevaluatedline.line[1] ) {
 		rightslopeinverse = static_cast<float>(rightevaluatedline.line[2] -
-											  rightevaluatedline.line[0]) /
-						   static_cast<float>(rightevaluatedline.line[3] -
-											  rightevaluatedline.line[1]);
+											   rightevaluatedline.line[0]) /
+							static_cast<float>(rightevaluatedline.line[3] -
+											   rightevaluatedline.line[1]);
 	} else {
-		rightslopeinverse = FLT_MAX;
+		if ( rightevaluatedline.line[2] > rightevaluatedline.line[0] ) {
+			rightslopeinverse = FLT_MAX;
+		} else if ( rightevaluatedline.line[2] < rightevaluatedline.line[0] ) {
+			rightslopeinverse = -FLT_MAX;
+		} else {
+			rightslopeinverse = 0.0f;
+		}
 	}
 
 	//Check shape before continuing
@@ -338,8 +350,14 @@ void FindPolygon( Polygon& polygon,
 	//Handle polygon intersection
 	if ( polygon[3].x > polygon[2].x ) {
 		//Use intersection point for both - y=mx+b
-		float bleft{ leftevaluatedline.center.y -
-					 leftevaluatedline.center.x / leftslopeinverse };
+		float bleft, bright;
+		if ( leftslopeinverse != 0.0f ) {
+			bleft = leftevaluatedline.center.y -
+					(leftevaluatedline.center.x / leftslopeinverse);			
+		} else {
+			bleft = FLT_MAX;
+		}
+
 		float bright{ rightevaluatedline.center.y -
 					 rightevaluatedline.center.x / rightslopeinverse };
 		int x{ static_cast<int>((bright - bleft) /
