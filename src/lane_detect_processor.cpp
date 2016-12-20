@@ -252,15 +252,25 @@ void FindPolygon( Polygon& polygon,
 	if ( leftevaluatedline.center.x > rightevaluatedline.center.x ) return;
 	
 	//Define slopes
-	float leftslopeinverse{ static_cast<float>(leftevaluatedline.line[2] -
-											   leftevaluatedline.line[0]) /
-							static_cast<float>(leftevaluatedline.line[3] -
-											   leftevaluatedline.line[1]) };
-	float rightslopeinverse{ static_cast<float>(rightevaluatedline.line[2] -
-											   rightevaluatedline.line[0]) /
-							static_cast<float>(rightevaluatedline.line[3] -
-											   rightevaluatedline.line[1]) };
-	
+	float leftslopeinverse, rightslopeinverse;
+	//Check for undefined slopes
+	if ( leftevaluatedline.line[3] != leftevaluatedline.line[1] ) {
+		leftslopeinverse = static_cast<float>(leftevaluatedline.line[2] -
+											  leftevaluatedline.line[0]) /
+						   static_cast<float>(leftevaluatedline.line[3] -
+											  leftevaluatedline.line[1]);
+	} else {
+		leftslopeinverse = FLT_MAX;
+	}
+	if ( rightevaluatedline.line[3] != rightevaluatedline.line[1] ) {
+		rightslopeinverse = static_cast<float>(rightevaluatedline.line[2] -
+											  rightevaluatedline.line[0]) /
+						   static_cast<float>(rightevaluatedline.line[3] -
+											  rightevaluatedline.line[1]);
+	} else {
+		rightslopeinverse = FLT_MAX;
+	}
+
 	//Check shape before continuing
 	if ( (leftslopeinverse > 0.0f) && (rightslopeinverse < 0.0f) ) return;
 	
