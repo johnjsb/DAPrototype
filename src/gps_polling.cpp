@@ -103,7 +103,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 
 	//Set system time - THIS IS CAUSING CRASHES, WHY?
 	if ( settimeofday(&tv, NULL) >= 0) {
-		std::cout << "Time set succesful!" << '\n';
+		std::cout << "Time set successful!" << '\n';
 	} else {
 		std::cout << "Time set failure!" << '\n';
 	}
