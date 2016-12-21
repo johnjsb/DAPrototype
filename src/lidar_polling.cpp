@@ -15,6 +15,7 @@
 #include <iostream>
 #include <atomic>
 #include <thread>
+#include <float.h>
 
 //3rd party libraries
 #include <wiringPi.h>
@@ -66,25 +67,29 @@ void LidarPolingThread( ProcessValues *processvalues,
 		int fcwresult{ -1 };
 		bool readerror{ true };
 		fcwresult = lidar_read(dacModule);
-		if ( (FEETPERCENTIMETER * fcwresult) >
-			 settings::fcw::kdistanceoffset ) {
-			fcwtracker.Update( FEETPERCENTIMETER * fcwresult,
-							   processvalues->gpsspeed_ );
-			timeoutcount = 0;
-			readerror = false;
+		if ( fcwresult == USHRT_MAX ) {
+			readerror = true;
 		} else {
-			timeoutcount++;
-			if ( timeoutcount <= timeoutdelay ) {
+			if ( (FEETPERCENTIMETER * fcwresult) >
+				 settings::fcw::kdistanceoffset ) {
+				fcwtracker.Update( FEETPERCENTIMETER * fcwresult,
+								   processvalues->gpsspeed_ );
+				timeoutcount = 0;
 				readerror = false;
+			} else {
+				timeoutcount++;
+				if ( timeoutcount <= timeoutdelay ) {
+					readerror = false;
+				}
 			}
-		}
-		
-		//Check if vehicle is moving
-		if ( processvalues->gpsspeed_ > 1.0 ) {
-			vehiclemoving = true;
+			
+			//Check if vehicle is moving
+			if ( processvalues->gpsspeed_ > 1.0 ) {
+				vehiclemoving = true;
 
-		} else {
-			vehiclemoving = false;
+			} else {
+				vehiclemoving = false;
+			}
 		}
 
 		//Update everything
