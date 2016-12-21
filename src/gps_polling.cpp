@@ -98,8 +98,8 @@ void GpsPollingThread( ProcessValues *processvalues,
 	double wholeseconds, decimalseconds, offsettime;
 	offsettime = gpsdata->fix.time - (5.0 * 3600.0);
 	decimalseconds = modf(offsettime, &wholeseconds);
-	tv.tv_sec = static_cast<int32_t>(wholeseconds);
-	tv.tv_usec = static_cast<int32_t>(decimalseconds * 1000000.0);
+	tv.tv_sec = static_cast<timeval::tv_sec>(wholeseconds);
+	tv.tv_usec = static_cast<timeval::tv_usec>(decimalseconds * 1000000.0);
 
 	//Set system time - THIS IS CAUSING CRASHES, WHY?
 	if ( settimeofday(&tv, NULL) >= 0) {
