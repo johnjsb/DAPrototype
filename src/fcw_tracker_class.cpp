@@ -14,6 +14,7 @@
 //Standard libraries
 #include <iostream>
 #include <math.h> 
+#include <float.h>
 #include <chrono>
 #include <deque>
 #include <sys/time.h>
