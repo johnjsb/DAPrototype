@@ -16,6 +16,7 @@
 #include <atomic>
 #include <deque>
 #include <cmath>
+#include <errno.h>
 #include <sys/time.h>
 
 //3rd party libraries
@@ -94,13 +95,11 @@ void GpsPollingThread( ProcessValues *processvalues,
 	}
 
 	//Convert gps_data_t* member 'time' to timeval
-	timeval tv{ 0 };
 	double offsettime{ gpsdata->fix.time - (5.0 * 3600.0) };
-	double wholeseconds{ 0.0 };
-	double decimalseconds{ 0.0 };
-	decimalseconds = modf(offsettime, &wholeseconds);
-	tv.tv_sec = static_cast<time_t>(wholeseconds);
-	tv.tv_usec = static_cast<time_t>(decimalseconds * 1000000.0);
+	double seconds{ 0.0 };
+	double microseconds{ 1000000.0 * modf(offsettime, &seconds) };
+	const timeval tv{ static_cast<time_t>(seconds),
+					  static_cast<suseconds_t>(microseconds) };
 
 	//Set system time - THIS IS CAUSING CRASHES, WHY?
 	if ( settimeofday(&tv, NULL) >= 0) {
