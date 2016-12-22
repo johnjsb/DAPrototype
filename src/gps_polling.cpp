@@ -94,8 +94,10 @@ void GpsPollingThread( ProcessValues *processvalues,
 	}
 
 	//Convert gps_data_t* member 'time' to timeval
-	timeval tv;
-	double wholeseconds, decimalseconds, offsettime;
+	timeval tv{ 0 };
+	double wholeseconds{ 0.0 };
+	double decimalseconds{ 0.0 };
+	double offsettime{ 0.0 };
 	offsettime = gpsdata->fix.time - (5.0 * 3600.0);
 	decimalseconds = modf(offsettime, &wholeseconds);
 	tv.tv_sec = static_cast<time_t>(wholeseconds);
