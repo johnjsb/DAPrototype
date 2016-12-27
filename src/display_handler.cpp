@@ -15,7 +15,9 @@
 #include <iostream>
 #include <mutex>
 #include <atomic>
-#include <gtk/gtk.h>	
+#include <gtk/gtk.h>
+#include <exception>
+#include <string>
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
@@ -74,25 +76,32 @@ void DisplayUpdateThread( cv::Mat *image,
 	
 	//Loop
 	while( !(*exitsignal) ) {
-		//Get latest image
-		displaymutex->lock();
-		cv::copyMakeBorder( *image,
-							imagetemp,
-							topborderthickness,
-							topborderthickness,
-							sideborderthickness,
-							sideborderthickness,
-							cv::BORDER_CONSTANT,
-							cv::Scalar(0) );
-		displaymutex->unlock();
-		cv::imshow( "Output", imagetemp );
-		cv::waitKey( 1 );
-		
-		//Set pace
-		displaypacer.SetPace();
+		try {
+			//Get latest image
+			displaymutex->lock();
+			cv::copyMakeBorder( *image,
+								imagetemp,
+								topborderthickness,
+								topborderthickness,
+								sideborderthickness,
+								sideborderthickness,
+								cv::BORDER_CONSTANT,
+								cv::Scalar(0) );
+			displaymutex->unlock();
+			cv::imshow( "Output", imagetemp );
+			cv::waitKey( 1 );
+			
+			//Set pace
+			displaypacer.SetPace();
+		} catch (const std::exception& ex) {
+			std::cout << "Display handler thread threw exception: "<< ex.what() << '\n';
+		} catch (const std::string& ex) {
+			std::cout << "Display handler thread threw exception: "<< ex.what() << '\n';
+		} catch (...) {
+			std::cout << "Display handler thread threw exception of unknown type!" << '\n';
+		}
 	}
 	
 	std::cout << "Exiting display handler thread!" << '\n';
 	return;
-
 }

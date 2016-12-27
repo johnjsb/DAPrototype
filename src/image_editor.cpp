@@ -19,6 +19,8 @@
 #include <mutex>
 #include <atomic>
 #include <math.h>
+#include <exception>
+#include <string>
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
@@ -83,127 +85,134 @@ void ImageEditorThread( cv::Mat *orgimage,
 	
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
-		//Get original image
-		capturemutex->lock();
-		cv::Mat modifiedimage{ orgimage->clone() };
-		capturemutex->unlock();
-        now = time(0);
-		timetext = asctime( localtime(&now) );
-		timetext.pop_back();
-		
-		//Show time
-		putText( modifiedimage,
-				 timetext,
-				 datetimelocation,
-				 CV_FONT_HERSHEY_COMPLEX,
-				 datetimesize,
-				 cv::Scalar(255,255,0),
-				 1,
-				 cv::LINE_8,
-				 false );
-		//Show speed
-		std::stringstream speedtext;
-		speedtext << std::fixed <<
-					 std::setprecision(1) << processvalues->gpsspeed_ << " mph";
-		putText( modifiedimage,
-				 speedtext.str(),
-				 speedlocation,
-				 CV_FONT_HERSHEY_COMPLEX,
-				 speedsize,
-				 cv::Scalar(0,255,0),
-				 1,
-				 cv::LINE_8,
-				 false );
-		
-		//Show latitude and longitude
-		putText( modifiedimage,
-				 ConvertLatLong(processvalues->latitude_, processvalues->longitude_),
-				 latlonglocation,
-				 CV_FONT_HERSHEY_COMPLEX,
-				 latlongsize,
-				 cv::Scalar(255,0,255),
-				 1,
-				 cv::LINE_8,
-				 false );
+		try {
+			//Get original image
+			capturemutex->lock();
+			cv::Mat modifiedimage{ orgimage->clone() };
+			capturemutex->unlock();
+			now = time(0);
+			timetext = asctime( localtime(&now) );
+			timetext.pop_back();
 			
-		//Show following time
-		std::stringstream timetext;
-		if (processvalues->fcwstatus_ > 0) {
-			timetext  << std::fixed <<
-						 std::setprecision(2) << processvalues->timetocollision_ << " s";
-		} else {
-			timetext  << "-.-- s";
-		}
-		putText( modifiedimage,
-				 timetext.str(),
-				 followingtimelocation,
-				 CV_FONT_HERSHEY_COMPLEX,
-				 followingtimesize,
-				 cv::Scalar(255,255,255),
-				 1,
-				 cv::LINE_8,
-				 false );
-		
-		//Show following distance
-		std::stringstream distancetext;
-		if ( processvalues->fcwstatus_ > 0 ) {
-			distancetext  << std::fixed <<
-							 std::setprecision(2) << processvalues->forwarddistance_ << " ft";
-		} else {
-			distancetext  << "-.-- ft";
-		}
-		putText( modifiedimage,
-				 distancetext.str(),
-				 distancelocation,
-				 CV_FONT_HERSHEY_COMPLEX,
-				 distancesize,
-				 cv::Scalar(255,255,255),
-				 1,
-				 cv::LINE_8,
-				 false );
-			
-		//Show diagnostic message
-		std::string diagnosticmessage{ GetDiagnosticString(processvalues->ldwstatus_,
-														   processvalues->fcwstatus_,
-														   processvalues-> gpsstatus_) };
-		if ( diagnosticmessage.length() != 0 ) {
+			//Show time
 			putText( modifiedimage,
-					 diagnosticmessage,
-					 diagnosticlocation,
+					 timetext,
+					 datetimelocation,
 					 CV_FONT_HERSHEY_COMPLEX,
-					 diagnosticsize,
-					 cv::Scalar(0,0,255),
+					 datetimesize,
+					 cv::Scalar(255,255,0),
 					 1,
 					 cv::LINE_8,
 					 false );
-		}
-		
+			//Show speed
+			std::stringstream speedtext;
+			speedtext << std::fixed <<
+						 std::setprecision(1) << processvalues->gpsspeed_ << " mph";
+			putText( modifiedimage,
+					 speedtext.str(),
+					 speedlocation,
+					 CV_FONT_HERSHEY_COMPLEX,
+					 speedsize,
+					 cv::Scalar(0,255,0),
+					 1,
+					 cv::LINE_8,
+					 false );
+			
+			//Show latitude and longitude
+			putText( modifiedimage,
+					 ConvertLatLong(processvalues->latitude_, processvalues->longitude_),
+					 latlonglocation,
+					 CV_FONT_HERSHEY_COMPLEX,
+					 latlongsize,
+					 cv::Scalar(255,0,255),
+					 1,
+					 cv::LINE_8,
+					 false );
 				
-		//Overlay lanes
-		Polygon newpolygon = processvalues->GetPolygon();
-		cv::Point cvpointarray[4];
-		std::copy( newpolygon.begin(), newpolygon.end(), cvpointarray );
-		if ( (newpolygon[0] != cv::Point(0,0)) &&
-			 settings::cam::kshadelanes &&
-			 (processvalues->ldwstatus_ > 0) ) {
-			cv::Mat polygonimage{ modifiedimage.size(),
-								  CV_8UC1,
-								  cv::Scalar(0) };
-			cv::fillConvexPoly( polygonimage, cvpointarray, 4,  cv::Scalar(1) );
-			OverlayImage( &polygonimage, &modifiedimage );
+			//Show following time
+			std::stringstream timetext;
+			if (processvalues->fcwstatus_ > 0) {
+				timetext  << std::fixed <<
+							 std::setprecision(2) << processvalues->timetocollision_ << " s";
+			} else {
+				timetext  << "-.-- s";
+			}
+			putText( modifiedimage,
+					 timetext.str(),
+					 followingtimelocation,
+					 CV_FONT_HERSHEY_COMPLEX,
+					 followingtimesize,
+					 cv::Scalar(255,255,255),
+					 1,
+					 cv::LINE_8,
+					 false );
+			
+			//Show following distance
+			std::stringstream distancetext;
+			if ( processvalues->fcwstatus_ > 0 ) {
+				distancetext  << std::fixed <<
+								 std::setprecision(2) << processvalues->forwarddistance_ << " ft";
+			} else {
+				distancetext  << "-.-- ft";
+			}
+			putText( modifiedimage,
+					 distancetext.str(),
+					 distancelocation,
+					 CV_FONT_HERSHEY_COMPLEX,
+					 distancesize,
+					 cv::Scalar(255,255,255),
+					 1,
+					 cv::LINE_8,
+					 false );
+				
+			//Show diagnostic message
+			std::string diagnosticmessage{ GetDiagnosticString(processvalues->ldwstatus_,
+															   processvalues->fcwstatus_,
+															   processvalues-> gpsstatus_) };
+			if ( diagnosticmessage.length() != 0 ) {
+				putText( modifiedimage,
+						 diagnosticmessage,
+						 diagnosticlocation,
+						 CV_FONT_HERSHEY_COMPLEX,
+						 diagnosticsize,
+						 cv::Scalar(0,0,255),
+						 1,
+						 cv::LINE_8,
+						 false );
+			}
+			
+					
+			//Overlay lanes
+			Polygon newpolygon = processvalues->GetPolygon();
+			cv::Point cvpointarray[4];
+			std::copy( newpolygon.begin(), newpolygon.end(), cvpointarray );
+			if ( (newpolygon[0] != cv::Point(0,0)) &&
+				 settings::cam::kshadelanes &&
+				 (processvalues->ldwstatus_ > 0) ) {
+				cv::Mat polygonimage{ modifiedimage.size(),
+									  CV_8UC1,
+									  cv::Scalar(0) };
+				cv::fillConvexPoly( polygonimage, cvpointarray, 4,  cv::Scalar(1) );
+				OverlayImage( &polygonimage, &modifiedimage );
+			}
+			
+			//Write display image
+			displaymutex->lock();
+			*displayimage = modifiedimage;
+			displaymutex->unlock();
+			
+			editorpacer.SetPace();
+		} catch (const std::exception& ex) {
+			std::cout << "Image Editor thread threw exception: "<< ex.what() << '\n';
+		} catch (const std::string& ex) {
+			std::cout << "Image Editor thread threw exception: "<< ex.what() << '\n';
+		} catch (...) {
+			std::cout << "Image Editor thread threw exception of unknown type!" << '\n';
 		}
-		
-		//Write display image
-		displaymutex->lock();
-		*displayimage = modifiedimage;
-		displaymutex->unlock();
-		
-		editorpacer.SetPace();
 	}
 	
 	std::cout << "Exiting image editor thread!" << '\n';
 	return;
-
 }
 /*****************************************************************************************/
 void OverlayImage( cv::Mat* overlay,
@@ -217,6 +226,7 @@ void OverlayImage( cv::Mat* overlay,
 			}
         }
     }
+	return;
 }
 /*****************************************************************************************/
 std::string ConvertLatLong ( double latitude, 

@@ -18,6 +18,8 @@
 #include <atomic>
 #include <deque>
 #include <array>
+#include <exception>
+#include <string>
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
@@ -59,58 +61,65 @@ void ProcessImageThread( cv::Mat *orgimage,
 
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
-		if ( (processvalues->gpsstatus_ != 2) && settings::ldw::kenabled ) {
-			//Get image
-			capturemutex->lock();
-			cv::Mat processimage{ *orgimage };
-			capturemutex->unlock();
-			
-			//Get lanes
-			Polygon newpolygon;
-			ProcessImage( processimage, newpolygon );
-			AveragePolygon( newpolygon,
-						    pastpolygons,
-						    settings::ldw::ksamplestoaverage,
-						    settings::ldw::ksamplestokeep );	
+		try {
+			if ( (processvalues->gpsstatus_ != 2) && settings::ldw::kenabled ) {
+				//Get image
+				capturemutex->lock();
+				cv::Mat processimage{ *orgimage };
+				capturemutex->unlock();
+				
+				//Get lanes
+				Polygon newpolygon;
+				ProcessImage( processimage, newpolygon );
+				AveragePolygon( newpolygon,
+								pastpolygons,
+								settings::ldw::ksamplestoaverage,
+								settings::ldw::ksamplestokeep );	
 
-			//Evaluate LDW
-			if ( newpolygon[0] != cv::Point(0,0) ) {
-				double deviationpix = 0.5 * ( newpolygon[0].x + 
-											  newpolygon[1].x - 
-											  settings::cam::kpixwidth );
-				double deviationper = 100.0 * deviationpix /
-									  static_cast<double>(newpolygon[1].x -
-														  newpolygon[0].x);	
-				if ( settings::ldw::kperoffsetalarm < deviationper ) {
-					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_ALARM;
-				} else if ( (settings::ldw::kperoffsetwarning < deviationper) &&
-							(deviationper < settings::ldw::kperoffsetalarm) ) {
-					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_WARNING;
-				} else if ( (0.0 < deviationper) &&
-						    (deviationper < settings::ldw::kperoffsetwarning) ) {
-					processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_OK;
-				} else if ( (0.0 > deviationper) &&
-							(deviationper > -settings::ldw::kperoffsetwarning) ) {
-					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_OK;
-				} else if ( (-settings::ldw::kperoffsetwarning > deviationper) &&
-							(deviationper > -settings::ldw::kperoffsetalarm) ) {
-					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_WARNING;
-				} else if ( -settings::ldw::kperoffsetalarm > deviationper ) {
-					processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_ALARM;
+				//Evaluate LDW
+				if ( newpolygon[0] != cv::Point(0,0) ) {
+					double deviationpix = 0.5 * ( newpolygon[0].x + 
+												  newpolygon[1].x - 
+												  settings::cam::kpixwidth );
+					double deviationper = 100.0 * deviationpix /
+										  static_cast<double>(newpolygon[1].x -
+															  newpolygon[0].x);	
+					if ( settings::ldw::kperoffsetalarm < deviationper ) {
+						processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_ALARM;
+					} else if ( (settings::ldw::kperoffsetwarning < deviationper) &&
+								(deviationper < settings::ldw::kperoffsetalarm) ) {
+						processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_WARNING;
+					} else if ( (0.0 < deviationper) &&
+								(deviationper < settings::ldw::kperoffsetwarning) ) {
+						processvalues->ldwstatus_ = LDW_LEFT_DEVIATION_OK;
+					} else if ( (0.0 > deviationper) &&
+								(deviationper > -settings::ldw::kperoffsetwarning) ) {
+						processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_OK;
+					} else if ( (-settings::ldw::kperoffsetwarning > deviationper) &&
+								(deviationper > -settings::ldw::kperoffsetalarm) ) {
+						processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_WARNING;
+					} else if ( -settings::ldw::kperoffsetalarm > deviationper ) {
+						processvalues->ldwstatus_ = LDW_RIGHT_DEVIATION_ALARM;
+					}
+				} else {
+					processvalues->ldwstatus_ = LDW_ERROR;
 				}
+				//Write new data
+				processvalues->SetPolygon(newpolygon);
 			} else {
-				processvalues->ldwstatus_ = LDW_ERROR;
+				processvalues->ldwstatus_ = LDW_INACTIVE;
 			}
-			//Write new data
-			processvalues->SetPolygon(newpolygon);
-		} else {
-			processvalues->ldwstatus_ = LDW_INACTIVE;
+			
+			processorpacer.SetPace();
+		} catch (const std::exception& ex) {
+			std::cout << "Image Processor thread threw exception: "<< ex.what() << '\n';
+		} catch (const std::string& ex) {
+			std::cout << "Image Processor thread threw exception: "<< ex.what() << '\n';
+		} catch (...) {
+			std::cout << "Image Processor thread threw exception of unknown type!" << '\n';
 		}
-		
-		processorpacer.SetPace();
 	}
 	
 	std::cout << "Exiting image processor thread!" << '\n';
 	return;
-
 }

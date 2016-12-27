@@ -16,6 +16,8 @@
 #include <algorithm> 
 #include <mutex>
 #include <atomic>
+#include <exception>
+#include <string>
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
@@ -55,27 +57,34 @@ void CaptureImageThread( cv::Mat *capture,
 
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
-		cv::Mat newimage;
-		Camera.grab();
-		Camera.retrieve( newimage );
-		cv::flip( newimage, newimage, -1 );
-		//resize image
-		if ( newimage.rows != settings::cam::kpixheight ) {
-			cv::resize( newimage,
-						newimage,
-						cv::Size(settings::cam::kpixwidth,
-								 settings::cam::kpixheight) );
-		}
-		
-		capturemutex->lock();
-		*capture = newimage;
-		capturemutex->unlock(); 
+		try {
+			cv::Mat newimage;
+			Camera.grab();
+			Camera.retrieve( newimage );
+			cv::flip( newimage, newimage, -1 );
+			//resize image
+			if ( newimage.rows != settings::cam::kpixheight ) {
+				cv::resize( newimage,
+							newimage,
+							cv::Size(settings::cam::kpixwidth,
+									 settings::cam::kpixheight) );
+			}
+			
+			capturemutex->lock();
+			*capture = newimage;
+			capturemutex->unlock(); 
 
-		//Set pace
-		camerapacer.SetPace();
+			//Set pace
+			camerapacer.SetPace();
+		} catch (const std::exception& ex) {
+			std::cout << "Image Capturer thread threw exception: "<< ex.what() << '\n';
+		} catch (const std::string& ex) {
+			std::cout << "Image Capturer thread threw exception: "<< ex.what() << '\n';
+		} catch (...) {
+			std::cout << "Image Capturer thread threw exception of unknown type!" << '\n';
+		}
 	}
 
 	std::cout << "Exiting image capturer thread!" << '\n';
 	return;
-
 }

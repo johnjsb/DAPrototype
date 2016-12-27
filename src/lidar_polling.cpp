@@ -16,6 +16,8 @@
 #include <atomic>
 #include <thread>
 #include <float.h>
+#include <exception>
+#include <string>
 
 //3rd party libraries
 #include <wiringPi.h>
@@ -62,85 +64,91 @@ void LidarPolingThread( ProcessValues *processvalues,
 
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
-
-		//Read FCW distance
-		int fcwresult{ -1 };
-		bool readerror{ true };
-		fcwresult = lidar_read(dacModule);
-		if ( fcwresult == USHRT_MAX ) {
-			readerror = true;
-		} else {
-			if ( (FEETPERCENTIMETER * fcwresult) >
-				 settings::fcw::kdistanceoffset ) {
-				fcwtracker.Update( FEETPERCENTIMETER * fcwresult,
-								   processvalues->gpsspeed_ );
-				timeoutcount = 0;
-				readerror = false;
+		try {
+			//Read FCW distance
+			int fcwresult{ -1 };
+			bool readerror{ true };
+			fcwresult = lidar_read(dacModule);
+			if ( fcwresult == USHRT_MAX ) {
+				readerror = true;
 			} else {
-				timeoutcount++;
-				if ( timeoutcount <= timeoutdelay ) {
+				if ( (FEETPERCENTIMETER * fcwresult) >
+					 settings::fcw::kdistanceoffset ) {
+					fcwtracker.Update( FEETPERCENTIMETER * fcwresult,
+									   processvalues->gpsspeed_ );
+					timeoutcount = 0;
 					readerror = false;
+				} else {
+					timeoutcount++;
+					if ( timeoutcount <= timeoutdelay ) {
+						readerror = false;
+					}
+				}
+				
+				//Check if vehicle is moving
+				if ( processvalues->gpsspeed_ > 1.0 ) {
+					vehiclemoving = true;
+
+				} else {
+					vehiclemoving = false;
 				}
 			}
-			
-			//Check if vehicle is moving
-			if ( processvalues->gpsspeed_ > 1.0 ) {
-				vehiclemoving = true;
 
+			//Update everything
+			processvalues->forwarddistance_ = fcwtracker.followingdistance_;
+			//if ( fcwtracker.followingtime_ < fcwtracker.timetocollision_ ) {
+				processvalues->timetocollision_ = fcwtracker.followingtime_;
+			//} else {
+			//	processvalues->timetocollision_ = fcwtracker.timetocollision_;			
+			//}
+
+			//FCW Status
+			if ( readerror ) {
+				processvalues->fcwstatus_ = FCW_ERROR;
+			/*
+			} else if ( (1000 * fcwtracker.timetocollision_) <
+						settings::fcw::kmscollisionwarning ) {
+				processvalues->fcwstatus_ = FCW_WARNING;
+			*/
+			} else if ( vehiclemoving &&
+						(1000 * fcwtracker.followingtime_) <
+						settings::fcw::kmsfollowdistwarning ) {
+				processvalues->fcwstatus_ = FCW_TAILGATE_WARNING;
+			/*
+			} else if ( (1000 * fcwtracker.timetocollision_) <
+						settings::fcw::kmscollisionalarm ) {
+				processvalues->fcwstatus_ = FCW_ALARM;
+			*/
+			} else if ( vehiclemoving &&
+						(1000 * fcwtracker.followingtime_) <
+						settings::fcw::kmsfollowdistalarm ) {
+				processvalues->fcwstatus_ = FCW_TAILGATE_ALARM;
 			} else {
-				vehiclemoving = false;
+				processvalues->fcwstatus_ = FCW_ACTIVE;
 			}
+	/*
+			//Check for driver pullahead
+			if ( !vehiclemoving &&
+				 (fcwtracker.acceleration_ > 0.1) &&
+				 (pullaheadcount > pullaheaddelay) ) {
+				processvalues->fcwstatus_ = FCW_PULL_AHEAD_WARNING;
+			} else if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) ) {
+				pullaheadcount++;
+			} else {
+				pullaheadcount = 0;
+			}
+	*/
+			//Setpace
+			lidarpacer.SetPace();
+		} catch (const std::exception& ex) {
+			std::cout << "Lidar Polling thread threw exception: "<< ex.what() << '\n';
+		} catch (const std::string& ex) {
+			std::cout << "Lidar Polling thread threw exception: "<< ex.what() << '\n';
+		} catch (...) {
+			std::cout << "Lidar Polling thread threw exception of unknown type!" << '\n';
 		}
-
-		//Update everything
-		processvalues->forwarddistance_ = fcwtracker.followingdistance_;
-		//if ( fcwtracker.followingtime_ < fcwtracker.timetocollision_ ) {
-			processvalues->timetocollision_ = fcwtracker.followingtime_;
-		//} else {
-		//	processvalues->timetocollision_ = fcwtracker.timetocollision_;			
-		//}
-
-		//FCW Status
-		if ( readerror ) {
-			processvalues->fcwstatus_ = FCW_ERROR;
-		/*
-		} else if ( (1000 * fcwtracker.timetocollision_) <
-					settings::fcw::kmscollisionwarning ) {
-			processvalues->fcwstatus_ = FCW_WARNING;
-		*/
-		} else if ( vehiclemoving &&
-					(1000 * fcwtracker.followingtime_) <
-					settings::fcw::kmsfollowdistwarning ) {
-			processvalues->fcwstatus_ = FCW_TAILGATE_WARNING;
-		/*
-		} else if ( (1000 * fcwtracker.timetocollision_) <
-					settings::fcw::kmscollisionalarm ) {
-			processvalues->fcwstatus_ = FCW_ALARM;
-		*/
-		} else if ( vehiclemoving &&
-					(1000 * fcwtracker.followingtime_) <
-					settings::fcw::kmsfollowdistalarm ) {
-			processvalues->fcwstatus_ = FCW_TAILGATE_ALARM;
-		} else {
-			processvalues->fcwstatus_ = FCW_ACTIVE;
-		}
-/*
-		//Check for driver pullahead
-		if ( !vehiclemoving &&
-			 (fcwtracker.acceleration_ > 0.1) &&
-			 (pullaheadcount > pullaheaddelay) ) {
-			processvalues->fcwstatus_ = FCW_PULL_AHEAD_WARNING;
-		} else if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) ) {
-			pullaheadcount++;
-		} else {
-			pullaheadcount = 0;
-		}
-*/
-		//Setpace
-		lidarpacer.SetPace();
 	}
 
 	std::cout << "Exiting Lidar polling thread!" << '\n';
 	return;
-
 }

@@ -18,6 +18,8 @@
 #include <cmath>
 #include <errno.h>
 #include <sys/time.h>
+#include <exception>
+#include <string>
 
 //3rd party libraries
 #include <libgpsmm.h>
@@ -110,35 +112,42 @@ void GpsPollingThread( ProcessValues *processvalues,
 
 	//Loop indefinitely
 	while( !(*exitsignal) ) {
-		if (!gps_rec.waiting(2000000)) {
-			processvalues->gpsstatus_ = GPS_ERROR;
-			std::cout << "GPS timeout." << '\n';
-		} else if ((gpsdata = gps_rec.read()) == NULL) {
-			processvalues->gpsstatus_ = GPS_ERROR;
-			std::cout << "GPS read error!" << '\n';
-		} else {
-			if ( gpsdata->fix.mode > 1) {
-				//Write values
-				processvalues->latitude_ = gpsdata->fix.latitude;
-				processvalues->longitude_ = gpsdata->fix.longitude;
-				processvalues->gpsspeed_ = MPSTOMPHCONVERSION * gpsdata->fix.speed;
-				if ( processvalues->gpsspeed_ > settings::ldw::kenablespeed ) {
-					processvalues->gpsstatus_ =  GPS_LOCK_LDW_ON;
-				} else {
-					processvalues->gpsstatus_ =  GPS_LOCK_LDW_OFF;
-				}
-				
+		try {
+			if (!gps_rec.waiting(2000000)) {
+				processvalues->gpsstatus_ = GPS_ERROR;
+				std::cout << "GPS timeout." << '\n';
+			} else if ((gpsdata = gps_rec.read()) == NULL) {
+				processvalues->gpsstatus_ = GPS_ERROR;
+				std::cout << "GPS read error!" << '\n';
 			} else {
-				processvalues->gpsstatus_ = GPS_NO_LOCK;
+				if ( gpsdata->fix.mode > 1) {
+					//Write values
+					processvalues->latitude_ = gpsdata->fix.latitude;
+					processvalues->longitude_ = gpsdata->fix.longitude;
+					processvalues->gpsspeed_ = MPSTOMPHCONVERSION * gpsdata->fix.speed;
+					if ( processvalues->gpsspeed_ > settings::ldw::kenablespeed ) {
+						processvalues->gpsstatus_ =  GPS_LOCK_LDW_ON;
+					} else {
+						processvalues->gpsstatus_ =  GPS_LOCK_LDW_OFF;
+					}
+					
+				} else {
+					processvalues->gpsstatus_ = GPS_NO_LOCK;
+				}
 			}
-		}
 
-		//gpspacer.SetPace();
+			gpspacer.SetPace();
+		} catch (const std::exception& ex) {
+			std::cout << "GPS Polling thread threw exception: "<< ex.what() << '\n';
+		} catch (const std::string& ex) {
+			std::cout << "GPS Polling thread threw exception: "<< ex.what() << '\n';
+		} catch (...) {
+			std::cout << "GPS Polling thread threw exception of unknown type!" << '\n';
+		}
 	}
 	
 	std::cout << "Exiting GPS polling thread!" << '\n';
 	return;
-
 }
 
 double Average ( double value,

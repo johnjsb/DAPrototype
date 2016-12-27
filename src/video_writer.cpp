@@ -20,6 +20,8 @@
 #include <atomic>
 #include <queue>
 #include <chrono>
+#include <exception>
+#include <string>
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
@@ -94,42 +96,48 @@ void VideoWriterThread ( cv::Mat *orgimage,
 
 	//Loop
 	while( !(*exitsignal) ) {
-		
-		//Normal Execution
-		if ( settings::cam::krecordorgimage ) {
-			capturemutex->lock();
-			queue.Push(orgimage->clone());
-			capturemutex->unlock();
-		} else {
-			displaymutex->lock();
-			queue.Push(modimage->clone());	
-			displaymutex->unlock();
-		}
-		
-		//New file changeover
-		if (static_cast<long>(std::chrono::duration_cast<std::chrono::seconds>(
-			std::chrono::high_resolution_clock::now() - startime).count()) > filelengthseconds) {
-
-			//Stop thread
-			queue.Stop();
-			
-			while (!queue.CheckReleased()) {
-				//Wait
-				videopacer.SetPace();
+		try {
+			//Normal Execution
+			if ( settings::cam::krecordorgimage ) {
+				capturemutex->lock();
+				queue.Push(orgimage->clone());
+				capturemutex->unlock();
+			} else {
+				displaymutex->lock();
+				queue.Push(modimage->clone());	
+				displaymutex->unlock();
 			}
 			
-			//Shift files
-			fileShift(filepath, settings::cam::kfilestokeep);
-			
-			//Restart thread
-			queue.Restart();
+			//New file changeover
+			if (static_cast<long>(std::chrono::duration_cast<std::chrono::seconds>(
+				std::chrono::high_resolution_clock::now() - startime).count()) > filelengthseconds) {
 
-			//Restart timer
-			startime = std::chrono::high_resolution_clock::now();
-		}
+				//Stop thread
+				queue.Stop();
 				
-		videopacer.SetPace();
-		
+				while (!queue.CheckReleased()) {
+					//Wait
+					videopacer.SetPace();
+				}
+				
+				//Shift files
+				fileShift(filepath, settings::cam::kfilestokeep);
+				
+				//Restart thread
+				queue.Restart();
+
+				//Restart timer
+				startime = std::chrono::high_resolution_clock::now();
+			}
+					
+			videopacer.SetPace();
+		} catch (const std::exception& ex) {
+			std::cout << "Video Writer thread threw exception: "<< ex.what() << '\n';
+		} catch (const std::string& ex) {
+			std::cout << "Video Writer thread threw exception: "<< ex.what() << '\n';
+		} catch (...) {
+			std::cout << "Video Writer thread threw exception of unknown type!" << '\n';
+		}
 	}
 
     queue.Cancel();
@@ -158,5 +166,4 @@ int fileShift( std::string filename,
     std::string newName = filename.substr(0,k) + "_" + std::to_string(i--) + filename.substr(k,filename.length() - k);
     j = j + i + rename(filename.c_str(), newName.c_str());
     return j;
-
 }
