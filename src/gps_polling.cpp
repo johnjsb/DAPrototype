@@ -95,7 +95,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 	}
 
 	//Convert gps_data_t* member 'time' to timeval
-	double offsettime{ gpsdata->fix.time - (5.0 * 3600.0) };
+	double offsettime{ gpsdata->fix.time - (5.0 * 3600.0) }; 	//5.0 hr offset for EST
 	double seconds{ 0.0 };
 	double microseconds{ 1000000.0 * modf(offsettime, &seconds) };
 	const timeval tv{ static_cast<time_t>(seconds),
