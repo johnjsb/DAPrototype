@@ -76,10 +76,10 @@ void CaptureImageThread( cv::Mat *capture,
 
 			//Set pace
 			camerapacer.SetPace();
-		} catch (const std::exception& ex) {
+		} catch ( const std::exception& ex ) {
 			std::cout << "Image Capturer thread threw exception: "<< ex.what() << '\n';
-		} catch (const std::string& ex) {
-			std::cout << "Image Capturer thread threw exception: "<< ex.what() << '\n';
+		} catch ( const std::string& str ) {
+			std::cout << "Image Capturer thread threw exception: "<< str << '\n';
 		} catch (...) {
 			std::cout << "Image Capturer thread threw exception of unknown type!" << '\n';
 		}

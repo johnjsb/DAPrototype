@@ -146,10 +146,10 @@ void GpioHandlerThread( ProcessValues *processvalues,
 				}
 		
 			gpiopacer.SetPace();
-		} catch (const std::exception& ex) {
+		} catch ( const std::exception& ex ) {
 			std::cout << "GPIO handler thread threw exception: "<< ex.what() << '\n';
-		} catch (const std::string& ex) {
-			std::cout << "GPIO handler thread threw exception: "<< ex.what() << '\n';
+		} catch ( const std::string& str ) {
+			std::cout << "GPIO handler thread threw exception: "<< str << '\n';
 		} catch (...) {
 			std::cout << "GPIO handler thread threw exception of unknown type!" << '\n';
 		}

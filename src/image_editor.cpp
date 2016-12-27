@@ -202,10 +202,10 @@ void ImageEditorThread( cv::Mat *orgimage,
 			displaymutex->unlock();
 			
 			editorpacer.SetPace();
-		} catch (const std::exception& ex) {
+		} catch ( const std::exception& ex ) {
 			std::cout << "Image Editor thread threw exception: "<< ex.what() << '\n';
-		} catch (const std::string& ex) {
-			std::cout << "Image Editor thread threw exception: "<< ex.what() << '\n';
+		} catch ( const std::string& str ) {
+			std::cout << "Image Editor thread threw exception: "<< str << '\n';
 		} catch (...) {
 			std::cout << "Image Editor thread threw exception of unknown type!" << '\n';
 		}

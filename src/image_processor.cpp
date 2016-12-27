@@ -111,10 +111,10 @@ void ProcessImageThread( cv::Mat *orgimage,
 			}
 			
 			processorpacer.SetPace();
-		} catch (const std::exception& ex) {
+		} catch ( const std::exception& ex ) {
 			std::cout << "Image Processor thread threw exception: "<< ex.what() << '\n';
-		} catch (const std::string& ex) {
-			std::cout << "Image Processor thread threw exception: "<< ex.what() << '\n';
+		} catch ( const std::string& str ) {
+			std::cout << "Image Processor thread threw exception: "<< str << '\n';
 		} catch (...) {
 			std::cout << "Image Processor thread threw exception of unknown type!" << '\n';
 		}

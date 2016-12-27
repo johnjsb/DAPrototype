@@ -131,10 +131,10 @@ void VideoWriterThread ( cv::Mat *orgimage,
 			}
 					
 			videopacer.SetPace();
-		} catch (const std::exception& ex) {
+		} catch ( const std::exception& ex ) {
 			std::cout << "Video Writer thread threw exception: "<< ex.what() << '\n';
-		} catch (const std::string& ex) {
-			std::cout << "Video Writer thread threw exception: "<< ex.what() << '\n';
+		} catch ( const std::string& str ) {
+			std::cout << "Video Writer thread threw exception: "<< str << '\n';
 		} catch (...) {
 			std::cout << "Video Writer thread threw exception of unknown type!" << '\n';
 		}

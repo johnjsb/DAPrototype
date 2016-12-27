@@ -140,10 +140,10 @@ void LidarPolingThread( ProcessValues *processvalues,
 	*/
 			//Setpace
 			lidarpacer.SetPace();
-		} catch (const std::exception& ex) {
+		} catch ( const std::exception& ex ) {
 			std::cout << "Lidar Polling thread threw exception: "<< ex.what() << '\n';
-		} catch (const std::string& ex) {
-			std::cout << "Lidar Polling thread threw exception: "<< ex.what() << '\n';
+		} catch ( const std::string& str ) {
+			std::cout << "Lidar Polling thread threw exception: "<< str << '\n';
 		} catch (...) {
 			std::cout << "Lidar Polling thread threw exception of unknown type!" << '\n';
 		}

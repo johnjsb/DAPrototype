@@ -93,10 +93,10 @@ void DisplayUpdateThread( cv::Mat *image,
 			
 			//Set pace
 			displaypacer.SetPace();
-		} catch (const std::exception& ex) {
+		} catch ( const std::exception& ex ) {
 			std::cout << "Display handler thread threw exception: "<< ex.what() << '\n';
-		} catch (const std::string& ex) {
-			std::cout << "Display handler thread threw exception: "<< ex.what() << '\n';
+		} catch ( const std::string& str ) {
+			std::cout << "Display handler thread threw exception: "<< str << '\n';
 		} catch (...) {
 			std::cout << "Display handler thread threw exception of unknown type!" << '\n';
 		}
