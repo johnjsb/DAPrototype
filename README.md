@@ -65,6 +65,7 @@
 <li>Adafruit Ultimate GPS</li>
 <li>GPS antenna and adapter</li>
 <li>5" HDMI 800x480 screen</li>
+<li>Flexible HDMI elbow</li>
 <li>Buzzer</li>
 <li>Female DC barrel jack connector</li>
 <li>Cigarette adapter with male DC barrel connector</li>
