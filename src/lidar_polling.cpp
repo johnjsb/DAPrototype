@@ -111,8 +111,10 @@ void LidarPolingThread( ProcessValues *processvalues,
 				processvalues->fcwstatus_ = FCW_WARNING;
 			*/
 			} else if ( vehiclemoving &&
-						(1000 * fcwtracker.followingtime_) <
-						settings::fcw::kmsfollowdistwarning ) {
+						((1000 * fcwtracker.followingtime_) <
+						settings::fcw::kmsfollowdistwarning) &&
+						((1000 * fcwtracker.followingtime_) >
+						settings::fcw::kmsfollowdistalarm) ) {
 				processvalues->fcwstatus_ = FCW_TAILGATE_WARNING;
 			/*
 			} else if ( (1000 * fcwtracker.timetocollision_) <
