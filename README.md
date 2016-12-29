@@ -34,9 +34,9 @@
 </blockquote>
 
 <p><a href="/Example.png" target="_blank"><img src="/Example.png" alt="" style="max-width:100%;"></a></p>
-<p><a href="Day-time driving condtions">https://youtu.be/WRAR0lgYsj8</a></p>
-<p><a href="Night-time driving condtions">https://youtu.be/zDFjwTFDbJ0</a></p>
-<p><a href="https://github.com/nategreco/">https://youtu.be/yc1ApW6gV3I</a></p>
+<p><a href="https://youtu.be/WRAR0lgYsj8">Daytime driving conditions</a></p>
+<p><a href="https://youtu.be/zDFjwTFDbJ0">Nighttime driving conditions</a></p>
+<p><a href="https://youtu.be/yc1ApW6gV3I">Rainy driving conditions</a></p>
 
 <blockquote>
 <p>This project is an attempt to create a standalone, windshield mounted driver assist unit with the following functionality:
