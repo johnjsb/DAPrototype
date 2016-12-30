@@ -11,6 +11,7 @@
       unit with the following functionality:
 		  - LDW (Lane Departure Warning)
 		  - FCW (Forward Collision Warning)
+		  - Tailgate warning
 		  - Driver pull-ahead warning
 		  - Dashcam functionality (with GPS & timestamp overlay)
 
