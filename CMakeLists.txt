@@ -4,20 +4,12 @@ project (DAPrototype)
 include_directories(include)
 add_compile_options(-std=c++11 -o3)
 find_package(OpenCV REQUIRED)
-if( ${CMAKE_NOT_RPI_TARGET} )
-else ()
-	message("Compiling for Raspberry Pi...")
-	SET( CMAKE_CXX_FLAGS "-l pthread -l wiringPi -l gps" )
-	find_package(raspicam REQUIRED)
-	#find_package(GPSD REQUIRED)
-	#find_package(WiringPi REQUIRED)
-	find_package(PkgConfig REQUIRED)
-	pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
-	include_directories(${GTK2_INCLUDE_DIRS})
-	#include_directories(${GPSD_INCLUDE_DIR})
-	#add_definitions(${GTK2_CFLAGS_OTHER})
-	#include_directories(${WIRINGPI_INCLUDE_DIRS})
-endif()
+message("Compiling for Raspberry Pi...")
+SET( CMAKE_CXX_FLAGS "-l pthread -l wiringPi -l gps" )
+find_package(raspicam REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
+include_directories(${GTK2_INCLUDE_DIRS})
 add_library(XML_READER_LIBRARIES src/xml_reader.cpp)
 add_library(PROCESS_VALUES_LIBRARIES src/process_values_class.cpp)
 add_library(DISPLAY_HANDLER_LIBRARIES src/display_handler.cpp)
@@ -37,7 +29,6 @@ add_library(VIDEO_WRITER_LIBRARIES src/video_writer.cpp)
 add_library(LANE_DETECT_LIBRARIES src/lane_detect_processor.cpp)
 include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable (DAPrototype main.cpp)
-#SET( CMAKE_CXX_FLAGS "-l pthread" )
 target_link_libraries(DAPrototype
 	pthread
 	LIDAR_POLLING_LIBRARIES
@@ -45,7 +36,6 @@ target_link_libraries(DAPrototype
 	${OpenCV_LIBS}
 	${raspicam_CV_LIBS}
 	${GTK2_LIBRARIES}
-#	${WIRINGPI_LIBRARIES}
 	DISPLAY_HANDLER_LIBRARIES
 	GPIO_HANDLER_LIBRARIES
 	IMAGE_CAPTURER_LIBRARIES
@@ -59,7 +49,6 @@ target_link_libraries(DAPrototype
 	STORAGE_WORKER_LIBRARIES
 	LANE_DETECT_LIBRARIES
 	PROCESS_VALUES_LIBRARIES
-#	GPS_LIBRARIES
 	GPS_POLLING_LIBRARIES
 	LIDAR_LITE_LIBRARIES
 )
