@@ -156,7 +156,7 @@ int main()
 							   &shutdownsignal );
 	
     //Set pace setter class!
-    PaceSetter mypacesetter( 10, "main" );
+    PaceSetter mypacesetter( 2, "main" );
     
 	while( !exitsignal ){
 		//Should check all threads still running
