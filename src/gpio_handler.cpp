@@ -44,126 +44,111 @@
 #define CENTERPIN 37
 
 /*****************************************************************************************/
-void GpioHandlerThread( ProcessValues *processvalues,
-						std::atomic<bool> *exitsignal,
-						std::atomic<bool> *shutdownsignal )
+bool GpioHandlerSetup( ProcessValues& processvalues )
 {
-
-	std::cout << "GPIO handler thread starting!" << '\n';
-	
-	//Check if enabled
-	if ( !settings::gpio::kenabled ) {
-		std::cout << "GPIO disabled, exiting!" << '\n';
-		return;
+	try {
+		//Setup GPIO pins
+		wiringPiSetupGpio();
+		pinMode(POWERINPUTPIN, INPUT); 
+		pinMode(BUZZERPIN, OUTPUT);
+		pinMode(LEFTALARMPIN, PWM_OUTPUT);
+		pinMode(LEFTWARNINGPIN, PWM_OUTPUT);
+		pinMode(LEFTOKPIN, PWM_OUTPUT);
+		pinMode(RIGHTALARMPIN, PWM_OUTPUT);
+		pinMode(RIGHTWARNINGPIN, PWM_OUTPUT);
+		pinMode(RIGHTOKPIN, PWM_OUTPUT);
+		pinMode(FORWARDALARMPIN, PWM_OUTPUT);
+		pinMode(FORWARDWARNINGPIN, PWM_OUTPUT);
+		pinMode(FORWARDOKPIN, PWM_OUTPUT);
+		pinMode(CENTERPIN, OUTPUT);
+	} catch ( const std::exception& ex ) {
+		std::cout << "GPIO handler setup threw exception: "<< ex.what() << '\n';
+		return false;
+	} catch ( const std::string& str ) {
+		std::cout << "GPIO handler setup threw exception: "<< str << '\n';
+		return false;
+	} catch (...) {
+		std::cout << "GPIO handler setup threw exception of unknown type!" << '\n';
+		return false;
 	}
-
-	//Create thread variables
-	bool warning{ false };
-	bool alarm{ false };
-	int buzzerinterval{  settings::comm::kpollrategpio / 2  };	//500ms
-	int blinkinterval{  settings::comm::kpollrategpio / 2  };	//500ms
-	int buzzercount{ 0 };
-	int blinkercount{ 0 };
-
-	wiringPiSetupGpio();
-	pinMode(POWERINPUTPIN, INPUT); 
-	pinMode(POWEROUTPUTPIN, OUTPUT); 
-	digitalWrite(POWEROUTPUTPIN, 1);				//Switch to delayed power
-	pinMode(BUZZERPIN, OUTPUT);
-	pinMode(LEFTALARMPIN, PWM_OUTPUT);
-	pinMode(LEFTWARNINGPIN, PWM_OUTPUT);
-	pinMode(LEFTOKPIN, PWM_OUTPUT);
-	pinMode(RIGHTALARMPIN, PWM_OUTPUT);
-	pinMode(RIGHTWARNINGPIN, PWM_OUTPUT);
-	pinMode(RIGHTOKPIN, PWM_OUTPUT);
-	pinMode(FORWARDALARMPIN, PWM_OUTPUT);
-	pinMode(FORWARDWARNINGPIN, PWM_OUTPUT);
-	pinMode(FORWARDOKPIN, PWM_OUTPUT);
-	pinMode(CENTERPIN, OUTPUT);
-
-	int inputfailcount{ 0 };
 	
-	//create pace setter
-	PaceSetter gpiopacer(settings::comm::kpollrategpio, "GPIO handler");
-	
-	//Loop indefinitely
-	for(;;) {
-		try {
-			//Check for Warnings
-			if ( (processvalues->ldwstatus_ > LDW_RIGHT_DEVIATION_OK) ||
-				 (processvalues->fcwstatus_ > FCW_ACTIVE) ||
-				 (processvalues->gpsstatus_ > GPS_LOCK_LDW_ON) ) {
-				warning = true;
-			} else {
-				warning = alarm = false;
-			}
-			//Check for Alarms
-			if ( (processvalues->ldwstatus_ > LDW_RIGHT_DEVIATION_WARNING) ||
-				 (processvalues->fcwstatus_ > FCW_TAILGATE_WARNING) ||
-				 (processvalues->gpsstatus_ > GPS_SPEED_WARNING) ) {
-				alarm = true;
-			}
+	return true;
+}
 
-				//Shutdown logic on power loss
-				if ( !digitalRead(POWERINPUTPIN) && settings::gpio::kautoshutdown ) {
-					std::cout << "Power loss detected, exiting!" << '\n';
-					break;
-				}
-				
-				//Set buzzer
-				if ( alarm && settings::gen::kenbuzzer ) {
-					digitalWrite(BUZZERPIN, 1);
-				} else if ( !alarm && warning && settings::gen::kenbuzzer ) {
-					buzzercount++;
-					if ( buzzercount % buzzerinterval != 0) continue;
-					if (digitalRead(BUZZERPIN)) {
-					digitalWrite(BUZZERPIN, 1);
-					} else {
-						digitalWrite(BUZZERPIN, 0);
-					}
-				} else {
-					digitalWrite(BUZZERPIN, 0);
-					buzzercount = buzzerinterval - 1;
-				}
-
-				//Set center LED
-				if ( (processvalues->ldwstatus_ >= LDW_INACTIVE) &&
-					 (processvalues->fcwstatus_ >= FCW_ACTIVE) &&
-					 (processvalues->gpsstatus_ > GPS_NO_LOCK) ) {
-						digitalWrite(CENTERPIN, 1);
-				} else if ( (processvalues->ldwstatus_ >= LDW_INACTIVE) &&
-							(processvalues->fcwstatus_ >= FCW_ACTIVE) &&
-							(processvalues->gpsstatus_ == GPS_INACTIVE) ) {
-					blinkercount++;
-					if ( blinkercount % blinkinterval != 0) continue;
-						if (digitalRead(CENTERPIN)) {
-						digitalWrite(CENTERPIN, 1);
-					} else {
-						digitalWrite(CENTERPIN, 0);
-					}
-					} else {
-					digitalWrite(CENTERPIN, 0);
-				}
+void GpioHandler( ProcessValues& processvalues, std::atomic<bool>& exitsignal )
+{
+	try {
+		//Create thread variables
+		bool warning{ false };
+		bool alarm{ false };
+		int buzzerinterval{  settings::comm::kpollrategpio / 2  };	//500ms
+		int blinkinterval{  settings::comm::kpollrategpio / 2  };	//500ms
+		int buzzercount{ 0 };
+		int blinkercount{ 0 };
+		int inputfailcount{ 0 };
 		
-			gpiopacer.SetPace();
-		} catch ( const std::exception& ex ) {
-			std::cout << "GPIO handler thread threw exception: "<< ex.what() << '\n';
-		} catch ( const std::string& str ) {
-			std::cout << "GPIO handler thread threw exception: "<< str << '\n';
-		} catch (...) {
-			std::cout << "GPIO handler thread threw exception of unknown type!" << '\n';
+		//Check for Warnings
+		if ( (processvalues->ldwstatus_ > LDW_RIGHT_DEVIATION_OK) ||
+			 (processvalues->fcwstatus_ > FCW_ACTIVE) ||
+			 (processvalues->gpsstatus_ > GPS_LOCK_LDW_ON) ) {
+			warning = true;
+		} else {
+			warning = alarm = false;
 		}
-    }
-	
-	*exitsignal = true;
-	
-	while( !(*shutdownsignal) ) {
-		//Just wait for video writer thread to exit
+		//Check for Alarms
+		if ( (processvalues->ldwstatus_ > LDW_RIGHT_DEVIATION_WARNING) ||
+			 (processvalues->fcwstatus_ > FCW_TAILGATE_WARNING) ||
+			 (processvalues->gpsstatus_ > GPS_SPEED_WARNING) ) {
+			alarm = true;
+		}
+
+		//Shutdown logic on power loss
+		if ( !digitalRead(POWERINPUTPIN) && settings::gpio::kautoshutdown ) {
+			std::cout << "Power loss detected, exiting!" << '\n';
+			return;
+		}
+
+		//Set buzzer
+		if ( alarm && settings::gen::kenbuzzer ) {
+			digitalWrite(BUZZERPIN, 1);
+		} else if ( !alarm && warning && settings::gen::kenbuzzer ) {
+			buzzercount++;
+			if ( buzzercount % buzzerinterval != 0) continue;
+			if (digitalRead(BUZZERPIN)) {
+			digitalWrite(BUZZERPIN, 1);
+			} else {
+				digitalWrite(BUZZERPIN, 0);
+			}
+		} else {
+			digitalWrite(BUZZERPIN, 0);
+			buzzercount = buzzerinterval - 1;
+		}
+
+		//Set center LED
+		if ( (processvalues->ldwstatus_ >= LDW_INACTIVE) &&
+			 (processvalues->fcwstatus_ >= FCW_ACTIVE) &&
+			 (processvalues->gpsstatus_ > GPS_NO_LOCK) ) {
+				digitalWrite(CENTERPIN, 1);
+		} else if ( (processvalues->ldwstatus_ >= LDW_INACTIVE) &&
+					(processvalues->fcwstatus_ >= FCW_ACTIVE) &&
+					(processvalues->gpsstatus_ == GPS_INACTIVE) ) {
+			blinkercount++;
+			if ( blinkercount % blinkinterval != 0) continue;
+				if (digitalRead(CENTERPIN)) {
+				digitalWrite(CENTERPIN, 1);
+			} else {
+				digitalWrite(CENTERPIN, 0);
+			}
+			} else {
+			digitalWrite(CENTERPIN, 0);
+		}
+	} catch ( const std::exception& ex ) {
+		std::cout << "GPIO handler thread threw exception: "<< ex.what() << '\n';
+	} catch ( const std::string& str ) {
+		std::cout << "GPIO handler thread threw exception: "<< str << '\n';
+	} catch (...) {
+		std::cout << "GPIO handler thread threw exception of unknown type!" << '\n';
 	}
-
-	digitalWrite(POWEROUTPUTPIN, 0);				//Kill power to RPi
-//	system ("sudo shutdown -h now");				//Shutdown RPi
-
-	std::cout << "Exiting GPIO handler thread!" << '\n';
+	
 	return;
 }

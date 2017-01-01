@@ -45,6 +45,7 @@
 
 //Standard libraries
 #include <iostream>
+#include <algorithm>
 #include <fstream>
 #include <string>
 #include <thread>
@@ -101,7 +102,6 @@ int main()
 
 	//Create shared resources
 	std::atomic<bool> exitsignal{ false };
-	std::atomic<bool> shutdownsignal{ false };
     cv::Mat captureimage;
 	std::mutex capturemutex;
 	cv::Mat displayimage;
@@ -141,38 +141,45 @@ int main()
 							   &displayimage,
 							   &displaymutex,
 							   &exitsignal );
-	//Start GPS poling thread
-	std::thread t_gpspolling( GpsPollingThread,
-							  &processvalues,
-							  &exitsignal );
-	//Start LIDAR polling thread
-	std::thread t_lidarpolling( LidarPolingThread,
-								&processvalues,
-								&exitsignal );
-	//Start GPIO thread
-	std::thread t_gpiohandler( GpioHandlerThread,
-							   &processvalues,
-							   &exitsignal,
-							   &shutdownsignal );
-	
+
     //Set pace setter class!
-    PaceSetter mypacesetter( 2, "main" );
+	int pollrate { std::max(std::max(settings::comm::kpollrategps,
+									 settings::comm::kpollratelidar),
+							settings::comm::kpollrategpio) };
+	int gpspollinterval{ pollrate / settings::comm::kpollrategps };
+	int gpiopollinterval{ pollrate / settings::comm::kpollrategpio };
+	int fcwpollinterval{ pollrate / settings::comm::kpollratelidar };
+	PaceSetter mypacesetter( pollrate, "Main" );
+	
+	//Setup polling
+	bool gpspoll{ false };
+	bool gpiopoll{ false };
+	bool fcwpoll{ false };
+	if ( !settings::gps::kenabled ) gpspoll = GpsPollingSetup();
+	if ( !settings::gpio::kenabled ) gpiopoll = GpioHandlerSetup();
+	if ( !settings::fcw::kenabled ) fcwpoll = LidarPollingSetup();
     
-	while( !exitsignal ){
-		//Should check all threads still running
+	int i{ 0 };
+	do {
+		i++;
+		if ( (gpspoll) &&
+			 (i % gpspollinterval == 0) ) GpsPolling( processvalues );
+		if ( (gpiopoll) &&
+			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
+														exitsignal );
+		if ( (fcwpoll) &&
+			 (i % fcwpollinterval == 0) ) LidarPolling( processvalues );
+
+		//Set Pace
 		mypacesetter.SetPace();
-	}
+	} while( !exitsignal );
 
     //Handle all the threads
 	t_videowriter.join();
 	t_imageprocessor.join();
-	t_lidarpolling.join();
-	t_gpspolling.join();
 	t_imeageeditor.join();
 	t_imagecapture.join();
 	t_displayupdate.join();
-	shutdownsignal = true;
-	t_gpiohandler.join();
 	std::cout.rdbuf(coutbuf);
 	std::cout << "Program exited gracefully!"  << '\n';
 

@@ -22,11 +22,7 @@
 #include "process_values_class.h"
 
 /*****************************************************************************************/
-void GpsPollingThread( ProcessValues *processvalues,
-					   std::atomic<bool> *exitsignal);
-
-double Average ( double value,
-				 std::deque<double> &values,
-			     int tokeep );
+bool GpsPollingSetup();
+void GpsPolling( ProcessValues& processvalues );
 
 #endif // GPS_POLLING_H_INCLUDED

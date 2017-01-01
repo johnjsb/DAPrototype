@@ -13,7 +13,7 @@
 
 //Standard libraries
 #include <iostream>
-#include <algorithm> 
+#include <algorithm>
 #include <mutex>
 #include <atomic>
 #include <exception>

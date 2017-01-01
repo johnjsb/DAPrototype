@@ -22,7 +22,7 @@
 #include "process_values_class.h"
 
 /*****************************************************************************************/
-void LidarPolingThread( ProcessValues *processvalues,
-						std::atomic<bool> *exitsignal );
+bool LidarPollingSetup();
+void LidarPolling( ProcessValues& processvalues );
 
 #endif // LIDAR_POLLING_H_INCLUDED
