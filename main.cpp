@@ -69,6 +69,7 @@
 
 //3rd party libraries
 #include "opencv2/opencv.hpp"
+#include <libgpsmm.h>
 
 void PrintHeader ()
 {
@@ -152,12 +153,18 @@ int main()
 	PaceSetter mypacesetter( pollrate, "Main" );
 	
 	//Setup polling
-	bool gpspoll{ false };
+
+	//GPIO
 	bool gpiopoll{ false };
-	bool fcwpoll{ false };
-	int dacmodule{ -1 };
-	if ( !settings::gps::kenabled ) gpspoll = GpsPollingSetup();
 	if ( !settings::gpio::kenabled ) gpiopoll = GpioHandlerSetup();
+	//GPS
+	bool gpspoll{ false };
+	gpsmm *gps_rec{ NULL };
+	if ( !settings::gps::kenabled ) gps_rec = GpsPollingSetup();
+	if ( (gps_rec != NULL) &&
+		 (gps_rec->stream(WATCH_ENABLE|WATCH_JSON) != NULL) ) gpspoll = true;
+	//FCW
+	bool fcwpoll{ false };
 	if ( !settings::fcw::kenabled )	dacmodule = LidarPollingSetup();
 	if ( dacmodule >= 0 )	fcwpoll = true;
     
@@ -165,7 +172,8 @@ int main()
 	do {
 		i++;
 		if ( (gpspoll) &&
-			 (i % gpspollinterval == 0) ) GpsPolling( processvalues );
+			 (i % gpspollinterval == 0) ) GpsPolling( processvalues,
+													  gps_rec );
 		if ( (gpiopoll) &&
 			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
 														exitsignal );
