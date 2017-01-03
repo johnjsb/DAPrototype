@@ -22,7 +22,7 @@
 #include "process_values_class.h"
 
 /*****************************************************************************************/
-bool LidarPollingSetup();
-void LidarPolling( ProcessValues& processvalues );
+int LidarPollingSetup();
+void LidarPolling( ProcessValues& processvalues, int dacmodule );
 
 #endif // LIDAR_POLLING_H_INCLUDED

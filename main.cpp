@@ -155,9 +155,11 @@ int main()
 	bool gpspoll{ false };
 	bool gpiopoll{ false };
 	bool fcwpoll{ false };
+	int dacmodule{ -1 };
 	if ( !settings::gps::kenabled ) gpspoll = GpsPollingSetup();
 	if ( !settings::gpio::kenabled ) gpiopoll = GpioHandlerSetup();
-	if ( !settings::fcw::kenabled ) fcwpoll = LidarPollingSetup();
+	if ( !settings::fcw::kenabled )	dacmodule = LidarPollingSetup();
+	if ( dacmodule >= 0 )	fcwpoll = true;
     
 	int i{ 0 };
 	do {
@@ -168,7 +170,8 @@ int main()
 			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
 														exitsignal );
 		if ( (fcwpoll) &&
-			 (i % fcwpollinterval == 0) ) LidarPolling( processvalues );
+			 (i % fcwpollinterval == 0) ) LidarPolling( processvalues,
+														dacmodule );
 
 		//Set Pace
 		mypacesetter.SetPace();

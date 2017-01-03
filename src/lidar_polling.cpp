@@ -37,31 +37,26 @@ extern "C" {
 }
 
 /*****************************************************************************************/
-bool LidarPollingSetup()
+int LidarPollingSetup()
 {
 	try {
 		//Setup I2C
-		int dacModule { wiringPiI2CSetup(0x62) };
-		if (dacModule < 0)
-		{
-			std::cout << "I2C Setup Error" << '\n';
-			return false;
-		}
+		int dacmodule { wiringPiI2CSetup(0x62) };
+		if ( dacmodule < 0 ) std::cout << "I2C Setup Error" << '\n';
+		return dacmodule;
 	} catch ( const std::exception& ex ) {
 		std::cout << "Lidar polling setup threw exception: "<< ex.what() << '\n';
-		return false;
+		return -1;
 	} catch ( const std::string& str ) {
 		std::cout << "Lidar polling setup threw exception: "<< str << '\n';
-		return false;
+		return -2;
 	} catch (...) {
 		std::cout << "Lidar polling setup threw exception of unknown type!" << '\n';
-		return false;
+		return -3;
 	}
-	
-	return true;
 }
 
-void LidarPolling( ProcessValues& processvalue )
+void LidarPolling( ProcessValues& processvalues, int dacmodule )
 {
 	try {
 		//Create thread variables
@@ -75,14 +70,14 @@ void LidarPolling( ProcessValues& processvalue )
 		//Read FCW distance
 		int fcwresult{ -1 };
 		bool readerror{ true };
-		fcwresult = lidar_read(dacModule);
+		fcwresult = lidar_read(dacmodule);
 		if ( fcwresult == USHRT_MAX ) {
 			readerror = true;
 		} else {
 			if ( (FEETPERCENTIMETER * fcwresult) >
 				 settings::fcw::kdistanceoffset ) {
 				fcwtracker.Update( FEETPERCENTIMETER * fcwresult,
-								   processvalues->gpsspeed_ );
+								   processvalues.gpsspeed_ );
 				timeoutcount = 0;
 				readerror = false;
 			} else {
@@ -93,7 +88,7 @@ void LidarPolling( ProcessValues& processvalue )
 			}
 
 			//Check if vehicle is moving
-			if ( processvalues->gpsspeed_ > 1.0 ) {
+			if ( processvalues.gpsspeed_ > 1.0 ) {
 				vehiclemoving = true;
 
 			} else {
@@ -102,45 +97,45 @@ void LidarPolling( ProcessValues& processvalue )
 		}
 
 		//Update everything
-		processvalues->forwarddistance_ = fcwtracker.followingdistance_;
+		processvalues.forwarddistance_ = fcwtracker.followingdistance_;
 		//if ( fcwtracker.followingtime_ < fcwtracker.timetocollision_ ) {
-			processvalues->timetocollision_ = fcwtracker.followingtime_;
+			processvalues.timetocollision_ = fcwtracker.followingtime_;
 		//} else {
-		//	processvalues->timetocollision_ = fcwtracker.timetocollision_;			
+		//	processvalues.timetocollision_ = fcwtracker.timetocollision_;			
 		//}
 
 		//FCW Status
 		if ( readerror ) {
-			processvalues->fcwstatus_ = FCW_ERROR;
+			processvalues.fcwstatus_ = FCW_ERROR;
 		/*
 		} else if ( (1000 * fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionwarning ) {
-			processvalues->fcwstatus_ = FCW_WARNING;
+			processvalues.fcwstatus_ = FCW_WARNING;
 		*/
 		} else if ( vehiclemoving &&
 					((1000 * fcwtracker.followingtime_) <
 					settings::fcw::kmsfollowdistwarning) &&
 					((1000 * fcwtracker.followingtime_) >
 					settings::fcw::kmsfollowdistalarm) ) {
-			processvalues->fcwstatus_ = FCW_TAILGATE_WARNING;
+			processvalues.fcwstatus_ = FCW_TAILGATE_WARNING;
 		/*
 		} else if ( (1000 * fcwtracker.timetocollision_) <
 					settings::fcw::kmscollisionalarm ) {
-			processvalues->fcwstatus_ = FCW_ALARM;
+			processvalues.fcwstatus_ = FCW_ALARM;
 		*/
 		} else if ( vehiclemoving &&
 					(1000 * fcwtracker.followingtime_) <
 					settings::fcw::kmsfollowdistalarm ) {
-			processvalues->fcwstatus_ = FCW_TAILGATE_ALARM;
+			processvalues.fcwstatus_ = FCW_TAILGATE_ALARM;
 		} else {
-			processvalues->fcwstatus_ = FCW_ACTIVE;
+			processvalues.fcwstatus_ = FCW_ACTIVE;
 		}
 /*
 	//Check for driver pullahead
 	if ( !vehiclemoving &&
 		 (fcwtracker.acceleration_ > 0.1) &&
 		 (pullaheadcount > pullaheaddelay) ) {
-		processvalues->fcwstatus_ = FCW_PULL_AHEAD_WARNING;
+		processvalues.fcwstatus_ = FCW_PULL_AHEAD_WARNING;
 	} else if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) ) {
 		pullaheadcount++;
 	} else {
