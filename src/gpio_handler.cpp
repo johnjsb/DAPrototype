@@ -88,17 +88,17 @@ void GpioHandler( ProcessValues& processvalues, std::atomic<bool>& exitsignal )
 		int inputfailcount{ 0 };
 		
 		//Check for Warnings
-		if ( (processvalues->ldwstatus_ > LDW_RIGHT_DEVIATION_OK) ||
-			 (processvalues->fcwstatus_ > FCW_ACTIVE) ||
-			 (processvalues->gpsstatus_ > GPS_LOCK_LDW_ON) ) {
+		if ( (processvalues.ldwstatus_ > LDW_RIGHT_DEVIATION_OK) ||
+			 (processvalues.fcwstatus_ > FCW_ACTIVE) ||
+			 (processvalues.gpsstatus_ > GPS_LOCK_LDW_ON) ) {
 			warning = true;
 		} else {
 			warning = alarm = false;
 		}
 		//Check for Alarms
-		if ( (processvalues->ldwstatus_ > LDW_RIGHT_DEVIATION_WARNING) ||
-			 (processvalues->fcwstatus_ > FCW_TAILGATE_WARNING) ||
-			 (processvalues->gpsstatus_ > GPS_SPEED_WARNING) ) {
+		if ( (processvalues.ldwstatus_ > LDW_RIGHT_DEVIATION_WARNING) ||
+			 (processvalues.fcwstatus_ > FCW_TAILGATE_WARNING) ||
+			 (processvalues.gpsstatus_ > GPS_SPEED_WARNING) ) {
 			alarm = true;
 		}
 
@@ -113,9 +113,10 @@ void GpioHandler( ProcessValues& processvalues, std::atomic<bool>& exitsignal )
 			digitalWrite(BUZZERPIN, 1);
 		} else if ( !alarm && warning && settings::gen::kenbuzzer ) {
 			buzzercount++;
-			if ( buzzercount % buzzerinterval != 0) continue;
-			if (digitalRead(BUZZERPIN)) {
-			digitalWrite(BUZZERPIN, 1);
+			if ( buzzercount % buzzerinterval != 0) {
+				//Do nothing
+			} else if (digitalRead(BUZZERPIN)) {
+				digitalWrite(BUZZERPIN, 1);
 			} else {
 				digitalWrite(BUZZERPIN, 0);
 			}
@@ -125,16 +126,17 @@ void GpioHandler( ProcessValues& processvalues, std::atomic<bool>& exitsignal )
 		}
 
 		//Set center LED
-		if ( (processvalues->ldwstatus_ >= LDW_INACTIVE) &&
-			 (processvalues->fcwstatus_ >= FCW_ACTIVE) &&
-			 (processvalues->gpsstatus_ > GPS_NO_LOCK) ) {
+		if ( (processvalues.ldwstatus_ >= LDW_INACTIVE) &&
+			 (processvalues.fcwstatus_ >= FCW_ACTIVE) &&
+			 (processvalues.gpsstatus_ > GPS_NO_LOCK) ) {
 				digitalWrite(CENTERPIN, 1);
-		} else if ( (processvalues->ldwstatus_ >= LDW_INACTIVE) &&
-					(processvalues->fcwstatus_ >= FCW_ACTIVE) &&
-					(processvalues->gpsstatus_ == GPS_INACTIVE) ) {
+		} else if ( (processvalues.ldwstatus_ >= LDW_INACTIVE) &&
+					(processvalues.fcwstatus_ >= FCW_ACTIVE) &&
+					(processvalues.gpsstatus_ == GPS_INACTIVE) ) {
 			blinkercount++;
-			if ( blinkercount % blinkinterval != 0) continue;
-				if (digitalRead(CENTERPIN)) {
+			if ( blinkercount % blinkinterval != 0) {
+				//Do nothing
+			} else if (digitalRead(CENTERPIN)) {
 				digitalWrite(CENTERPIN, 1);
 			} else {
 				digitalWrite(CENTERPIN, 0);

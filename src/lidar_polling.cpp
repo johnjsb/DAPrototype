@@ -45,7 +45,7 @@ bool LidarPollingSetup()
 		if (dacModule < 0)
 		{
 			std::cout << "I2C Setup Error" << '\n';
-			return;
+			return false;
 		}
 	} catch ( const std::exception& ex ) {
 		std::cout << "Lidar polling setup threw exception: "<< ex.what() << '\n';
