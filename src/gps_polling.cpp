@@ -34,21 +34,22 @@
 #define MPSTOMPHCONVERSION 2.237
 
 /*****************************************************************************************/
-gpsmm *GpsPollingSetup()
+gpsmm GpsPollingSetup()
 {
-	gpsmm* gps_rec{ NULL };
+	gpsmm gpsrecv;
+	
 	try {
 		//Create thread variables
-		gps_rec = &gpsmm("localhost", DEFAULT_GPSD_PORT);
+		gpsrecv("localhost", DEFAULT_GPSD_PORT);
 
 		//Check that gpsd service is running
-		if (gps_rec.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
+		if (gpsrecv.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
 			std::cout << "No GPSD running. exiting GPS thread." << '\n';
-			return gps_rec;
+			return gpsrecv;
 		}
 
 		//Get first reading to set time
-		struct gps_data_t* gpsdata{ gps_rec.read() };
+		struct gps_data_t* gpsdata{ gpsrecv.read() };
 
 		//Set baud rate 115200
 		if (gps_send(gpsdata,"$PMTK251,115200*1F\r\n") >= 0) {
@@ -86,21 +87,21 @@ gpsmm *GpsPollingSetup()
 		std::cout << "GPS polling setup threw exception of unknown type!" << '\n';
 	}
 	
-	return gps_rec;
+	return gpsrecv;
 }
 
-void GpsPolling( ProcessValues& processvalues, gpsmm* gps_rec )
+void GpsPolling( ProcessValues& processvalues, gpsmm* gpsrecv )
 {
 	static bool timeset{ false };
 	try {
 		//Get data
-		struct gps_data_t* gpsdata{ gps_rec->read() };
+		struct gps_data_t* gpsdata{ gpsrecv->read() };
 
 		//Set time
 		if ( !timeset ) timeset = SetTime(gpsdata);
 		
 		//Evaluate
-		if (!gps_rec->waiting(2000000)) {
+		if (!gpsrecv->waiting(2000000)) {
 			processvalues.gpsstatus_ = GPS_ERROR;
 			std::cout << "GPS timeout." << '\n';
 		} else if ((gpsdata == NULL) {

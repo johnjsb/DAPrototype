@@ -22,7 +22,7 @@
 #include "process_values_class.h"
 
 /*****************************************************************************************/
-gpsmm *GpsPollingSetup();
+gpsmm GpsPollingSetup();
 void GpsPolling( ProcessValues& processvalues, gpsmm* gps_rec );
 bool SetTime( struct gps_data_t* data );
 

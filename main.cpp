@@ -156,16 +156,20 @@ int main()
 
 	//GPIO
 	bool gpiopoll{ false };
-	if ( !settings::gpio::kenabled ) gpiopoll = GpioHandlerSetup();
+	if ( settings::gpio::kenabled ) gpiopoll = GpioHandlerSetup();
 	//GPS
 	bool gpspoll{ false };
-	gpsmm *gps_rec{ NULL };
-	if ( !settings::gps::kenabled ) gps_rec = GpsPollingSetup();
-	if ( (gps_rec != NULL) &&
-		 (gps_rec->stream(WATCH_ENABLE|WATCH_JSON) != NULL) ) gpspoll = true;
+	gpsmm gpsrecv;
+	if ( settings::gps::kenabled ) {
+		gpsrecv = GpsPollingSetup();
+		if ( gpsrecv.stream(WATCH_ENABLE|WATCH_JSON) != NULL ) {
+			gpspoll = true;
+		}
+	}
+	
 	//FCW
 	bool fcwpoll{ false };
-	if ( !settings::fcw::kenabled )	dacmodule = LidarPollingSetup();
+	if ( settings::fcw::kenabled )	dacmodule = LidarPollingSetup();
 	if ( dacmodule >= 0 )	fcwpoll = true;
     
 	int i{ 0 };
@@ -173,7 +177,7 @@ int main()
 		i++;
 		if ( (gpspoll) &&
 			 (i % gpspollinterval == 0) ) GpsPolling( processvalues,
-													  gps_rec );
+													  &gpsrecv );
 		if ( (gpiopoll) &&
 			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
 														exitsignal );
