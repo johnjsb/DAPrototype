@@ -56,6 +56,7 @@ namespace settings{
         extern const int kpollrategpio;
     }
     namespace gps{
+        extern const bool kenabled;
         extern const int ksamplestoaverage;
     }
     namespace ldw{
