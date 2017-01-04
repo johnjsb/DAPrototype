@@ -158,7 +158,7 @@ int main()
 	bool gpiopoll{ false };
 	if ( settings::gpio::kenabled ) gpiopoll = GpioHandlerSetup();
 	//GPS
-	const gpsmm* gpsrecv;
+	const gpsmm* gpsrecv{ NULL };
 	bool gpspoll{ false };
 	if ( settings::gps::kenabled ) {
 		try {
@@ -177,12 +177,12 @@ int main()
 			gpspoll = false;
 		}
 	} else {
-		gpsrecv{ NULL };
+		gpsrecv = NULL;
 	}
 	//FCW
 	bool fcwpoll{ false };
-	if ( settings::fcw::kenabled )	dacmodule = LidarPollingSetup();
-	if ( dacmodule >= 0 )	fcwpoll = true;
+	if ( settings::fcw::kenabled ) dacmodule = LidarPollingSetup();
+	if ( dacmodule >= 0 ) fcwpoll = true;
     
 	//Loop
 	int i{ 0 };

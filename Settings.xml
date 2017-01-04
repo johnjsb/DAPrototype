@@ -33,6 +33,7 @@
 		<pollRateGpio>5</pollRateGpio>
 	</COMM>
 	<GPS>
+		<enabled>1</enabled>
 		<samplesToAverage>3</samplesToAverage>
 	</GPS>
 	<LDW>
