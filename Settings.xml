@@ -41,9 +41,9 @@
 		<samplesToKeep>5</samplesToKeep>
 		<samplesToAverage>3</samplesToAverage>
 		<!Warning limit as % of screen width>
-		<perOffsetWarning>20</perOffsetWarning>
+		<perOffsetWarning>17</perOffsetWarning>
 		<!Alarm limit as % of screen width>
-		<perOffsetAlarm>35</perOffsetAlarm>
+		<perOffsetAlarm>25</perOffsetAlarm>
 		<msUntilWarning>500</msUntilWarning>
 		<msUntilAlarm>500</msUntilAlarm>
 		<updateFPS>10</updateFPS>
@@ -52,10 +52,10 @@
 		<enabled>1</enabled>
 		<samplesToAverage>3</samplesToAverage>
 		<distanceOffset>5.0</distanceOffset>
-		<msFollowDistWarning>2500</msFollowDistWarning>
-		<msFollowDistAlarm>2000</msFollowDistAlarm>
-		<msCollisionWarning>300</msCollisionWarning>
-		<msCollisionAlarm>300</msCollisionAlarm>
+		<msFollowDistWarning>1000</msFollowDistWarning>
+		<msFollowDistAlarm>800</msFollowDistAlarm>
+		<msCollisionWarning>3000</msCollisionWarning>
+		<msCollisionAlarm>2500</msCollisionAlarm>
 	</FCW>
 	<GPIO>
 		<enabled>1</enabled>
