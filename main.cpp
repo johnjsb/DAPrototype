@@ -158,12 +158,23 @@ int main()
 	bool gpiopoll{ false };
 	if ( settings::gpio::kenabled ) gpiopoll = GpioHandlerSetup();
 	//GPS
+	const gpsmm* gpsrecv;
 	bool gpspoll{ false };
-	gpsmm gpsrecv;
 	if ( settings::gps::kenabled ) {
-		gpsrecv = GpsPollingSetup();
-		if ( gpsrecv.stream(WATCH_ENABLE|WATCH_JSON) != NULL ) {
-			gpspoll = true;
+		try {
+			gpsrecv = new GpsPollingSetup();
+			if ( gpsrecv->stream(WATCH_ENABLE|WATCH_JSON) != NULL ) {
+				gpspoll = true;
+			}
+		} catch ( const std::exception& ex ) {
+			std::cout << "GPS polling setup threw exception: "<< ex.what() << '\n';
+			gpspoll = false;
+		} catch ( const std::string& str ) {
+			std::cout << "GPS polling setup threw exception: "<< str << '\n';
+			gpspoll = false;
+		} catch (...) {
+			std::cout << "GPS polling setup threw exception of unknown type!" << '\n';
+			gpspoll = false;
 		}
 	}
 	
@@ -177,7 +188,7 @@ int main()
 		i++;
 		if ( (gpspoll) &&
 			 (i % gpspollinterval == 0) ) GpsPolling( processvalues,
-													  &gpsrecv );
+													  gpsrecv );
 		if ( (gpiopoll) &&
 			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
 														exitsignal );
