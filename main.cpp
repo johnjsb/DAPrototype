@@ -179,12 +179,12 @@ int main()
 	} else {
 		gpsrecv{ NULL };
 	}
-	
 	//FCW
 	bool fcwpoll{ false };
 	if ( settings::fcw::kenabled )	dacmodule = LidarPollingSetup();
 	if ( dacmodule >= 0 )	fcwpoll = true;
     
+	//Loop
 	int i{ 0 };
 	do {
 		i++;
@@ -202,6 +202,7 @@ int main()
 		mypacesetter.SetPace();
 	} while( !exitsignal );
 	
+	//Cleanup variables
 	delete gpsrecv;
 
     //Handle all the threads
