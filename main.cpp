@@ -176,6 +176,8 @@ int main()
 			std::cout << "GPS polling setup threw exception of unknown type!" << '\n';
 			gpspoll = false;
 		}
+	} else {
+		gpsrecv{ NULL };
 	}
 	
 	//FCW
