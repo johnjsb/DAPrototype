@@ -199,6 +199,8 @@ int main()
 		//Set Pace
 		mypacesetter.SetPace();
 	} while( !exitsignal );
+	
+	delete gpsrecv;
 
     //Handle all the threads
 	t_videowriter.join();
