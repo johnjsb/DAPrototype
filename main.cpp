@@ -158,14 +158,11 @@ int main()
 	bool gpiopoll{ false };
 	if ( settings::gpio::kenabled ) gpiopoll = GpioHandlerSetup();
 	//GPS
-	const gpsmm* gpsrecv{ NULL };
+	gpsmm* gpsrecv{ NULL };
 	bool gpspoll{ false };
 	if ( settings::gps::kenabled ) {
 		try {
-			gpsrecv = new GpsPollingSetup();
-			if ( gpsrecv->stream(WATCH_ENABLE|WATCH_JSON) != NULL ) {
-				gpspoll = true;
-			}
+			gpspoll = GpsPollingSetup( gpsrecv );
 		} catch ( const std::exception& ex ) {
 			std::cout << "GPS polling setup threw exception: "<< ex.what() << '\n';
 			gpspoll = false;
@@ -181,6 +178,7 @@ int main()
 	}
 	//FCW
 	bool fcwpoll{ false };
+	int dacmodule{ -1 };
 	if ( settings::fcw::kenabled ) dacmodule = LidarPollingSetup();
 	if ( dacmodule >= 0 ) fcwpoll = true;
     

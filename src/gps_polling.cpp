@@ -33,19 +33,16 @@
 #define MPSTOMPHCONVERSION 2.237
 
 /*****************************************************************************************/
-gpsmm GpsPollingSetup()
+bool GpsPollingSetup( gpsmm* gpsrecv )
 {
-	//Create thread variables
-	gpsmm gpsrecv("localhost", DEFAULT_GPSD_PORT);
-
 	//Check that gpsd service is running
-	if ( gpsrecv.stream(WATCH_ENABLE|WATCH_JSON) == NULL ) {
+	if ( gpsrecv->stream(WATCH_ENABLE|WATCH_JSON) == NULL ) {
 		std::cout << "No GPSD running. exiting GPS thread." << '\n';
-		return gpsrecv;
+		return false;
 	}
 
 	//Get first reading to set time
-	struct gps_data_t* gpsdata{ gpsrecv.read() };
+	struct gps_data_t* gpsdata{ gpsrecv->read() };
 
 	//Set baud rate 115200
 	if ( gps_send(gpsdata,"$PMTK251,115200*1F\r\n") >= 0 ) {
@@ -75,7 +72,7 @@ gpsmm GpsPollingSetup()
 		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
 	
-	return gpsrecv;
+	return true;
 }
 
 /*****************************************************************************************/
