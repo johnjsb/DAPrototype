@@ -44,6 +44,7 @@ bool GpsPollingSetup( gpsmm* gpsrecv )
 	//Get first reading to set time
 	struct gps_data_t* gpsdata{ gpsrecv->read() };
 
+/*
 	//Set baud rate 115200
 	if ( gps_send(gpsdata,"$PMTK251,115200*1F\r\n") >= 0 ) {
 		std::cout << "GPS baud rate set to 115200" << '\n';
@@ -71,7 +72,7 @@ bool GpsPollingSetup( gpsmm* gpsrecv )
 	} else {
 		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
-	
+*/
 	return true;
 }
 
