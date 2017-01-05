@@ -20,6 +20,7 @@
 #include <sys/time.h>
 #include <exception>
 #include <string>
+#include <thread>
 
 //3rd party libraries
 #include <libgpsmm.h>
@@ -31,47 +32,56 @@
 
 //Preprocessor
 #define MPSTOMPHCONVERSION 2.237
+#define RETRIES 3
 
 /*****************************************************************************************/
 bool GpsPollingSetup( gpsmm* gpsrecv )
 {
 	//Check that gpsd service is running
 	if ( gpsrecv->stream(WATCH_ENABLE|WATCH_JSON) == NULL ) {
-		std::cout << "No GPSD running. exiting GPS thread." << '\n';
+		std::cout << "No GPSD running. GPS setup failed." << '\n';
 		return false;
 	}
 
 	//Get first reading to set time
 	struct gps_data_t* gpsdata{ gpsrecv->read() };
-	
-	if ( gpsdata ) {
-		//Set baud rate 115200
-		if ( gps_send(gpsdata,"$PMTK251,115200*1F\r\n") >= 0 ) {
-			std::cout << "GPS baud rate set to 115200" << '\n';
-		} else {
-			std::cout << "GPS baud rate setting failed!" << '\n';
+	int tries{ 0 };
+	while ( !gpsdata ) {
+		gpsdata = gpsrecv->read();
+		std::this_thread::sleep_for(std::chrono:seconds(2));
+		if ( trires > RETRIES ) {
+			std::cout << "Failed to get valid gps read in " << RETRIES << attempts << '\n';
+			return false;
 		}
+		tries++;
+	}
 
-		//Update every 100 ms
-		if ( gps_send(gpsdata,"$PMTK220,100*2F\r\n") >= 0 ) {
-			std::cout << "GPS update rate set to 10hz" << '\n';
-		} else {
-			std::cout << "GPS update rate setting failed!" << '\n';
-		}
+	//Set baud rate 115200
+	if ( gps_send(gpsdata,"$PMTK251,115200*1F\r\n") >= 0 ) {
+		std::cout << "GPS baud rate set to 115200" << '\n';
+	} else {
+		std::cout << "GPS baud rate setting failed!" << '\n';
+	}
 
-		//Measure every 200 ms
-		if ( gps_send(gpsdata,"$PMTK300,200,0,0,0,0*2F\r\n") >= 0 ) {
-			std::cout << "GPS measure rate set to 5hz" << '\n';
-		} else {
-			std::cout << "GPS measure rate setting failed!" << '\n';
-		}
+	//Update every 100 ms
+	if ( gps_send(gpsdata,"$PMTK220,100*2F\r\n") >= 0 ) {
+		std::cout << "GPS update rate set to 10hz" << '\n';
+	} else {
+		std::cout << "GPS update rate setting failed!" << '\n';
+	}
 
-		//Set speed threshold @ 2.0 m/s
-		if ( gps_send(gpsdata,"$PMTK397,2.0*3F\r\n") >= 0 ) {
-			std::cout << "GPS speed threshold set to 2.0 m/s" << '\n';
-		} else {
-			std::cout << "GPS speed threshold setting failed!" << '\n';
-		}
+	//Measure every 200 ms
+	if ( gps_send(gpsdata,"$PMTK300,200,0,0,0,0*2F\r\n") >= 0 ) {
+		std::cout << "GPS measure rate set to 5hz" << '\n';
+	} else {
+		std::cout << "GPS measure rate setting failed!" << '\n';
+	}
+
+	//Set speed threshold @ 2.0 m/s
+	if ( gps_send(gpsdata,"$PMTK397,2.0*3F\r\n") >= 0 ) {
+		std::cout << "GPS speed threshold set to 2.0 m/s" << '\n';
+	} else {
+		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
 
 	return true;
