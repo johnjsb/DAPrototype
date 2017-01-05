@@ -162,6 +162,7 @@ int main()
 	bool gpspoll{ false };
 	if ( settings::gps::kenabled ) {
 		try {
+			gpsrecv = new gpsmm("localhost", DEFAULT_GPSD_PORT);
 			gpspoll = GpsPollingSetup( gpsrecv );
 		} catch ( const std::exception& ex ) {
 			std::cout << "GPS polling setup threw exception: "<< ex.what() << '\n';

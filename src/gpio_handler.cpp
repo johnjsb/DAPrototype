@@ -44,7 +44,7 @@
 #define CENTERPIN 37
 
 /*****************************************************************************************/
-bool GpioHandlerSetup( ProcessValues& processvalues )
+bool GpioHandlerSetup()
 {
 	try {
 		//Setup GPIO pins
