@@ -324,6 +324,9 @@ void FindPolygon( Polygon& polygon,
 		maxy = maxyactual;
 	}
 	
+	//Handle polygon intersection
+	if ( polygon[0].x > polygon[1].x ) return;
+	
 	//Construct polygon
 	if ( useoptimaly ) {
 		polygon[0] = bottomleftoptimal;
