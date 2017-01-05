@@ -61,6 +61,8 @@ bool GpioHandlerSetup()
 		pinMode(FORWARDWARNINGPIN, PWM_OUTPUT);
 		pinMode(FORWARDOKPIN, PWM_OUTPUT);
 		pinMode(CENTERPIN, OUTPUT);
+		pinMode(POWEROUTPUTPIN, OUTPUT);
+		digitalWrite(POWEROUTPUTPIN, 1);
 	} catch ( const std::exception& ex ) {
 		std::cout << "GPIO handler setup threw exception: "<< ex.what() << '\n';
 		return false;
@@ -103,8 +105,12 @@ void GpioHandler( ProcessValues& processvalues, std::atomic<bool>& exitsignal )
 		}
 
 		//Shutdown logic on power loss
-		if ( !digitalRead(POWERINPUTPIN) && settings::gpio::kautoshutdown ) {
+		if ( !digitalRead(POWERINPUTPIN) ) {
+			exitsignal = true;
 			std::cout << "Power loss detected, exiting!" << '\n';
+			if ( settings::gpio::kautoshutdown ) {
+				digitalWrite(POWEROUTPUTPIN, 0);
+			}
 			return;
 		}
 
