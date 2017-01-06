@@ -46,33 +46,22 @@
 /*****************************************************************************************/
 bool GpioHandlerSetup()
 {
-	try {
-		//Setup GPIO pins
-		wiringPiSetupGpio();
-		pinMode(POWERINPUTPIN, INPUT); 
-		pinMode(BUZZERPIN, OUTPUT);
-		pinMode(LEFTALARMPIN, PWM_OUTPUT);
-		pinMode(LEFTWARNINGPIN, PWM_OUTPUT);
-		pinMode(LEFTOKPIN, PWM_OUTPUT);
-		pinMode(RIGHTALARMPIN, PWM_OUTPUT);
-		pinMode(RIGHTWARNINGPIN, PWM_OUTPUT);
-		pinMode(RIGHTOKPIN, PWM_OUTPUT);
-		pinMode(FORWARDALARMPIN, PWM_OUTPUT);
-		pinMode(FORWARDWARNINGPIN, PWM_OUTPUT);
-		pinMode(FORWARDOKPIN, PWM_OUTPUT);
-		pinMode(CENTERPIN, OUTPUT);
-		pinMode(POWEROUTPUTPIN, OUTPUT);
-		digitalWrite(POWEROUTPUTPIN, 1);
-	} catch ( const std::exception& ex ) {
-		std::cout << "GPIO handler setup threw exception: "<< ex.what() << '\n';
-		return false;
-	} catch ( const std::string& str ) {
-		std::cout << "GPIO handler setup threw exception: "<< str << '\n';
-		return false;
-	} catch (...) {
-		std::cout << "GPIO handler setup threw exception of unknown type!" << '\n';
-		return false;
-	}
+	//Setup GPIO pins
+	wiringPiSetupGpio();
+	pinMode(POWERINPUTPIN, INPUT); 
+	pinMode(BUZZERPIN, OUTPUT);
+	pinMode(LEFTALARMPIN, PWM_OUTPUT);
+	pinMode(LEFTWARNINGPIN, PWM_OUTPUT);
+	pinMode(LEFTOKPIN, PWM_OUTPUT);
+	pinMode(RIGHTALARMPIN, PWM_OUTPUT);
+	pinMode(RIGHTWARNINGPIN, PWM_OUTPUT);
+	pinMode(RIGHTOKPIN, PWM_OUTPUT);
+	pinMode(FORWARDALARMPIN, PWM_OUTPUT);
+	pinMode(FORWARDWARNINGPIN, PWM_OUTPUT);
+	pinMode(FORWARDOKPIN, PWM_OUTPUT);
+	pinMode(CENTERPIN, OUTPUT);
+	pinMode(POWEROUTPUTPIN, OUTPUT);
+	digitalWrite(POWEROUTPUTPIN, 1);
 	
 	return true;
 }

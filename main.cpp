@@ -157,7 +157,20 @@ int main()
 
 	//GPIO
 	bool gpiopoll{ false };
-	if ( settings::gpio::kenabled ) gpiopoll = GpioHandlerSetup();
+	if ( settings::gpio::kenabled ) {
+		try {
+			gpiopoll = GpioHandlerSetup();
+		} catch ( const std::exception& ex ) {
+			std::cout << "GPIO handler setup threw exception: "<< ex.what() << '\n';
+			gpiopoll = false;
+		} catch ( const std::string& str ) {
+			std::cout << "GPIO handler setup threw exception: "<< str << '\n';
+			gpiopoll = false;
+		} catch (...) {
+			std::cout << "GPIO handler setup threw exception of unknown type!" << '\n';
+			gpiopoll = false;
+		}
+	}
 	//GPS
 	gpsmm* gpsrecv{ NULL };
 	bool gpspoll{ false };
@@ -222,7 +235,9 @@ int main()
 	
 	//Cleanup variables
 	delete gpsrecv;
+	gpsrecv = NULL:
 	delete fcwtracker;
+	fcwtracker = NULL:
 
     //Handle all the threads
 	t_videowriter.join();
