@@ -26,7 +26,7 @@
 int LidarPollingSetup();
 void LidarPolling( ProcessValues& processvalues,
 				   int dacmodule,
-				   int pullaheadcount,
+				   int& pullaheadcount,
 				   FcwTracker* fcwtracker );
 
 #endif // LIDAR_POLLING_H_INCLUDED

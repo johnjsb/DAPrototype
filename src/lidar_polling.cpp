@@ -58,7 +58,7 @@ int LidarPollingSetup()
 
 void LidarPolling( ProcessValues& processvalues,
 				   int dacmodule,
-				   int pullaheadcount,
+				   int& pullaheadcount,
 				   FcwTracker* fcwtracker )
 {
 	try {
