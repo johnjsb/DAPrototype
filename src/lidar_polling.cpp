@@ -63,7 +63,7 @@ void LidarPolling( ProcessValues& processvalues, int dacmodule )
 		bool vehiclemoving{ false };
 		int pullaheaddelay{ settings::comm::kpollratelidar / 2 };	//500ms
 		int timeoutdelay{ settings::comm::kpollratelidar / 2 };		//500ms
-		int pullaheadcount{ 0 };
+		static int pullaheadcount{ 0 };
 		int timeoutcount{ 0 };
 		static FcwTracker fcwtracker( settings::fcw::ksamplestoaverage );
 
