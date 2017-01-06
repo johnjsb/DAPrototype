@@ -19,6 +19,7 @@
 #include "opencv2/opencv.hpp"
 
 //Project libraries
+#include "lane_detect_constants.h"
 #include "lane_detect_processor.h"
 #include "process_values_class.h"
 
@@ -31,10 +32,7 @@ ProcessValues::ProcessValues() : ldwstatus_{0},
 								 longitude_{0.0},
 								 forwarddistance_{0.0},
 								 timetocollision_{0.0},
-								 polygon_{ cv::Point(0,0),
-										   cv::Point(0,0),
-										   cv::Point(0,0),
-										   cv::Point(0,0) }
+								 polygon_{ lanedetectconstants::defaultpolygon }
 {
 
 }
