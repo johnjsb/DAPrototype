@@ -32,7 +32,7 @@
 
 //Preprocessor
 #define MPSTOMPHCONVERSION 2.237
-#define RETRIES 3
+#define RETRIES 3						//gpsmm.read() consistently fails twice after boot
 
 /*****************************************************************************************/
 bool GpsPollingSetup( gpsmm* gpsrecv )
@@ -48,9 +48,10 @@ bool GpsPollingSetup( gpsmm* gpsrecv )
 	int tries{ 0 };
 	while ( !gpsdata ) {
 		gpsdata = gpsrecv->read();
-		std::this_thread::sleep_for(std::chrono:seconds(2));
-		if ( trires > RETRIES ) {
-			std::cout << "Failed to get valid gps read in " << RETRIES << attempts << '\n';
+		std::this_thread::sleep_for( std::chrono::seconds(2) );
+		if ( tries > RETRIES ) {
+			std::cout << "Failed to get valid gps read in " << RETRIES <<
+						 " attempts "<< '\n';
 			return false;
 		}
 		tries++;
