@@ -26,7 +26,9 @@
 #define MPHTOFPSCONVERSION 1.46667f
 
 /*****************************************************************************************/
-FcwTracker::FcwTracker( int samplestoaverage ) : ksamplestoaverage_{ samplestoaverage }
+FcwTracker::FcwTracker( int samplestoaverage ) : ksamplestoaverage_{ samplestoaverage },
+												 timeoutcount_{ 0 },
+												 pullaheadcount_{ 0 }
 {
 	//Fill with some data to prevent exceptions
 	distances_.push_back( 0.0 );

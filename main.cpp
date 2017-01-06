@@ -182,7 +182,6 @@ int main()
 	FcwTracker* fcwtracker{ NULL };
 	bool fcwpoll{ false };
 	int dacmodule{ -1 };
-	int pullaheadcount{ 0 };
 	if ( settings::fcw::kenabled ) {
 		try {
 			fcwtracker = new FcwTracker( settings::fcw::ksamplestoaverage );
@@ -215,7 +214,6 @@ int main()
 		if ( (fcwpoll) &&
 			 (i % fcwpollinterval == 0) ) LidarPolling( processvalues,
 														dacmodule,
-													    pullaheadcount,
 													    fcwtracker );
 
 		//Set Pace

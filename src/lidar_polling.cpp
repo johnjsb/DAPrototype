@@ -58,7 +58,6 @@ int LidarPollingSetup()
 
 void LidarPolling( ProcessValues& processvalues,
 				   int dacmodule,
-				   int& pullaheadcount,
 				   FcwTracker* fcwtracker )
 {
 	try {
@@ -66,7 +65,6 @@ void LidarPolling( ProcessValues& processvalues,
 		bool vehiclemoving{ false };
 		int pullaheaddelay{ settings::comm::kpollratelidar / 2 };	//500ms
 		int timeoutdelay{ settings::comm::kpollratelidar / 2 };		//500ms
-		int timeoutcount{ 0 };
 
 		//Read FCW distance
 		int fcwresult{ -1 };
@@ -79,11 +77,11 @@ void LidarPolling( ProcessValues& processvalues,
 				 settings::fcw::kdistanceoffset ) {
 				fcwtracker->Update( FEETPERCENTIMETER * fcwresult,
 								   processvalues.gpsspeed_ );
-				timeoutcount = 0;
+				fcwtracker->timeoutcount_ = 0;
 				readerror = false;
 			} else {
-				timeoutcount++;
-				if ( timeoutcount <= timeoutdelay ) {
+				fcwtracker->timeoutcount_++;
+				if ( fcwtracker->timeoutcount_ <= timeoutdelay ) {
 					readerror = false;
 				}
 			}
@@ -135,12 +133,12 @@ void LidarPolling( ProcessValues& processvalues,
 	//Check for driver pullahead
 	if ( !vehiclemoving &&
 		 (fcwtracker->acceleration_ > 0.1) &&
-		 (pullaheadcount > pullaheaddelay) ) {
+		 (fcwtracker->pullaheadcount_ > pullaheaddelay) ) {
 		processvalues.fcwstatus_ = FCW_PULL_AHEAD_WARNING;
 	} else if ( !vehiclemoving && (fcwtracker->acceleration_ > 0.1) ) {
-		pullaheadcount++;
+		fcwtracker->pullaheadcount_++;
 	} else {
-		pullaheadcount = 0;
+		fcwtracker->pullaheadcount_ = 0;
 	}
 */
 
