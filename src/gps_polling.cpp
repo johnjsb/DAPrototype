@@ -20,147 +20,151 @@
 #include <sys/time.h>
 #include <exception>
 #include <string>
+#include <thread>
 
 //3rd party libraries
 #include <libgpsmm.h>
 
 //Project libraries
-#include "pace_setter_class.h"
 #include "process_values_class.h"
 #include "xml_reader.h"
 #include "gps_polling.h"
 
 //Preprocessor
 #define MPSTOMPHCONVERSION 2.237
+#define RETRIES 3						//gpsmm.read() consistently fails twice after boot
 
 /*****************************************************************************************/
-void GpsPollingThread( ProcessValues *processvalues,
-					   std::atomic<bool> *exitsignal )
+bool GpsPollingSetup( gpsmm* gpsrecv )
 {
-
-	std::cout << "GPS polling thread starting!" << '\n';
-
-	//Create thread variables
-	gpsmm gps_rec("localhost", DEFAULT_GPSD_PORT);
-	processvalues->gpsstatus_ = GPS_NO_LOCK;
-	
 	//Check that gpsd service is running
-    if (gps_rec.stream(WATCH_ENABLE|WATCH_JSON) == NULL) {
-        std::cout << "No GPSD running. exiting GPS thread." << '\n';
-        return;
-    }
+	if ( gpsrecv->stream(WATCH_ENABLE|WATCH_JSON) == NULL ) {
+		std::cout << "No GPSD running. GPS setup failed." << '\n';
+		return false;
+	}
 
-    //Get first reading to set time
-	struct gps_data_t* gpsdata{ gps_rec.read() };
-	
+	//Get first reading to set time
+	struct gps_data_t* gpsdata{ gpsrecv->read() };
+	int tries{ 0 };
+	while ( !gpsdata ) {
+		gpsdata = gpsrecv->read();
+		std::this_thread::sleep_for( std::chrono::seconds(2) );
+		if ( tries > RETRIES ) {
+			std::cout << "Failed to get valid gps read in " << RETRIES <<
+						 " attempts "<< '\n';
+			return false;
+		}
+		tries++;
+	}
+
 	//Set baud rate 115200
-	if (gps_send(gpsdata,"$PMTK251,115200*1F\r\n") >= 0) {
+	if ( gps_send(gpsdata,"$PMTK251,115200*1F\r\n") >= 0 ) {
 		std::cout << "GPS baud rate set to 115200" << '\n';
 	} else {
 		std::cout << "GPS baud rate setting failed!" << '\n';
 	}
-	
+
 	//Update every 100 ms
-	if (gps_send(gpsdata,"$PMTK220,100*2F\r\n") >= 0) {
+	if ( gps_send(gpsdata,"$PMTK220,100*2F\r\n") >= 0 ) {
 		std::cout << "GPS update rate set to 10hz" << '\n';
 	} else {
 		std::cout << "GPS update rate setting failed!" << '\n';
 	}
-	
+
 	//Measure every 200 ms
-	if (gps_send(gpsdata,"$PMTK300,200,0,0,0,0*2F\r\n") >= 0) {
+	if ( gps_send(gpsdata,"$PMTK300,200,0,0,0,0*2F\r\n") >= 0 ) {
 		std::cout << "GPS measure rate set to 5hz" << '\n';
 	} else {
 		std::cout << "GPS measure rate setting failed!" << '\n';
 	}
-	
+
 	//Set speed threshold @ 2.0 m/s
-	if (gps_send(gpsdata,"$PMTK397,2.0*3F\r\n") >= 0) {
+	if ( gps_send(gpsdata,"$PMTK397,2.0*3F\r\n") >= 0 ) {
 		std::cout << "GPS speed threshold set to 2.0 m/s" << '\n';
 	} else {
 		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
 
-	//create pace setter
-	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
+	return true;
+}
 
-	//Loop until first GPS lock to set system time
-	while ( (gpsdata == NULL) ||
-			(gpsdata->fix.mode <= 1) ||
-			(gpsdata->fix.time < 1) ||
-			std::isnan(gpsdata->fix.time) ) {
-		if (*exitsignal) {
-			return;
-		}
-		gpspacer.SetPace();
-		gpsdata = gps_rec.read();
-	}
+/*****************************************************************************************/
+void GpsPolling( ProcessValues& processvalues,
+				 gpsmm* gpsrecv )
+{
+	static bool timeset{ false };
+	try {
+		//Get data
+		struct gps_data_t* gpsdata{ gpsrecv->read() };
 
-	//Convert gps_data_t* member 'time' to timeval
-	double offsettime{ gpsdata->fix.time - (5.0 * 3600.0) }; 	//5.0 hr offset for EST
-	double seconds{ 0.0 };
-	double microseconds{ 1000000.0 * modf(offsettime, &seconds) };
-	const timeval tv{ static_cast<time_t>(seconds),
-					  static_cast<suseconds_t>(microseconds) };
-
-	//Set system time - THIS IS CAUSING CRASHES, WHY?
-	if ( settimeofday(&tv, NULL) >= 0) {
-		std::cout << "Time set successful!" << '\n';
-	} else {
-		std::cout << "Time set failure!" << '\n';
-	}
-
-	//Loop indefinitely
-	while( !(*exitsignal) ) {
-		try {
-			if (!gps_rec.waiting(2000000)) {
-				processvalues->gpsstatus_ = GPS_ERROR;
-				std::cout << "GPS timeout." << '\n';
-			} else if ((gpsdata = gps_rec.read()) == NULL) {
-				processvalues->gpsstatus_ = GPS_ERROR;
-				std::cout << "GPS read error!" << '\n';
-			} else {
-				if ( gpsdata->fix.mode > 1) {
-					//Write values
-					processvalues->latitude_ = gpsdata->fix.latitude;
-					processvalues->longitude_ = gpsdata->fix.longitude;
-					processvalues->gpsspeed_ = MPSTOMPHCONVERSION * gpsdata->fix.speed;
-					if ( processvalues->gpsspeed_ > settings::ldw::kenablespeed ) {
-						processvalues->gpsstatus_ =  GPS_LOCK_LDW_ON;
-					} else {
-						processvalues->gpsstatus_ =  GPS_LOCK_LDW_OFF;
-					}
-					
+		//Set time
+		if ( !timeset ) timeset = SetTime(gpsdata);
+		
+		//Evaluate
+		if ( !gpsrecv->waiting(2000000) ) {
+			processvalues.gpsstatus_ = GPS_ERROR;
+			std::cout << "GPS timeout." << '\n';
+		} else if ( gpsdata == NULL ) {
+			processvalues.gpsstatus_ = GPS_ERROR;
+			std::cout << "GPS read error!" << '\n';
+		} else {
+			if ( gpsdata->fix.mode > 1) {
+				//Write values
+				processvalues.latitude_ = gpsdata->fix.latitude;
+				processvalues.longitude_ = gpsdata->fix.longitude;
+				processvalues.gpsspeed_ = MPSTOMPHCONVERSION * gpsdata->fix.speed;
+				if ( processvalues.gpsspeed_ > settings::ldw::kenablespeed ) {
+					processvalues.gpsstatus_ =  GPS_LOCK_LDW_ON;
 				} else {
-					processvalues->gpsstatus_ = GPS_NO_LOCK;
+					processvalues.gpsstatus_ =  GPS_LOCK_LDW_OFF;
 				}
-			}
 
-			gpspacer.SetPace();
-		} catch ( const std::exception& ex ) {
-			std::cout << "GPS Polling thread threw exception: "<< ex.what() << '\n';
-		} catch ( const std::string& str ) {
-			std::cout << "GPS Polling thread threw exception: "<< str << '\n';
-		} catch (...) {
-			std::cout << "GPS Polling thread threw exception of unknown type!" << '\n';
+			} else {
+				processvalues.gpsstatus_ = GPS_NO_LOCK;
+			}
 		}
+	} catch ( const std::exception& ex ) {
+		std::cout << "GPS polling threw exception: "<< ex.what() << '\n';
+	} catch ( const std::string& str ) {
+		std::cout << "GPS polling threw exception: "<< str << '\n';
+	} catch (...) {
+		std::cout << "GPS polling threw exception of unknown type!" << '\n';
 	}
-	
-	std::cout << "Exiting GPS polling thread!" << '\n';
+
 	return;
 }
 
-double Average ( double value,
-			     std::deque<double> &values,
-			     int tokeep )
+/*****************************************************************************************/
+bool SetTime( struct gps_data_t* data )
 {
-	values.push_back(value);
-	if ( values.size() > tokeep ) {
-		values.pop_front();
-		for ( int i = 1; i < values.size(); i++ ) {
-			value += values[i];
+	try {
+		if ( (data == NULL) ||
+			 (data->fix.mode <= 1) ||
+			 (data->fix.time < 1) ||
+			 std::isnan(data->fix.time) ) return false;
+
+		//Convert gps_data_t* member 'time' to timeval
+		double offsettime{ data->fix.time - (5.0 * 3600.0) }; 	//5.0 hr offset for EST
+		double seconds{ 0.0 };
+		double microseconds{ 1000000.0 * modf(offsettime, &seconds) };
+		const timeval tv{ static_cast<time_t>(seconds),
+						  static_cast<suseconds_t>(microseconds) };
+
+		//Set system time - THIS IS CAUSING CRASHES, WHY?
+		if ( settimeofday(&tv, NULL) >= 0) {
+			std::cout << "Time set successful!" << '\n';
+			return true;
+		} else {
+			std::cout << "Time set failure!" << '\n';
+			return false;
 		}
-		value /= values.size();
+	} catch ( const std::exception& ex ) {
+		std::cout << "GPS time setting threw exception: "<< ex.what() << '\n';
+	} catch ( const std::string& str ) {
+		std::cout << "GPS time setting threw exception: "<< str << '\n';
+	} catch (...) {
+		std::cout << "GPS time setting threw exception of unknown type!" << '\n';
 	}
-	return value;
+	
+	return false;
 }

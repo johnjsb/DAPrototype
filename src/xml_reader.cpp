@@ -49,7 +49,8 @@ static int g_commpollrategps{ 1 };
 static int g_commpollratelidar{ 5 };
 static int g_commpollrategpio{ 5 };
 //GPS
-static int g_gpssamplestoaverage{ 3 };
+static bool g_gpsenabled{ true };
+static int g_gpssamplestoaverage{ 1 };
 //LDW
 static bool g_ldwenabled{ true };
 static int g_ldwenablespeed{ 15 };
@@ -142,7 +143,15 @@ int ReadXmlSettings()
 			(*(*attributeApproachElement).FirstChildElement( "pollRateLIDAR" )).
 										  QueryIntText( &g_commpollratelidar );
 			(*(*attributeApproachElement).FirstChildElement( "pollRateGpio" )).
-										  QueryIntText( &g_commpollrategpio );	
+										  QueryIntText( &g_commpollrategpio );
+
+			//GPS
+			attributeApproachElement = doc.FirstChildElement()->
+									   FirstChildElement( "GPS" );
+			(*(*attributeApproachElement).FirstChildElement( "enabled" )).
+										  QueryBoolText( &g_gpsenabled );
+			(*(*attributeApproachElement).FirstChildElement( "samplesToAverage" )).
+										  QueryIntText( &g_gpssamplestoaverage );
 
 			//LDW
 			attributeApproachElement = doc.FirstChildElement()->
@@ -233,6 +242,7 @@ namespace settings{
 		const int kpollrategpio{ g_commpollrategpio };
 	}
 	namespace gps{
+		const bool kenabled{ g_gpsenabled };
 		const int ksamplestoaverage{ g_gpssamplestoaverage };
 	}
 	namespace ldw{

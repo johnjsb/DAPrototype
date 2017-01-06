@@ -15,18 +15,16 @@
 #ifndef GPS_POLLING_H_INCLUDED
 #define GPS_POLLING_H_INCLUDED
 
-//Standard libraries
-#include <atomic>
+//3rd party libraries
+#include <libgpsmm.h>
 
 //Project libraries
 #include "process_values_class.h"
 
 /*****************************************************************************************/
-void GpsPollingThread( ProcessValues *processvalues,
-					   std::atomic<bool> *exitsignal);
-
-double Average ( double value,
-				 std::deque<double> &values,
-			     int tokeep );
+bool GpsPollingSetup( gpsmm* gpsrecv );
+void GpsPolling( ProcessValues& processvalues,
+				 gpsmm* gps_rec );
+bool SetTime( struct gps_data_t* data );
 
 #endif // GPS_POLLING_H_INCLUDED

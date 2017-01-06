@@ -45,12 +45,17 @@
 
 //Standard libraries
 #include <iostream>
+#include <algorithm>
 #include <fstream>
 #include <string>
 #include <thread>
 #include <cstdlib>
 #include <mutex>
 #include <atomic>
+
+//3rd party libraries
+#include "opencv2/opencv.hpp"
+#include <libgpsmm.h>
 
 //DAPrototype source files
 #include "display_handler.h"
@@ -65,9 +70,7 @@
 #include "process_values_class.h"
 #include "video_writer.h"
 #include "xml_reader.h"
-
-//3rd party libraries
-#include "opencv2/opencv.hpp"
+#include "fcw_tracker_class.h"
 
 void PrintHeader ()
 {
@@ -101,7 +104,6 @@ int main()
 
 	//Create shared resources
 	std::atomic<bool> exitsignal{ false };
-	std::atomic<bool> shutdownsignal{ false };
     cv::Mat captureimage;
 	std::mutex capturemutex;
 	cv::Mat displayimage;
@@ -141,38 +143,108 @@ int main()
 							   &displayimage,
 							   &displaymutex,
 							   &exitsignal );
-	//Start GPS poling thread
-	std::thread t_gpspolling( GpsPollingThread,
-							  &processvalues,
-							  &exitsignal );
-	//Start LIDAR polling thread
-	std::thread t_lidarpolling( LidarPolingThread,
-								&processvalues,
-								&exitsignal );
-	//Start GPIO thread
-	std::thread t_gpiohandler( GpioHandlerThread,
-							   &processvalues,
-							   &exitsignal,
-							   &shutdownsignal );
-	
+
     //Set pace setter class!
-    PaceSetter mypacesetter( 2, "main" );
-    
-	while( !exitsignal ){
-		//Should check all threads still running
-		mypacesetter.SetPace();
+	int pollrate { std::max(std::max(settings::comm::kpollrategps,
+									 settings::comm::kpollratelidar),
+							settings::comm::kpollrategpio) };
+	int gpspollinterval{ pollrate / settings::comm::kpollrategps };
+	int gpiopollinterval{ pollrate / settings::comm::kpollrategpio };
+	int fcwpollinterval{ pollrate / settings::comm::kpollratelidar };
+	PaceSetter mypacesetter( pollrate, "Main" );
+	
+	//Setup polling
+
+	//GPIO
+	bool gpiopoll{ false };
+	if ( settings::gpio::kenabled ) {
+		try {
+			gpiopoll = GpioHandlerSetup();
+		} catch ( const std::exception& ex ) {
+			std::cout << "GPIO handler setup threw exception: "<< ex.what() << '\n';
+			gpiopoll = false;
+		} catch ( const std::string& str ) {
+			std::cout << "GPIO handler setup threw exception: "<< str << '\n';
+			gpiopoll = false;
+		} catch (...) {
+			std::cout << "GPIO handler setup threw exception of unknown type!" << '\n';
+			gpiopoll = false;
+		}
 	}
+	//GPS
+	gpsmm* gpsrecv{ NULL };
+	bool gpspoll{ false };
+	if ( settings::gps::kenabled ) {
+		try {
+			gpsrecv = new gpsmm("localhost", DEFAULT_GPSD_PORT);
+			gpspoll = GpsPollingSetup( gpsrecv );
+		} catch ( const std::exception& ex ) {
+			std::cout << "GPS polling setup threw exception: "<< ex.what() << '\n';
+			gpspoll = false;
+		} catch ( const std::string& str ) {
+			std::cout << "GPS polling setup threw exception: "<< str << '\n';
+			gpspoll = false;
+		} catch (...) {
+			std::cout << "GPS polling setup threw exception of unknown type!" << '\n';
+			gpspoll = false;
+		}
+	} else {
+		gpsrecv = NULL;
+	}
+	//FCW
+	FcwTracker* fcwtracker{ NULL };
+	bool fcwpoll{ false };
+	int dacmodule{ -1 };
+	if ( settings::fcw::kenabled ) {
+		try {
+			fcwtracker = new FcwTracker( settings::fcw::ksamplestoaverage );
+			dacmodule = LidarPollingSetup();
+			if ( dacmodule >= 0 ) fcwpoll = true;
+		} catch ( const std::exception& ex ) {
+			std::cout << "FCW setup threw exception: "<< ex.what() << '\n';
+			fcwpoll = false;
+		} catch ( const std::string& str ) {
+			std::cout << "FCW setup threw exception: "<< str << '\n';
+			fcwpoll = false;
+		} catch (...) {
+			std::cout << "FCW setup threw exception of unknown type!" << '\n';
+			fcwpoll = false;
+		}
+	} else {
+		fcwtracker = NULL;
+	}
+    
+	//Loop
+	int i{ 0 };
+	do {
+		i++;
+		if ( (gpspoll) &&
+			 (i % gpspollinterval == 0) ) GpsPolling( processvalues,
+													  gpsrecv );
+		if ( (gpiopoll) &&
+			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
+														exitsignal );
+		if ( (fcwpoll) &&
+			 (i % fcwpollinterval == 0) ) LidarPolling( processvalues,
+														dacmodule,
+													    fcwtracker );
+
+		//Set Pace
+		mypacesetter.SetPace();
+	} while( !exitsignal );
+	
+	//Cleanup variables
+	delete gpsrecv;
+	gpsrecv = NULL:
+	delete fcwtracker;
+	fcwtracker = NULL:
 
     //Handle all the threads
 	t_videowriter.join();
 	t_imageprocessor.join();
-	t_lidarpolling.join();
-	t_gpspolling.join();
 	t_imeageeditor.join();
 	t_imagecapture.join();
 	t_displayupdate.join();
-	shutdownsignal = true;
-	t_gpiohandler.join();
 	std::cout.rdbuf(coutbuf);
 	std::cout << "Program exited gracefully!"  << '\n';
 

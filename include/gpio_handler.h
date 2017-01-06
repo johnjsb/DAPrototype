@@ -22,8 +22,8 @@
 #include "process_values_class.h"
 
 /*****************************************************************************************/
-void GpioHandlerThread( ProcessValues *processvalues,
-						std::atomic<bool> *exitsignal,
-						std::atomic<bool> *shutdownsignal );
+bool GpioHandlerSetup();
+void GpioHandler( ProcessValues& processvalues,
+				  std::atomic<bool>& exitsignal );
 
 #endif // GPIO_HANDLER_H_INCLUDED

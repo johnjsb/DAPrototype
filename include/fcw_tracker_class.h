@@ -27,6 +27,8 @@ class FcwTracker
 		double followingtime_;  			//s
 		double timetocollision_;			//s
 		double acceleration_;				//ft/s^2 (averaged)
+		int timeoutcount_;					//# of polls
+		int pullaheadcount_;				//# of polls
         FcwTracker( int samplestoaverage = 3 );
         void Update( double distance,
 					 double speed );
