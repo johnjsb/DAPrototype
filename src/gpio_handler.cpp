@@ -77,7 +77,8 @@ bool GpioHandlerSetup()
 	return true;
 }
 
-void GpioHandler( ProcessValues& processvalues, std::atomic<bool>& exitsignal )
+void GpioHandler( ProcessValues& processvalues,
+				  std::atomic<bool>& exitsignal )
 {
 	try {
 		//Create thread variables

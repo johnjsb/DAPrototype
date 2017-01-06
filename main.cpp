@@ -53,6 +53,10 @@
 #include <mutex>
 #include <atomic>
 
+//3rd party libraries
+#include "opencv2/opencv.hpp"
+#include <libgpsmm.h>
+
 //DAPrototype source files
 #include "display_handler.h"
 #include "gpio_handler.h"
@@ -66,10 +70,7 @@
 #include "process_values_class.h"
 #include "video_writer.h"
 #include "xml_reader.h"
-
-//3rd party libraries
-#include "opencv2/opencv.hpp"
-#include <libgpsmm.h>
+#include "fcw_tracker_class.h"
 
 void PrintHeader ()
 {
@@ -178,10 +179,28 @@ int main()
 		gpsrecv = NULL;
 	}
 	//FCW
+	FcwTracker* fcwtracker{ NULL };
 	bool fcwpoll{ false };
 	int dacmodule{ -1 };
-	if ( settings::fcw::kenabled ) dacmodule = LidarPollingSetup();
-	if ( dacmodule >= 0 ) fcwpoll = true;
+	int pullaheadcount{ 0 };
+	if ( settings::fcw::kenabled ) {
+		try {
+			fcwtracker = new FcwTracker( settings::fcw::ksamplestoaverage );
+			dacmodule = LidarPollingSetup();
+			if ( dacmodule >= 0 ) fcwpoll = true;
+		} catch ( const std::exception& ex ) {
+			std::cout << "FCW setup threw exception: "<< ex.what() << '\n';
+			fcwpoll = false;
+		} catch ( const std::string& str ) {
+			std::cout << "FCW setup threw exception: "<< str << '\n';
+			fcwpoll = false;
+		} catch (...) {
+			std::cout << "FCW setup threw exception of unknown type!" << '\n';
+			fcwpoll = false;
+		}
+	} else {
+		fcwtracker = NULL;
+	}
     
 	//Loop
 	int i{ 0 };
@@ -195,7 +214,9 @@ int main()
 														exitsignal );
 		if ( (fcwpoll) &&
 			 (i % fcwpollinterval == 0) ) LidarPolling( processvalues,
-														dacmodule );
+														dacmodule,
+													    pullaheadcount,
+													    fcwtracker );
 
 		//Set Pace
 		mypacesetter.SetPace();
@@ -203,6 +224,7 @@ int main()
 	
 	//Cleanup variables
 	delete gpsrecv;
+	delete fcwtracker;
 
     //Handle all the threads
 	t_videowriter.join();

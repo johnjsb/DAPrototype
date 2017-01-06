@@ -56,16 +56,17 @@ int LidarPollingSetup()
 	}
 }
 
-void LidarPolling( ProcessValues& processvalues, int dacmodule )
+void LidarPolling( ProcessValues& processvalues,
+				   int dacmodule,
+				   int pullaheadcount,
+				   FcwTracker* fcwtracker )
 {
 	try {
 		//Create thread variables
 		bool vehiclemoving{ false };
 		int pullaheaddelay{ settings::comm::kpollratelidar / 2 };	//500ms
 		int timeoutdelay{ settings::comm::kpollratelidar / 2 };		//500ms
-		static int pullaheadcount{ 0 };
 		int timeoutcount{ 0 };
-		static FcwTracker fcwtracker( settings::fcw::ksamplestoaverage );
 
 		//Read FCW distance
 		int fcwresult{ -1 };
@@ -76,7 +77,7 @@ void LidarPolling( ProcessValues& processvalues, int dacmodule )
 		} else {
 			if ( (FEETPERCENTIMETER * fcwresult) >
 				 settings::fcw::kdistanceoffset ) {
-				fcwtracker.Update( FEETPERCENTIMETER * fcwresult,
+				fcwtracker->Update( FEETPERCENTIMETER * fcwresult,
 								   processvalues.gpsspeed_ );
 				timeoutcount = 0;
 				readerror = false;
@@ -97,34 +98,34 @@ void LidarPolling( ProcessValues& processvalues, int dacmodule )
 		}
 
 		//Update everything
-		processvalues.forwarddistance_ = fcwtracker.followingdistance_;
-		//if ( fcwtracker.followingtime_ < fcwtracker.timetocollision_ ) {
-			processvalues.timetocollision_ = fcwtracker.followingtime_;
+		processvalues.forwarddistance_ = fcwtracker->followingdistance_;
+		//if ( fcwtracker->followingtime_ < fcwtracker->timetocollision_ ) {
+			processvalues.timetocollision_ = fcwtracker->followingtime_;
 		//} else {
-		//	processvalues.timetocollision_ = fcwtracker.timetocollision_;			
+		//	processvalues.timetocollision_ = fcwtracker->timetocollision_;			
 		//}
 
 		//FCW Status
 		if ( readerror ) {
 			processvalues.fcwstatus_ = FCW_ERROR;
 		/*
-		} else if ( (1000 * fcwtracker.timetocollision_) <
+		} else if ( (1000 * fcwtracker->timetocollision_) <
 					settings::fcw::kmscollisionwarning ) {
 			processvalues.fcwstatus_ = FCW_WARNING;
 		*/
 		} else if ( vehiclemoving &&
-					((1000 * fcwtracker.followingtime_) <
+					((1000 * fcwtracker->followingtime_) <
 					settings::fcw::kmsfollowdistwarning) &&
-					((1000 * fcwtracker.followingtime_) >
+					((1000 * fcwtracker->followingtime_) >
 					settings::fcw::kmsfollowdistalarm) ) {
 			processvalues.fcwstatus_ = FCW_TAILGATE_WARNING;
 		/*
-		} else if ( (1000 * fcwtracker.timetocollision_) <
+		} else if ( (1000 * fcwtracker->timetocollision_) <
 					settings::fcw::kmscollisionalarm ) {
 			processvalues.fcwstatus_ = FCW_ALARM;
 		*/
 		} else if ( vehiclemoving &&
-					(1000 * fcwtracker.followingtime_) <
+					(1000 * fcwtracker->followingtime_) <
 					settings::fcw::kmsfollowdistalarm ) {
 			processvalues.fcwstatus_ = FCW_TAILGATE_ALARM;
 		} else {
@@ -133,10 +134,10 @@ void LidarPolling( ProcessValues& processvalues, int dacmodule )
 /*
 	//Check for driver pullahead
 	if ( !vehiclemoving &&
-		 (fcwtracker.acceleration_ > 0.1) &&
+		 (fcwtracker->acceleration_ > 0.1) &&
 		 (pullaheadcount > pullaheaddelay) ) {
 		processvalues.fcwstatus_ = FCW_PULL_AHEAD_WARNING;
-	} else if ( !vehiclemoving && (fcwtracker.acceleration_ > 0.1) ) {
+	} else if ( !vehiclemoving && (fcwtracker->acceleration_ > 0.1) ) {
 		pullaheadcount++;
 	} else {
 		pullaheadcount = 0;

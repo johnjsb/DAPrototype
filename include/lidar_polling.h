@@ -20,9 +20,13 @@
 
 //Project libraries
 #include "process_values_class.h"
+#include "fcw_tracker_class.h"
 
 /*****************************************************************************************/
 int LidarPollingSetup();
-void LidarPolling( ProcessValues& processvalues, int dacmodule );
+void LidarPolling( ProcessValues& processvalues,
+				   int dacmodule,
+				   int pullaheadcount,
+				   FcwTracker* fcwtracker );
 
 #endif // LIDAR_POLLING_H_INCLUDED

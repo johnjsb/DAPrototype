@@ -23,6 +23,7 @@
 
 /*****************************************************************************************/
 bool GpioHandlerSetup();
-void GpioHandler( ProcessValues& processvalues, std::atomic<bool>& exitsignal );
+void GpioHandler( ProcessValues& processvalues,
+				  std::atomic<bool>& exitsignal );
 
 #endif // GPIO_HANDLER_H_INCLUDED

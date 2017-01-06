@@ -89,7 +89,8 @@ bool GpsPollingSetup( gpsmm* gpsrecv )
 }
 
 /*****************************************************************************************/
-void GpsPolling( ProcessValues& processvalues, gpsmm* gpsrecv )
+void GpsPolling( ProcessValues& processvalues,
+				 gpsmm* gpsrecv )
 {
 	static bool timeset{ false };
 	try {

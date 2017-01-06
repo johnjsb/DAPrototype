@@ -23,7 +23,8 @@
 
 /*****************************************************************************************/
 bool GpsPollingSetup( gpsmm* gpsrecv );
-void GpsPolling( ProcessValues& processvalues, gpsmm* gps_rec );
+void GpsPolling( ProcessValues& processvalues,
+				 gpsmm* gps_rec );
 bool SetTime( struct gps_data_t* data );
 
 #endif // GPS_POLLING_H_INCLUDED
