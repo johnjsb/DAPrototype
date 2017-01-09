@@ -218,7 +218,10 @@ int main()
 	//Loop
 	int i{ 0 };
 	do {
+		//Increment
 		i++;
+		//Flush cout buffer every second
+		if ( i % gpspollinterval == 0 ) std::cout << std::flush;
 		if ( (gpspoll) &&
 			 (i % gpspollinterval == 0) ) GpsPolling( processvalues,
 													  gpsrecv,
