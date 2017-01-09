@@ -174,6 +174,7 @@ int main()
 	//GPS
 	gpsmm* gpsrecv{ NULL };
 	bool gpspoll{ false };
+	bool timeset{ false };
 	if ( settings::gps::kenabled ) {
 		try {
 			gpsrecv = new gpsmm("localhost", DEFAULT_GPSD_PORT);
@@ -220,7 +221,8 @@ int main()
 		i++;
 		if ( (gpspoll) &&
 			 (i % gpspollinterval == 0) ) GpsPolling( processvalues,
-													  gpsrecv );
+													  gpsrecv,
+													  timeset );
 		if ( (gpiopoll) &&
 			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
 														exitsignal );

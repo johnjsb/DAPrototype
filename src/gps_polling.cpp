@@ -90,9 +90,10 @@ bool GpsPollingSetup( gpsmm* gpsrecv )
 
 /*****************************************************************************************/
 void GpsPolling( ProcessValues& processvalues,
-				 gpsmm* gpsrecv )
+				 gpsmm* gpsrecv,
+				 bool& timeset )
 {
-	static bool timeset{ false };
+	//static bool timeset{ false };
 	try {
 		//Get data
 		struct gps_data_t* gpsdata{ gpsrecv->read() };
