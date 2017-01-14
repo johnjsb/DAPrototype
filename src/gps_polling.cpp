@@ -56,7 +56,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 			std::cout << "Failed to get valid gps read in " << RETRIES <<
 						 " attempts "<< '\n';
 			std::cout << "Exiting GPS polling thread!" << '\n';
-			return false;
+			return;
 		}
 		tries++;
 	}
