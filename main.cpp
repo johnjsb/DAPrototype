@@ -145,9 +145,10 @@ int main()
 							   &exitsignal );
 
     //Set pace setter class!
-	int pollrate { std::max(std::max(settings::comm::kpollrategps,
-									 settings::comm::kpollratelidar),
-							settings::comm::kpollrategpio) };
+	int pollrate{ std::max(std::max(settings::comm::kpollrategps,
+									settings::comm::kpollratelidar),
+						   settings::comm::kpollrategpio) };
+	int bufferflushrate { pollrate * 10};	//Every 10 seconds
 	int gpspollinterval{ pollrate / settings::comm::kpollrategps };
 	int gpiopollinterval{ pollrate / settings::comm::kpollrategpio };
 	int fcwpollinterval{ pollrate / settings::comm::kpollratelidar };
@@ -221,7 +222,7 @@ int main()
 		//Increment
 		i++;
 		//Flush cout buffer every second
-		if ( i % gpspollinterval == 0 ) std::cout << std::flush;
+		if ( i % bufferflushrate == 0 ) std::cout << std::flush;
 		if ( (gpspoll) &&
 			 (i % gpspollinterval == 0) ) GpsPolling( processvalues,
 													  gpsrecv,
