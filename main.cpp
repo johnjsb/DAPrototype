@@ -149,8 +149,9 @@ int main()
 							  &exitsignal );
 
     //Set pace setter class!
-	int pollrate { std::max(settings::comm::kpollratelidar,
-							settings::comm::kpollrategpio) };
+	int pollrate{ std::max(settings::comm::kpollratelidar,
+						   settings::comm::kpollrategpio) };
+	int bufferflushrate { pollrate * 10};	//Every 10 seconds
 	int gpiopollinterval{ pollrate / settings::comm::kpollrategpio };
 	int fcwpollinterval{ pollrate / settings::comm::kpollratelidar };
 	PaceSetter mypacesetter( pollrate, "Main" );
@@ -202,7 +203,7 @@ int main()
 		//Increment
 		i++;
 		//Flush cout buffer every second
-		if ( i % gpspollinterval == 0 ) std::cout << std::flush;
+		if ( i % pollrate == 0 ) std::cout << std::flush;
 		if ( (gpiopoll) &&
 			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
 														exitsignal );
