@@ -98,9 +98,10 @@ void GpsPollingThread( ProcessValues *processvalues,
 			//Get data
 			gpsdata = gpsrecv.read();
 			
-			//Set time
-			if ( !timeset ) timeset = SetTime(gpsdata);
-
+			//Set time - commented out due to crashing after boot
+			/*
+			 * if ( !timeset ) timeset = SetTime(gpsdata);
+			 */
 			//Evaluate
 			if ( !gpsrecv.waiting(maxwaittime) ) {
 				processvalues->gpsstatus_ = GPS_ERROR;
