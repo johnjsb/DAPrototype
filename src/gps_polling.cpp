@@ -50,7 +50,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 	struct gps_data_t* gpsdata{ gpsrecv.read() };
 	int tries{ 0 };
 	while ( !gpsdata ) {
-		gpsdata = gpsrecv->read();
+		gpsdata = gpsrecv.read();
 		std::this_thread::sleep_for( std::chrono::seconds(2) );
 		if ( tries > RETRIES ) {
 			std::cout << "Failed to get valid gps read in " << RETRIES <<
