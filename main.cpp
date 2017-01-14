@@ -143,12 +143,14 @@ int main()
 							   &displayimage,
 							   &displaymutex,
 							   &exitsignal );
+	//Start GPS poling thread
+	std::thread t_gpspolling( GpsPollingThread,
+							  &processvalues,
+							  &exitsignal );
 
     //Set pace setter class!
-	int pollrate { std::max(std::max(settings::comm::kpollrategps,
-									 settings::comm::kpollratelidar),
+	int pollrate { std::max(settings::comm::kpollratelidar,
 							settings::comm::kpollrategpio) };
-	int gpspollinterval{ pollrate / settings::comm::kpollrategps };
 	int gpiopollinterval{ pollrate / settings::comm::kpollrategpio };
 	int fcwpollinterval{ pollrate / settings::comm::kpollratelidar };
 	PaceSetter mypacesetter( pollrate, "Main" );
@@ -170,27 +172,6 @@ int main()
 			std::cout << "GPIO handler setup threw exception of unknown type!" << '\n';
 			gpiopoll = false;
 		}
-	}
-	//GPS
-	gpsmm* gpsrecv{ NULL };
-	bool gpspoll{ false };
-	bool timeset{ false };
-	if ( settings::gps::kenabled ) {
-		try {
-			gpsrecv = new gpsmm("localhost", DEFAULT_GPSD_PORT);
-			gpspoll = GpsPollingSetup( gpsrecv );
-		} catch ( const std::exception& ex ) {
-			std::cout << "GPS polling setup threw exception: "<< ex.what() << '\n';
-			gpspoll = false;
-		} catch ( const std::string& str ) {
-			std::cout << "GPS polling setup threw exception: "<< str << '\n';
-			gpspoll = false;
-		} catch (...) {
-			std::cout << "GPS polling setup threw exception of unknown type!" << '\n';
-			gpspoll = false;
-		}
-	} else {
-		gpsrecv = NULL;
 	}
 	//FCW
 	FcwTracker* fcwtracker{ NULL };
@@ -222,10 +203,6 @@ int main()
 		i++;
 		//Flush cout buffer every second
 		if ( i % gpspollinterval == 0 ) std::cout << std::flush;
-		if ( (gpspoll) &&
-			 (i % gpspollinterval == 0) ) GpsPolling( processvalues,
-													  gpsrecv,
-													  timeset );
 		if ( (gpiopoll) &&
 			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
 														exitsignal );
@@ -239,8 +216,6 @@ int main()
 	} while( !exitsignal );
 	
 	//Cleanup variables
-	delete gpsrecv;
-	gpsrecv = NULL;
 	delete fcwtracker;
 	fcwtracker = NULL;
 
