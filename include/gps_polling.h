@@ -22,10 +22,9 @@
 #include "process_values_class.h"
 
 /*****************************************************************************************/
-bool GpsPollingSetup( gpsmm* gpsrecv );
-void GpsPolling( ProcessValues& processvalues,
-				 gpsmm* gps_rec,
-				 bool& timeset );
+void GpsPollingThread( ProcessValues *processvalues,
+					   std::atomic<bool> *exitsignal);
+
 bool SetTime( struct gps_data_t* data );
 
 #endif // GPS_POLLING_H_INCLUDED
