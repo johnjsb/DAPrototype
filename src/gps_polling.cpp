@@ -39,14 +39,18 @@
 void GpsPollingThread( ProcessValues *processvalues,
 					   std::atomic<bool> *exitsignal )
 {
-
 	std::cout << "GPS polling thread starting!" << '\n';
 
-	//Create thread variables
-	processvalues->gpsstatus_ = GPS_NO_LOCK;
-	bool timeset{ false };
-	int maxwaittime{ 3000000 / settings::comm::kpollrategps };
+	//Construct gpsmm class
 	gpsmm gpsrecv("localhost", DEFAULT_GPSD_PORT);
+	
+	//Check that the gpsd service is running
+	if ( gpsrecv.stream(WATCH_ENABLE|WATCH_JSON) == NULL ) {
+		std::cout << "No GPSD running, exiting GPS thread." << '\n';
+		return;
+	}
+
+	//Create gps_data_t*
 	struct gps_data_t* gpsdata{ gpsrecv.read() };
 	int tries{ 0 };
 	while ( !gpsdata ) {
@@ -60,7 +64,9 @@ void GpsPollingThread( ProcessValues *processvalues,
 		}
 		tries++;
 	}
-	
+
+	//GPS Setup
+
 	//Set baud rate 115200
 	if (gps_send(gpsdata,"$PMTK251,115200*1F\r\n") >= 0) {
 		std::cout << "GPS baud rate set to 115200" << '\n';
@@ -88,6 +94,11 @@ void GpsPollingThread( ProcessValues *processvalues,
 	} else {
 		std::cout << "GPS speed threshold setting failed!" << '\n';
 	}
+	
+	//Create thread variables
+	processvalues->gpsstatus_ = GPS_NO_LOCK;
+	bool timeset{ false };
+	int maxwaittime{ 3000000 / settings::comm::kpollrategps };
 
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
@@ -99,9 +110,8 @@ void GpsPollingThread( ProcessValues *processvalues,
 			gpsdata = gpsrecv.read();
 			
 			//Set time - commented out due to crashing after boot
-			/*
-			 * if ( !timeset ) timeset = SetTime(gpsdata);
-			 */
+			//if ( !timeset ) timeset = SetTime(gpsdata);
+
 			//Evaluate
 			if ( !gpsrecv.waiting(maxwaittime) ) {
 				processvalues->gpsstatus_ = GPS_ERROR;
