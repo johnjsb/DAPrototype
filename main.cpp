@@ -251,6 +251,9 @@ int main()
 	t_imeageeditor.join();
 	t_imagecapture.join();
 	t_displayupdate.join();
+
+	//Flush buffer and close file
+	std::cout << std::flush;
 	std::cout.rdbuf(coutbuf);
 	std::cout << "Program exited gracefully!"  << '\n';
 
