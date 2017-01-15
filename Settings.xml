@@ -28,7 +28,7 @@
 		<updateFPS>10</updateFPS>
 	</DISP>
 	<COMM>
-		<pollRateGPS>5</pollRateGPS>
+		<pollRateGPS>1</pollRateGPS>
 		<pollRateLIDAR>10</pollRateLIDAR>
 		<pollRateGpio>10</pollRateGpio>
 	</COMM>
