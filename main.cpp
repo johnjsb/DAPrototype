@@ -203,7 +203,7 @@ int main()
 		//Increment
 		i++;
 		//Flush cout buffer every second
-		if ( i % pollrate == 0 ) std::cout << std::flush;
+		if ( i % bufferflushrate == 0 ) std::cout << std::flush;
 		if ( (gpiopoll) &&
 			 (i % gpiopollinterval == 0) ) GpioHandler( processvalues,
 														exitsignal );
@@ -226,6 +226,9 @@ int main()
 	t_imeageeditor.join();
 	t_imagecapture.join();
 	t_displayupdate.join();
+
+	//Flush buffer and close file
+	std::cout << std::flush;
 	std::cout.rdbuf(coutbuf);
 	std::cout << "Program exited gracefully!"  << '\n';
 
