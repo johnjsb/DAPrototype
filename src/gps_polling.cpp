@@ -98,7 +98,6 @@ void GpsPollingThread( ProcessValues *processvalues,
 	//Create thread variables
 	processvalues->gpsstatus_ = GPS_NO_LOCK;
 	bool timeset{ false };
-	int maxwaittime{ 3000000 / settings::comm::kpollrategps };
 
 	//create pace setter
 	PaceSetter gpspacer(settings::comm::kpollrategps, "GPS polling");
@@ -113,7 +112,7 @@ void GpsPollingThread( ProcessValues *processvalues,
 			//if ( !timeset ) timeset = SetTime(gpsdata);
 
 			//Evaluate
-			if ( !gpsrecv.waiting(maxwaittime) ) {
+			if ( !gpsrecv.waiting(3000000) ) {
 				processvalues->gpsstatus_ = GPS_ERROR;
 				std::cout << "GPS timeout." << '\n';
 			} else if ( gpsdata == NULL ) {
